@@ -19,6 +19,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -58,7 +59,9 @@ public class PostgreSqlConnectionPool implements DataSource {
     @Override
     public void close() {
         pool.clear();
-        Arrays.stream(connections).forEach(PooledConnection::doClose);
+        Arrays.stream(connections)
+                .filter(Objects::nonNull)
+                .forEach(PooledConnection::doClose);
     }
     
     @SuppressWarnings("resource")
@@ -147,8 +150,7 @@ public class PostgreSqlConnectionPool implements DataSource {
         private void doClose() {
             try {
                 connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (SQLException ignore) {
             }
         }
 
