@@ -77,7 +77,9 @@ public class PostgreSqlConnectionPool implements DataSource {
                     return result;
                 }
             }
-            return pool.take();
+            result = pool.take();
+            result.isInPool.set(false);
+            return result; 
         } catch (InterruptedException e) {
             throw new DaoException(e);
         }
