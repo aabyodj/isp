@@ -8,8 +8,5 @@ public interface DataSource {
     void close();
     
     Connection getConnection() throws SQLException;
-    
-    static DataSource getInstance() {
-        return DaoFactory.getInstance().getDataSource();
-    }
+
 }

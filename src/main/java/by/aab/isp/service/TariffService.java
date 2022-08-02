@@ -10,8 +10,4 @@ public interface TariffService {
     
     Tariff getById(long id);
     
-    static TariffService getInstance() {
-        return ServiceFactory.getInstance().getService(TariffService.class);
-    }
-    
 }

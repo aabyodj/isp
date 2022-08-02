@@ -10,9 +10,10 @@ import by.aab.isp.service.impl.TariffServiceImpl;
 public class ServiceFactory {
     
     private final Map<Class<?>, Object> services = new HashMap<>();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
     
     private ServiceFactory() {
-        services.put(TariffService.class, new TariffServiceImpl(TariffDao.getInstance()));
+        services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
     }
     
     private static class BillPughSingleton {
@@ -31,7 +32,7 @@ public class ServiceFactory {
     }
 
     public void destroy() {
-        DaoFactory.getInstance().destroy();
+        daoFactory.destroy();
     }
     
 }

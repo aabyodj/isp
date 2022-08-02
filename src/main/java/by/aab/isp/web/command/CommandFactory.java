@@ -11,14 +11,16 @@ public class CommandFactory {
     private final Map<String, Command> commands = new HashMap<>();
     private final Command index = request -> "jsp/index.jsp";
     private final Command error = request -> "jsp/error.jsp";
+    private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
     
     private CommandFactory() {
-        commands.put("tariffs", new ShowAllTariffsCommand(TariffService.getInstance()));
-        commands.put("show_tariff", new ShowTariffCommand(TariffService.getInstance()));
+        TariffService tariffService = serviceFactory.getService(TariffService.class);
+        commands.put("tariffs", new ShowAllTariffsCommand(tariffService));
+        commands.put("show_tariff", new ShowTariffCommand(tariffService));
     }
     
     public Command getCommand(String commandName) {
-        if (null == commandName) return index;
+        if (null == commandName || commandName.isBlank()) return index;
         Command result = commands.get(commandName);
         return result != null ? result : error;
     }
@@ -32,7 +34,7 @@ public class CommandFactory {
     }
     
     public void destroy() {
-        ServiceFactory.getInstance().destroy();
+        serviceFactory.destroy();
     }
 
 }
