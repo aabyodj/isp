@@ -9,13 +9,13 @@ import java.util.Map;
 public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
-    private final Command index = request -> "jsp/index.jsp";
+    private final Command index;
     private final Command error = request -> "jsp/error.jsp";
     private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
     
     private CommandFactory() {
         TariffService tariffService = serviceFactory.getService(TariffService.class);
-        commands.put("tariffs", new ShowAllTariffsCommand(tariffService));
+        index = new HomeCommand(tariffService);
         commands.put("show_tariff", new ShowTariffCommand(tariffService));
     }
     
