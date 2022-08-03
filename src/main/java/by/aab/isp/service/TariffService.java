@@ -9,5 +9,6 @@ public interface TariffService {
     Collection<Tariff> getAll();
     
     Tariff getById(long id);
-    
+
+    Tariff save(Tariff tariff);
 }

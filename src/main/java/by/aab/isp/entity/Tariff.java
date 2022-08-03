@@ -1,15 +1,21 @@
 package by.aab.isp.entity;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
-public class Tariff {
-    
+public class Tariff implements Entity {
+
+    public Tariff() {
+        id = 0;
+        name = "";
+        description = "";
+        price = BigDecimal.ZERO;
+    }
+
     private long id;
     private String name;
     private String description;

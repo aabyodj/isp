@@ -16,8 +16,9 @@ import java.util.function.Function;
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.DataSource;
+import by.aab.isp.entity.Entity;
 
-abstract class AbstractRepositoryJdbc<T> implements CrudRepository<T> {
+abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
     
     final DataSource dataSource;
     final String tableName;
@@ -26,6 +27,7 @@ abstract class AbstractRepositoryJdbc<T> implements CrudRepository<T> {
     final String sqlInsert;
     final String sqlSelect;
     final String sqlSelectWhereId;
+    final String sqlUpdateWhereId;
     
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<SqlParameter> fields) {
         this.dataSource = dataSource;
@@ -36,22 +38,47 @@ abstract class AbstractRepositoryJdbc<T> implements CrudRepository<T> {
                         .reduce(new StringJoiner(",", "(", ");"), StringJoiner::add, StringJoiner::merge);
         sqlInsert = "INSERT INTO " + tableName
                 + fields.stream()
-                    .map(SqlParameter::getName)
-                    .reduce(new StringJoiner(",", "(", ")"),
-                            StringJoiner::add,
-                            StringJoiner::merge)
+                        .skip(1)
+                        .map(SqlParameter::getName)
+                        .reduce(new StringJoiner(",", "(", ")"),
+                                StringJoiner::add,
+                                StringJoiner::merge)
                 + "VALUES"
                 + fields.stream()
-                    .map(field -> "?")
-                    .reduce(new StringJoiner(",", "(", ")"),
-                            StringJoiner::add,
-                            StringJoiner::merge);
+                        .skip(1)
+                        .map(field -> "?")
+                        .reduce(new StringJoiner(",", "(", ")"),
+                                StringJoiner::add,
+                                StringJoiner::merge);
         sqlSelect = "SELECT * FROM " + tableName;
         sqlSelectWhereId = sqlSelect + " WHERE id=";
+        sqlUpdateWhereId = "UPDATE " + tableName + " SET "
+                + fields.stream()
+                        .skip(1)
+                        .map(field -> field.getName() + " = ?")
+                        .reduce(new StringJoiner(", "),
+                                StringJoiner::add,
+                                StringJoiner::merge)
+                + " WHERE id=";
     }
     
     public void init() {
         executeUpdate(sqlCreateTable);
+    }
+
+    @Override
+    public T save(T entity) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+            mapObjectToRow(entity, statement);
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
+            resultSet.next();
+            return objectWithId(entity, resultSet.getLong(1));
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -62,84 +89,53 @@ abstract class AbstractRepositoryJdbc<T> implements CrudRepository<T> {
     @Override
     public Optional<T> findById(long id) {
         return findOne(sqlSelectWhereId + id, this::mapRowToObject);
-    }    
-    
+    }
+
     @Override
-    public T save(T object) {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-            mapObjectToRow(object, statement);
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getGeneratedKeys();
-            resultSet.next();
-            T result = objectWithId(object, resultSet.getLong(1));
-            return result;
+    public boolean update(T entity) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId())) {
+            mapObjectToRow(entity, statement);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            closeConnection(connection, statement);
         }
     }
 
     Collection<T> findMany(String sql, Function<ResultSet, Collection<T>> mapper) {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.createStatement();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             return mapper.apply(resultSet);
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            closeConnection(connection, statement);
         }
     }
     
     Optional<T> findOne(String sql, Function<ResultSet, T> mapper) {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.createStatement();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
                                     : Optional.empty();
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            closeConnection(connection, statement);
         }
     }
     
     int executeUpdate(String sql) {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.createStatement();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             return statement.executeUpdate(sql);
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            closeConnection(connection, statement);
         }
     }
-    
-    static void closeConnection(Connection connection, Statement statement) {
-        try {
-            if (statement != null && !statement.isClosed()) statement.close();
-        } catch (SQLException ignore) {
-        }
-        try {
-            if (connection != null && !connection.isClosed()) connection.close();
-        } catch (SQLException ignore) {
-        }
-    }
-    
+
     Collection<T> mapRowsToObjects(ResultSet rows) {
         try {
             Collection<T> result = new LinkedList<>();

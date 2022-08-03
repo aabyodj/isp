@@ -33,4 +33,14 @@ public class TariffServiceImpl implements TariffService {
         }
     }
 
+    @Override
+    public Tariff save(Tariff tariff) {
+        if (tariff.getId() == 0) {
+            return tariffDao.save(tariff);
+        } else {
+            if (!tariffDao.update(tariff)) throw new ServiceException("Could not update tariff");
+            return tariff;
+        }
+    }
+
 }

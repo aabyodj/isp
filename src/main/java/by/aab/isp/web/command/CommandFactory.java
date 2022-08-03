@@ -16,7 +16,9 @@ public class CommandFactory {
     private CommandFactory() {
         TariffService tariffService = serviceFactory.getService(TariffService.class);
         index = new HomeCommand(tariffService);
-        commands.put("show_tariff", new ShowTariffCommand(tariffService));
+        commands.put("view_tariff", new EditTariffCommand(tariffService));
+        commands.put("new_tariff", commands.get("view_tariff"));
+        commands.put("save_tariff", new SaveTariffCommand(tariffService));
     }
     
     public Command getCommand(String commandName) {

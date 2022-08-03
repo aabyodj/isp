@@ -15,10 +15,11 @@
             </section>
             <section>
                 <h1>Our tariff plans</h1>
+                <a href="?action=new_tariff">Add new tariff plan</a>
                 <ul><c:forEach var="tariff" items="${tariffs}">
                     <li>
                         <section>
-                            <a href="?action=show_tariff&id=${tariff.id}">
+                            <a href="?action=view_tariff&id=${tariff.id}">
                                 <h1>${tariff.name}</h1>
                                 <div>${tariff.description}</div>
                                 <span>Price: </span><span>${tariff.price}</span>

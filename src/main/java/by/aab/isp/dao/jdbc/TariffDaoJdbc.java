@@ -24,7 +24,6 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     void mapObjectToRow(Tariff tariff, PreparedStatement row) {
         try {
             int c = 0;
-            row.setLong(++c, tariff.getId());
             row.setString(++c, tariff.getName());
             row.setString(++c, tariff.getDescription());
             row.setBigDecimal(++c, tariff.getPrice());
