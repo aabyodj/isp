@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 
+import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
+
 public class SaveTariffCommand implements Command {
 
     private final TariffService tariffService;
@@ -21,7 +23,6 @@ public class SaveTariffCommand implements Command {
                 req.getParameter("description"),
                 new BigDecimal(req.getParameter("price")));
         tariffService.save(tariff);
-        req.setAttribute("redirectDestination", req.getRequestURL());
-        return "jsp/redirect.jsp";
+        return SCHEMA_REDIRECT + req.getContextPath();
     }
 }
