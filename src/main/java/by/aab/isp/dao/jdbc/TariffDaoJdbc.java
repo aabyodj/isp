@@ -6,17 +6,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.DataSource;
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
 
 public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements TariffDao {
 
     public TariffDaoJdbc(DataSource dataSource) {
-        super(dataSource, "tariff", List.of(new SqlParameter("id", "bigserial NOT NULL"),
-                                            new SqlParameter("name", "varchar(15) NOT NULL"),
-                                            new SqlParameter("description", "varchar(50) NOT NULL"),
-                                            new SqlParameter("price", "decimal(10, 2) NOT NULL")));
+        super(dataSource, "tariff", List.of(
+                new SqlParameter("name", "varchar(15) NOT NULL"),
+                new SqlParameter("description", "varchar(50) NOT NULL"),
+                new SqlParameter("price", "decimal(10, 2) NOT NULL")));
         init();
     }
 

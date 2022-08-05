@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.aab.isp.config.Config;
-import by.aab.isp.dao.jdbc.PostgreSqlConnectionPool;
+import by.aab.isp.dao.jdbc.DataSource;
+import by.aab.isp.dao.jdbc.SqlConnectionPool;
 import by.aab.isp.dao.jdbc.TariffDaoJdbc;
 
 public class DaoFactory {
@@ -18,7 +19,7 @@ public class DaoFactory {
         String user = config.getString("db.user");
         String password = config.getString("db.password");
         int poolSize = config.getInt("db.poolsize", 1);
-        dataSource = new PostgreSqlConnectionPool(url, user, password, poolSize);
+        dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
     }
     
@@ -35,10 +36,6 @@ public class DaoFactory {
         T result = (T) repositories.get(clazz);
         if (null == result) throw new IllegalArgumentException();
         return result;
-    }
-    
-    public DataSource getDataSource() {
-        return dataSource;
     }
 
     public void destroy() {

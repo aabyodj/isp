@@ -15,7 +15,6 @@ import java.util.function.Function;
 
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.DataSource;
 import by.aab.isp.entity.Entity;
 
 abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
@@ -33,19 +32,18 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         this.dataSource = dataSource;
         this.tableName = tableName;
         sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName
+                + " (id " + dataSource.getDialect().getSerial8Type() + " PRIMARY KEY,"
                 + fields.stream()
                         .map(field -> field.getName() + " " + field.getType())
-                        .reduce(new StringJoiner(",", "(", ");"), StringJoiner::add, StringJoiner::merge);
+                        .reduce(new StringJoiner(",", "", ");"), StringJoiner::add, StringJoiner::merge);
         sqlInsert = "INSERT INTO " + tableName
                 + fields.stream()
-                        .skip(1)
                         .map(SqlParameter::getName)
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge)
                 + "VALUES"
                 + fields.stream()
-                        .skip(1)
                         .map(field -> "?")
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
@@ -54,7 +52,6 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         sqlSelectWhereId = sqlSelect + " WHERE id=";
         sqlUpdateWhereId = "UPDATE " + tableName + " SET "
                 + fields.stream()
-                        .skip(1)
                         .map(field -> field.getName() + " = ?")
                         .reduce(new StringJoiner(", "),
                                 StringJoiner::add,
@@ -156,8 +153,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     static class SqlParameter {
         
-        final String name;
-        final String type;
+        private final String name;
+        private final String type;
         
         public SqlParameter(String name, String type) {
             super();

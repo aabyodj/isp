@@ -1,22 +1,8 @@
 package by.aab.isp.dao.jdbc;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.ShardingKey;
-import java.sql.Statement;
-import java.sql.Struct;
+import by.aab.isp.dao.DaoException;
+
+import java.sql.*;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -26,23 +12,30 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
-import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.DataSource;
-
-public class PostgreSqlConnectionPool implements DataSource {
+public class SqlConnectionPool implements DataSource {
     
     private final String url;
     private final String user;
     private final String password;
+    private final SqlDialect dialect;
     private final AtomicInteger connectionsCount = new AtomicInteger(0);
     private final PooledConnection[] connections;
     private final BlockingQueue<PooledConnection> pool;
 
-    public PostgreSqlConnectionPool(String url, String user, String password, int poolSize) {
+    private static final Pattern SCHEMA_PATTERN = Pattern.compile("^jdbc:([a-z]+):");
+
+    public SqlConnectionPool(String url, String user, String password, int poolSize) {
         this.url = url;
         this.user = user;
         this.password = password;
+        String schema = SCHEMA_PATTERN.matcher(url)
+                .results()
+                .map(result -> result.group(1))
+                .findFirst()
+                .orElseThrow();
+        dialect = SqlDialect.valueOf(schema.toUpperCase());
         connections = new PooledConnection[poolSize];
         pool = new ArrayBlockingQueue<>(poolSize);
         init();
@@ -50,7 +43,7 @@ public class PostgreSqlConnectionPool implements DataSource {
 
     void init() {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(dialect.getDriverClassName());
         } catch (ClassNotFoundException e) {
             throw new DaoException(e);
         }        
@@ -64,7 +57,6 @@ public class PostgreSqlConnectionPool implements DataSource {
                 .forEach(PooledConnection::doClose);
     }
     
-    @SuppressWarnings("resource")
     @Override
     public Connection getConnection() throws SQLException {
         try {
@@ -87,7 +79,12 @@ public class PostgreSqlConnectionPool implements DataSource {
             throw new DaoException(e);
         }
     }
-    
+
+    @Override
+    public SqlDialect getDialect() {
+        return dialect;
+    }
+
     private class PooledConnection implements Connection {
         
         private final AtomicBoolean isInPool = new AtomicBoolean(false);
