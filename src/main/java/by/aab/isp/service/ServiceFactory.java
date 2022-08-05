@@ -5,7 +5,9 @@ import java.util.Map;
 
 import by.aab.isp.dao.DaoFactory;
 import by.aab.isp.dao.TariffDao;
+import by.aab.isp.dao.UserDao;
 import by.aab.isp.service.impl.TariffServiceImpl;
+import by.aab.isp.service.impl.UserServiceImpl;
 
 public class ServiceFactory {
     
@@ -14,6 +16,7 @@ public class ServiceFactory {
     
     private ServiceFactory() {
         services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
+        services.put(UserService.class, new UserServiceImpl(daoFactory.getDao(UserDao.class)));
     }
     
     private static class BillPughSingleton {
@@ -29,6 +32,10 @@ public class ServiceFactory {
         T result = (T) services.get(clazz);
         if (null == result) throw new IllegalArgumentException();
         return result;
+    }
+
+    public void init() {
+        daoFactory.init();
     }
 
     public void destroy() {

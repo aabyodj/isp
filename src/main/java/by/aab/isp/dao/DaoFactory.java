@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.aab.isp.config.Config;
+import by.aab.isp.dao.jdbc.UserDaoJdbc;
 import by.aab.isp.dao.jdbc.DataSource;
 import by.aab.isp.dao.jdbc.SqlConnectionPool;
 import by.aab.isp.dao.jdbc.TariffDaoJdbc;
@@ -11,7 +12,7 @@ import by.aab.isp.dao.jdbc.TariffDaoJdbc;
 public class DaoFactory {
     
     private final DataSource dataSource;
-    private final Map<Class<?>, Object> repositories = new HashMap<>();
+    private final Map<Class<?>, CrudRepository<?>> repositories = new HashMap<>();
     
     private DaoFactory() {
         Config config = Config.getInstance();
@@ -21,6 +22,7 @@ public class DaoFactory {
         int poolSize = config.getInt("db.poolsize", 1);
         dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
+        repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
     }
     
     private static class BillPughSingleton {
@@ -36,6 +38,10 @@ public class DaoFactory {
         T result = (T) repositories.get(clazz);
         if (null == result) throw new IllegalArgumentException();
         return result;
+    }
+
+    public void init() {
+        repositories.values().forEach(CrudRepository::init);
     }
 
     public void destroy() {

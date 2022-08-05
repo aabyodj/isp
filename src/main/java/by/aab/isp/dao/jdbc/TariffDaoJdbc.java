@@ -16,7 +16,6 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
                 new SqlParameter("name", "varchar(15) NOT NULL"),
                 new SqlParameter("description", "varchar(50) NOT NULL"),
                 new SqlParameter("price", "decimal(10, 2) NOT NULL")));
-        init();
     }
 
     @Override

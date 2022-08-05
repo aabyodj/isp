@@ -40,6 +40,11 @@ public final class Controller extends HttpServlet {
     }
 
     @Override
+    public void init() throws ServletException {
+        CommandFactory.getInstance().init();
+    }
+
+    @Override
     public void destroy() {
         CommandFactory.getInstance().destroy();
     }
