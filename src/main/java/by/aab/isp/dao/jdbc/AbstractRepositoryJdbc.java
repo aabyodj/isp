@@ -65,9 +65,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
 
     @Override
     public T save(T entity) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
             mapObjectToRow(entity, statement);
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -90,9 +89,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
 
     @Override
     public boolean update(T entity) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId())) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId());
             mapObjectToRow(entity, statement);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -101,9 +99,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     }
 
     Collection<T> findMany(String sql, Function<ResultSet, Collection<T>> mapper) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return mapper.apply(resultSet);
         } catch (SQLException e) {
@@ -112,9 +109,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     }
     
     Optional<T> findOne(String sql, Function<ResultSet, T> mapper) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
                                     : Optional.empty();
@@ -124,9 +120,8 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     }
     
     int executeUpdate(String sql) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
             return statement.executeUpdate(sql);
         } catch (SQLException e) {
             throw new DaoException(e);
