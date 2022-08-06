@@ -36,4 +36,14 @@ public class UserServiceImpl implements UserService {
             return user;
         }
     }
+
+    @Override
+    public User login(String email, String password) {
+        try {
+            //TODO: validate password
+            return userDao.findByEmail(email).orElseThrow();
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
 }

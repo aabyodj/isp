@@ -7,7 +7,7 @@
         <title>Manage users | Internet Service Provider</title>
     </head>
     <body>
-<%@ include file="inc/header.inc" %>
+<%@ include file="inc/page-header.inc" %>
         <main>
             <h1>Manage users</h1>
             <a href="?action=new_user">Add new user</a>

@@ -7,7 +7,7 @@
         <title>${user.email}${user.id !=0 ? ' | Edit' : 'New'} user account | Internet Service Provider</title>
     </head>
     <body>
-<%@ include file="inc/header.inc" %>
+<%@ include file="inc/page-header.inc" %>
         <main>
             <h1>${tariff.id !=0 ? 'Edit' : 'New'} user account</h1>
             <form action="?action=save_user" method="POST">

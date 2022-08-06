@@ -7,7 +7,7 @@
         <title>Internet Service Provider</title>
     </head>
     <body>
-<%@ include file="inc/header.inc" %>
+<%@ include file="inc/page-header.inc" %>
         <main>
             <section>
                 <h1>Welcome!</h1>

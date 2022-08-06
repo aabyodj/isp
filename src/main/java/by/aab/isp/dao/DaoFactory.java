@@ -8,8 +8,11 @@ import by.aab.isp.dao.jdbc.UserDaoJdbc;
 import by.aab.isp.dao.jdbc.DataSource;
 import by.aab.isp.dao.jdbc.SqlConnectionPool;
 import by.aab.isp.dao.jdbc.TariffDaoJdbc;
+import by.aab.isp.entity.User;
 
 public class DaoFactory {
+
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
     
     private final DataSource dataSource;
     private final Map<Class<?>, CrudRepository<?>> repositories = new HashMap<>();
@@ -42,6 +45,15 @@ public class DaoFactory {
 
     public void init() {
         repositories.values().forEach(CrudRepository::init);
+
+        //TODO: must create default admin somewhere else
+        UserDao userDao = getDao(UserDao.class);
+        if (userDao.countByRoleId(User.Role.ADMIN.ordinal()) < 1) {
+            User defaultAdmin = new User();
+            defaultAdmin.setEmail(DEFAULT_ADMIN_EMAIL);
+            defaultAdmin.setRole(User.Role.ADMIN);
+            userDao.save(defaultAdmin);
+        }
     }
 
     public void destroy() {

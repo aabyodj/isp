@@ -3,6 +3,7 @@ package by.aab.isp.web.command;
 import by.aab.isp.service.ServiceFactory;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
+import by.aab.isp.web.util.UserUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +13,16 @@ public class CommandFactory {
     private final Map<String, Command> commands = new HashMap<>();
     private final Command index;
     private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
+    private final UserUtil userUtil;
     
     private CommandFactory() {
         TariffService tariffService = serviceFactory.getService(TariffService.class);
         UserService userService = serviceFactory.getService(UserService.class);
+        userUtil = new UserUtil(userService);
         index = new HomeCommand(tariffService);
+        commands.put("login", (req) -> "jsp/login-form.jsp");
+        commands.put("check_login", new CheckLoginCommand(userService));
+        commands.put("logout", new LogoutCommand());
         commands.put("edit_tariff", new EditTariffCommand(tariffService));
         commands.put("new_tariff", getCommand("edit_tariff"));
         commands.put("view_tariff", getCommand("edit_tariff"));
@@ -32,6 +38,11 @@ public class CommandFactory {
         Command result = commands.get(commandName);
         if (null == result) throw new RuntimeException("Command '" + commandName + "' not found");
         return result;
+    }
+
+    //TODO: use a separate factory for this
+    public UserUtil getUserUtil() {
+        return userUtil;
     }
 
     private static class BillPughSingleton {

@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import by.aab.isp.dao.CrudRepository;
@@ -24,6 +25,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     final String sqlCreateTable;
     final String sqlInsert;
+    final String sqlCount;
     final String sqlSelect;
     final String sqlSelectWhereId;
     final String sqlUpdateWhereId;
@@ -52,6 +54,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge);
+        sqlCount = "SELECT count(*) FROM " + tableName;
         sqlSelect = "SELECT * FROM " + tableName;
         sqlSelectWhereId = sqlSelect + " WHERE id=";
         sqlUpdateWhereId = "UPDATE " + tableName + " SET "
@@ -79,6 +82,22 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
+
+    long count(String sql) {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            return resultSet.getLong(1);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public long count() {
+        return count(sqlCount);
     }
 
     @Override
@@ -117,6 +136,18 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
+                                    : Optional.empty();
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    Optional<T> findOne(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, T> mapper) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            filler.accept(statement);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next() ? Optional.of(mapper.apply(resultSet))
                                     : Optional.empty();
         } catch (SQLException e) {
             throw new DaoException(e);

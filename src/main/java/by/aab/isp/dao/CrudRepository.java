@@ -10,6 +10,8 @@ public interface CrudRepository<T extends Entity> {
     void init();
 
     T save(T entity);
+
+    long count();
     
     Collection<T> findAll();
     

@@ -30,7 +30,9 @@ public final class Controller extends HttpServlet {
 
     private static void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String commandName = req.getParameter("action");
-        Command command = CommandFactory.getInstance().getCommand(commandName);
+        CommandFactory commandFactory = CommandFactory.getInstance();
+        Command command = commandFactory.getCommand(commandName);
+        commandFactory.getUserUtil().setUserAttribute(req);
         String path = command.apply(req);
         if (PATTERN_REDIRECT.matcher(path).find()) {
             resp.sendRedirect(path.substring(SCHEMA_REDIRECT.length()));
