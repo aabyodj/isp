@@ -31,11 +31,15 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<SqlParameter> fields) {
         this.dataSource = dataSource;
         this.tableName = tableName;
+        SqlDialect dialect = dataSource.getDialect();
         sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName
-                + " (id " + dataSource.getDialect().getSerial8Type() + " PRIMARY KEY,"
+                + " (id " + dialect.getSerial8Type() + " PRIMARY KEY,"
                 + fields.stream()
                         .map(field -> field.getName() + " " + field.getType())
-                        .reduce(new StringJoiner(",", "", ");"), StringJoiner::add, StringJoiner::merge);
+                        .reduce(new StringJoiner(",", "", ")"),
+                                StringJoiner::add,
+                                StringJoiner::merge)
+                + dialect.getTableUtf8();
         sqlInsert = "INSERT INTO " + tableName
                 + fields.stream()
                         .map(SqlParameter::getName)
