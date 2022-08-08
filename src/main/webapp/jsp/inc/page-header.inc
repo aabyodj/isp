@@ -6,11 +6,39 @@
                     <li><a href="?action=login">Log in</a>
                 </ul>
             </c:when>
-            <c:otherwise>
+            <c:when test="${activeUser.role == 'ADMIN'}">
                 <ul>
                     <li><a href="?action=manage_users">Manage users</a>
-                    <li><a href="?action=logout">Log out</a>
+                    <li>
+                        <p>${activeUser.email}</p>
+                        <ul>
+                            <li><a href="?action=logout">Log out</a>
+                        </ul>
+                    </li>
                 </ul>
-            </c:otherwise>
+            </c:when>
+            <c:when test="${activeUser.role == 'MANAGER'}">
+                <ul>
+                    <li><a href="?action=manage_users">Manage customers</a>
+                    <li>
+                        <p>${activeUser.email}</p>
+                        <ul>
+                            <li><a href="?action=logout">Log out</a>
+                        </ul>
+                    </li>
+                </ul>
+            </c:when>
+            <c:when test="${activeUser.role == 'CUSTOMER'}">
+                <ul>
+                    <li>
+                        <p>${activeUser.email}</p>
+                        <ul>
+                            <li>Balance: ${account.balance}
+                            <c:if test="${account.tariff != null}"><li>Tariff: ${account.tariff.name}
+                            </c:if><li><a href="?action=logout">Log out</a>
+                        </ul>
+                    </li>
+                </ul>
+            </c:when>
             </c:choose></nav>
         </header>
