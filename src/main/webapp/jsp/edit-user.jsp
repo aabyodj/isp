@@ -9,7 +9,7 @@
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1>${tariff.id !=0 ? 'Edit' : 'New'} user account</h1>
+            <h1>${user.id !=0 ? 'Edit' : 'New'} user account</h1>
             <form action="?action=save_user" method="POST">
                 <input type="hidden" name="id" value="${user.id}">
                 <ul>
