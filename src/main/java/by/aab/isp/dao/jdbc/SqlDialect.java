@@ -4,7 +4,7 @@ enum SqlDialect {
 
     MYSQL(
             "com.mysql.cj.jdbc.Driver",
-            "SERIAL",
+            "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY",
             "CHARACTER SET utf8"),
     POSTGRESQL(
             "org.postgresql.Driver",

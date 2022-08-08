@@ -29,11 +29,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
-        if (user.getId() == 0) {
-            return userDao.save(user);
-        } else {
-            if (!userDao.update(user)) throw new ServiceException("Could not update user");
-            return user;
+        try {
+            if (user.getId() == 0) {
+                return userDao.save(user);
+            } else {
+                userDao.update(user);
+                return user;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
     }
 

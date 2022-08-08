@@ -23,12 +23,12 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     final DataSource dataSource;
     final String tableName;
     
-    final String sqlCreateTable;
-    final String sqlInsert;
-    final String sqlCount;
-    final String sqlSelect;
-    final String sqlSelectWhereId;
-    final String sqlUpdateWhereId;
+    String sqlCreateTable;
+    String sqlInsert;
+    String sqlCount;
+    String sqlSelect;
+    String sqlSelectWhereId;
+    String sqlUpdateWhereId;
     
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<SqlParameter> fields) {
         this.dataSource = dataSource;
@@ -64,6 +64,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
                                 StringJoiner::add,
                                 StringJoiner::merge)
                 + " WHERE id=";
+        init();
     }
     
     public void init() {
@@ -111,11 +112,13 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     }
 
     @Override
-    public boolean update(T entity) {
+    public void update(T entity) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId());
             mapObjectToRow(entity, statement);
-            return statement.executeUpdate() > 0;
+            if (statement.executeUpdate() > 0) {
+                throw new DaoException("Could not update " + entity.getClass().getName());
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }

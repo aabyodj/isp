@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.aab.isp.config.Config;
-import by.aab.isp.dao.jdbc.UserDaoJdbc;
-import by.aab.isp.dao.jdbc.DataSource;
-import by.aab.isp.dao.jdbc.SqlConnectionPool;
-import by.aab.isp.dao.jdbc.TariffDaoJdbc;
+import by.aab.isp.dao.jdbc.*;
 import by.aab.isp.entity.User;
 
 public class DaoFactory {
@@ -26,6 +23,8 @@ public class DaoFactory {
         dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
         repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
+        repositories.put(CustomerAccountDao.class, new CustomerAccountDaoJdbc(
+                dataSource, getDao(TariffDao.class), getDao(UserDao.class)));
     }
     
     private static class BillPughSingleton {
@@ -44,7 +43,7 @@ public class DaoFactory {
     }
 
     public void init() {
-        repositories.values().forEach(CrudRepository::init);
+//        repositories.values().forEach(CrudRepository::init);
 
         //TODO: must create default admin somewhere else
         UserDao userDao = getDao(UserDao.class);

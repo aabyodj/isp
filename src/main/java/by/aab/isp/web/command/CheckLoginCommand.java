@@ -20,7 +20,7 @@ public class CheckLoginCommand implements Command {
         String password = req.getParameter("password");
         User user = userService.login(email, password);
         HttpSession session = req.getSession();
-        session.setAttribute("activeUser", user);
+        session.setAttribute("userId", user.getId());
         return SCHEMA_REDIRECT + req.getContextPath();
     }
 }

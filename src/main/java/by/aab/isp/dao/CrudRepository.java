@@ -17,5 +17,5 @@ public interface CrudRepository<T extends Entity> {
     
     Optional<T> findById(long id);
 
-    boolean update(T entity);
+    void update(T entity);
 }
