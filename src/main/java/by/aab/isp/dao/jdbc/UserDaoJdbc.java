@@ -13,10 +13,7 @@ import java.util.Optional;
 public class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
 
     public UserDaoJdbc(DataSource dataSource) {
-        super(dataSource, "users", List.of(
-                new SqlParameter("email", "varchar(25) UNIQUE NOT NULL"),
-                new SqlParameter("role_id", "INTEGER NOT NULL")
-        ));
+        super(dataSource, "users", List.of("email", "role_id"));
     }
 
     @Override

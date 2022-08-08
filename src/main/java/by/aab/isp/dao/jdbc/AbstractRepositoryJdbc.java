@@ -22,29 +22,18 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     final DataSource dataSource;
     final String tableName;
-    
-    String sqlCreateTable;
+
     String sqlInsert;
     String sqlCount;
     String sqlSelect;
     String sqlSelectWhereId;
     String sqlUpdateWhereId;
     
-    AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<SqlParameter> fields) {
+    AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
         this.dataSource = dataSource;
         this.tableName = tableName;
-        SqlDialect dialect = dataSource.getDialect();
-        sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName
-                + " (id " + dialect.getSerial8Type() + " PRIMARY KEY,"
-                + fields.stream()
-                        .map(field -> field.getName() + " " + field.getType())
-                        .reduce(new StringJoiner(",", "", ")"),
-                                StringJoiner::add,
-                                StringJoiner::merge)
-                + dialect.getTableUtf8();
         sqlInsert = "INSERT INTO " + tableName
                 + fields.stream()
-                        .map(SqlParameter::getName)
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge)
@@ -59,16 +48,14 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         sqlSelectWhereId = sqlSelect + " WHERE id=";
         sqlUpdateWhereId = "UPDATE " + tableName + " SET "
                 + fields.stream()
-                        .map(field -> field.getName() + " = ?")
-                        .reduce(new StringJoiner(", "),
+                        .reduce(new StringJoiner("=?, "),
                                 StringJoiner::add,
                                 StringJoiner::merge)
                 + " WHERE id=";
-        init();
     }
-    
+
+    @Override
     public void init() {
-        executeUpdate(sqlCreateTable);
     }
 
     @Override
@@ -183,25 +170,5 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     abstract T mapRowToObject(ResultSet row);
     
     abstract T objectWithId(T object, long id);
-    
-    static class SqlParameter {
-        
-        private final String name;
-        private final String type;
-        
-        public SqlParameter(String name, String type) {
-            super();
-            this.name = name;
-            this.type = type;
-        }
 
-        public String getName() {
-            return name;
-        }
-
-        public String getType() {
-            return type;
-        }
-        
-    }
 }

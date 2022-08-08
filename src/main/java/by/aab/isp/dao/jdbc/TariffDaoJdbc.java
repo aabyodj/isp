@@ -12,10 +12,7 @@ import by.aab.isp.entity.Tariff;
 public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements TariffDao {
 
     public TariffDaoJdbc(DataSource dataSource) {
-        super(dataSource, "tariff", List.of(
-                new SqlParameter("name", "varchar(15) NOT NULL"),
-                new SqlParameter("description", "varchar(50) NOT NULL"),
-                new SqlParameter("price", "decimal(10, 2) NOT NULL")));
+        super(dataSource, "tariff", List.of("name", "description", "price"));
     }
 
     @Override

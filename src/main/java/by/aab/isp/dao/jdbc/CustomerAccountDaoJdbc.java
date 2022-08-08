@@ -14,13 +14,7 @@ import java.util.StringJoiner;
 
 public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<CustomerAccount> implements CustomerAccountDao {
 
-    private static final List<SqlParameter> FIELDS = List.of(
-            new SqlParameter("tariff_id", "BIGINT NOT NULL DEFAULT 0"),
-            //TODO: determine appropriate data type for monetary fields
-            new SqlParameter("balance", "DECIMAL(10, 2) NOT NULL DEFAULT 0"),
-            new SqlParameter("permitted_overdraft", "DECIMAL(10, 2) NOT NULL DEFAULT 0"),
-            new SqlParameter("payoff_date", "TIMESTAMP")
-    );
+    private static final List<String> FIELDS = List.of("tariff_id", "balance", "permitted_overdraft", "payoff_date");
 
     private final TariffDao tariffDao;
     private final UserDao userDao;
@@ -30,10 +24,9 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
         sqlInsert = "INSERT INTO " + tableName
                 + "(user_id,"
                 + FIELDS.stream()
-                .map(SqlParameter::getName)
-                .reduce(new StringJoiner(",", "", ")"),
-                        StringJoiner::add,
-                        StringJoiner::merge)
+                        .reduce(new StringJoiner(",", "", ")"),
+                                StringJoiner::add,
+                                StringJoiner::merge)
                 + "VALUES (?,"
                 + FIELDS.stream()
                 .map(field -> "?")
@@ -43,27 +36,12 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
         sqlSelectWhereId = sqlSelect + " WHERE user_id=";
         sqlUpdateWhereId = "UPDATE " + tableName + " SET "
                 + FIELDS.stream()
-                .map(field -> field.getName() + " = ?")
-                .reduce(new StringJoiner(", "),
-                        StringJoiner::add,
-                        StringJoiner::merge)
+                        .reduce(new StringJoiner("=?, "),
+                                StringJoiner::add,
+                                StringJoiner::merge)
                 + " WHERE user_id=";
         this.tariffDao = tariffDao;
         this.userDao = userDao;
-    }
-
-    @Override
-    public void init() {
-        sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName
-                + "(user_id BIGINT NOT NULL UNIQUE,"
-                + FIELDS.stream()
-                .map(field -> field.getName() + " " + field.getType() + ",")
-                .reduce(new StringBuilder(),
-                        StringBuilder::append,
-                        StringBuilder::append)
-                + "FOREIGN KEY (user_id) REFERENCES users(id))"
-                + dataSource.getDialect().getTableUtf8();
-        super.init();
     }
 
     final String sqlCountWhereUserId = sqlCount + " WHERE user_id=";
