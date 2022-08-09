@@ -33,8 +33,11 @@ public class CustomerAccountServiceImpl implements CustomerAccountService {
 
     @Override
     public CustomerAccount save(CustomerAccount account) {
+        if (account.getId() == 0) {
+            throw new ServiceException("Cannot save customer account for non existent user");
+        }
         try {
-            if (account.getId() == 0 || accountDao.countByUserId(account.getId()) < 1) {
+            if (accountDao.countByUserId(account.getId()) < 1) {
                 account = accountDao.save(account);
             } else {
                 accountDao.update(account);

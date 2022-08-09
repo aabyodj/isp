@@ -47,18 +47,6 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
     }
 
     @Override
-    public CustomerAccount save(CustomerAccount account) {
-        User user = account.getUser();
-        if (user.getId() == 0) {
-            user = userDao.save(user);
-        } else {
-            userDao.update(user);
-        }
-        account.setUser(user);
-        return super.save(account);
-    }
-
-    @Override
     public Optional<CustomerAccount> findByUser(User user) {
         return findOne(sqlSelectWhereId + user.getId(), row -> {
             try {
