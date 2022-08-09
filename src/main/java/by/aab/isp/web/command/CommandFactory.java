@@ -16,9 +16,9 @@ public class CommandFactory {
     private CommandFactory() {
         PromotionService promotionService = serviceFactory.getService(PromotionService.class);
         TariffService tariffService = serviceFactory.getService(TariffService.class);
-        CustomerAccountService customerService = serviceFactory.getService(CustomerAccountService.class);
+        CustomerAccountService accountService = serviceFactory.getService(CustomerAccountService.class);
         UserService userService = serviceFactory.getService(UserService.class);
-        userUtil = new UserUtil(customerService, userService);
+        userUtil = new UserUtil(accountService, userService);
         index = new HomeCommand(promotionService, tariffService);
         commands.put("login", (req) -> "jsp/login-form.jsp");
         commands.put("check_login", new CheckLoginCommand(userService));
@@ -31,9 +31,9 @@ public class CommandFactory {
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(tariffService));
         commands.put("manage_users", new ManageUsersCommand(userService));
-        commands.put("edit_user", new EditUserCommand(userService));
+        commands.put("edit_user", new EditUserCommand(accountService, userService, tariffService));
         commands.put("new_user", getCommand("edit_user"));
-        commands.put("save_user", new SaveUserCommand(userService));
+        commands.put("save_user", new SaveUserCommand(accountService, userService, tariffService));
     }
     
     public Command getCommand(String commandName) {

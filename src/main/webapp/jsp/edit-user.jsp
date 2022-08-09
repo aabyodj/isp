@@ -23,7 +23,17 @@
                         <select name="role" required><c:forEach var="roleOption" items="${userRoles}">
                             <option value="${roleOption}"${roleOption == user.role ? ' selected' : ''}>${roleOption.toString().toLowerCase()}</option>
                         </c:forEach></select>
+                    </li><c:if test="${account != null}">
+                    <li>
+                        Balance: <c:out value="${account.balance}" />
                     </li>
+                    <li>
+                        <label for="tariff">Tariff: </label>
+                        <select name="tariff">
+                            <option value="0"${account.tariff == null ? ' selected' : ''}>no</option><c:forEach var="tariff" items="${tariffs}">
+                            <option value="${tariff.id}"${account.tariff.id == tariff.id ? ' selected' : ''}><c:out value="${tariff.name}" /></option>
+                        </c:forEach></select>
+                    </li></c:if>
                 </ul>
                 <input type="submit" value="Submit">
             </form>

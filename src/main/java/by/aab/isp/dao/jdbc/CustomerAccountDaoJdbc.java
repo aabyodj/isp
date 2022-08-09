@@ -10,7 +10,6 @@ import by.aab.isp.entity.User;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
 
 public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<CustomerAccount> implements CustomerAccountDao {
 
@@ -22,21 +21,37 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
     public CustomerAccountDaoJdbc(DataSource dataSource, TariffDao tariffDao, UserDao userDao) {
         super(dataSource, "customer_accounts", FIELDS);
         sqlInsert = "INSERT INTO " + tableName
-                + "(user_id,"
                 + FIELDS.stream()
-                        .reduce(new StringJoiner(",", "", ")"),
-                                StringJoiner::add,
-                                StringJoiner::merge)
-                + "VALUES (?,"
+                        .map(field -> field + ", ")
+                        .reduce(new StringBuilder("("),
+                                StringBuilder::append,
+                                StringBuilder::append)
+                + " user_id) VALUES ("
                 + FIELDS.stream()
-                .map(field -> "?")
-                .reduce(new StringJoiner(",", "(", ")"),
-                        StringJoiner::add,
-                        StringJoiner::merge);
+                        .map(field -> "?, ")
+                        .reduce(new StringBuilder(),
+                                StringBuilder::append,
+                                StringBuilder::append)
+                + "?)";
         sqlSelectWhereId = sqlSelect + " WHERE user_id=";
         sqlUpdateWhereId = sqlUpdate + " WHERE user_id=";
         this.tariffDao = tariffDao;
         this.userDao = userDao;
+    }
+
+    @Override
+    public CustomerAccount save(CustomerAccount account) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sqlInsert);
+            mapObjectToRow(account, statement);
+            statement.setLong(FIELDS.size() + 1, account.getId());
+            if (statement.executeUpdate() < 1) {
+                throw new DaoException("Could not insert CustomerAccount");
+            }
+            return account;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     final String sqlCountWhereUserId = sqlCount + " WHERE user_id=";
@@ -70,7 +85,6 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
     void mapObjectToRow(CustomerAccount account, PreparedStatement row) {
         try {
             int c = 0;
-            row.setLong(++c, account.getId());
             row.setLong(++c, account.getTariff() != null ? account.getTariff().getId()
                                                          : 0);
             row.setBigDecimal(++c, account.getBalance());
