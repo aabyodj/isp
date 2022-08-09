@@ -35,6 +35,8 @@ public class TariffServiceImpl implements TariffService {
 
     @Override
     public Tariff save(Tariff tariff) {
+        tariff.setName(tariff.getName().strip());
+        tariff.setDescription(tariff.getDescription().strip());
         try {
             if (tariff.getId() == 0) {
                 return tariffDao.save(tariff);

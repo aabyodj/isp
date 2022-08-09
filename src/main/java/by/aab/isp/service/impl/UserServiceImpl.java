@@ -29,6 +29,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
+        //TODO: validate email
+        user.setEmail(user.getEmail().strip());
         try {
             if (user.getId() == 0) {
                 return userDao.save(user);

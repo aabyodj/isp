@@ -34,6 +34,8 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public Promotion save(Promotion promotion) {
+        promotion.setName(promotion.getName().strip());
+        promotion.setDescription(promotion.getDescription().strip());
         try {
             if (promotion.getId() == 0) {
                 return promotionDao.save(promotion);
