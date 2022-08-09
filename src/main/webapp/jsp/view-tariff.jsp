@@ -4,12 +4,12 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Internet Service Provider</title>
+        <title><c:out value="${tariff.name}" />Internet Service Provider</title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
-        <h1>${tariff.name}</h1>
-        <div>${tariff.description}</div>
+        <h1><c:out value="${tariff.name}" /></h1>
+        <div><c:out value="${tariff.description}" /></div>
         <span>Price: </span><span>${tariff.price}</span>
     </body>
 </html>

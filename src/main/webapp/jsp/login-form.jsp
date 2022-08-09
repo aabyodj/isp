@@ -14,7 +14,7 @@
                 <ul>
                     <li>
                         <label for="user-email">Your email</label>
-                        <input type="email" name="email" required placeholder="user@example.com" value="${user.email}">
+                        <input type="email" name="email" required placeholder="user@example.com">
                     </li>
                     <li>
                         <label for="password">Your password</label>

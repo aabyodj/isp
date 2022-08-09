@@ -18,7 +18,7 @@
                     <th></th>
                 </tr><c:forEach var="user" items="${users}">
                 <tr>
-                    <td>${user.email}</td>
+                    <td><c:out value="${user.email}" /></td>
                     <td>${user.role.toString().toLowerCase()}</td>
                     <td><a href="?action=edit_user&user_id=${user.id}">Edit user</a></td>
                 </tr></c:forEach>

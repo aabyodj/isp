@@ -19,8 +19,8 @@
                 <ul><c:forEach var="promotion" items="${promotions}">
                     <li>
                         <a href="?action=edit_promotion&id=${promotion.id}">
-                            <h2>${promotion.name}</h2>
-                            <div>${promotion.description}</div>
+                            <h2><c:out value="${promotion.name}" /></h2>
+                            <div><c:out value="${promotion.description}" /></div>
                         </a>
                     </li></c:forEach>
                 </ul>
@@ -31,8 +31,8 @@
                 <ul><c:forEach var="tariff" items="${tariffs}">
                     <li>
                         <a href="?action=view_tariff&id=${tariff.id}">
-                            <h2>${tariff.name}</h2>
-                            <div>${tariff.description}</div>
+                            <h2><c:out value="${tariff.name}" /></h2>
+                            <div><c:out value="${tariff.description}" /></div>
                             <span>Price: </span><span>${tariff.price}</span>
                         </a>
                     </li></c:forEach>

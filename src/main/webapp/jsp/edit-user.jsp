@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>${user.email}${user.id !=0 ? ' | Edit' : 'New'} user account | Internet Service Provider</title>
+        <title><c:out value="${user.email}" />${user.id !=0 ? ' | Edit' : 'New'} user account | Internet Service Provider</title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
@@ -15,7 +15,8 @@
                 <ul>
                     <li>
                         <label for="user-email">User email</label>
-                        <input type="email" name="email" required placeholder="user@example.com" value="${user.email}">
+                        <input type="email" name="email" required maxlength=25 placeholder="user@example.com"
+                            value="<c:out value="${user.email}" />">
                     </li>
                     <li>
                         <label for="role">User role</label>

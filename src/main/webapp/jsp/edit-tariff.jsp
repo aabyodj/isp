@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>${tariff.name}${tariff.id !=0 ? ' | Edit' : 'New'} tariff plan | Internet Service Provider</title>
+        <title><c:out value="${tariff.name}" />${tariff.id !=0 ? ' | Edit' : 'New'} tariff plan | Internet Service Provider</title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
@@ -15,11 +15,12 @@
                 <ul>
                     <li>
                         <label for="tariff-name">Tariff name</label>
-                        <input type="text" name="name" required placeholder="Tariff name" value="${tariff.name}">
+                        <input type="text" name="name" required maxlength=15 placeholder="Tariff name"
+                            value="<c:out value="${tariff.name}" />">
                     </li>
                     <li>
                         <label for="description">Tariff description</label>
-                        <input type="text" name="description" required placeholder="Tariff description" value="${tariff.description}">
+                        <textarea name="description" required maxlength=50 placeholder="Tariff description"><c:out value="${tariff.description}" /></textarea>
                     </li>
                     <li>
                         <label for="price">Monthly price</label>

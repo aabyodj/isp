@@ -10,7 +10,7 @@
                 <ul>
                     <li><a href="?action=manage_users">Manage users</a>
                     <li>
-                        <p>${activeUser.email}</p>
+                        <p><c:out value="${activeUser.email}" /></p>
                         <ul>
                             <li><a href="?action=logout">Log out</a>
                         </ul>
@@ -31,10 +31,10 @@
             <c:when test="${activeUser.role == 'CUSTOMER'}">
                 <ul>
                     <li>
-                        <p>${activeUser.email}</p>
+                        <p><c:out value="${activeUser.email}" /></p>
                         <ul>
                             <li>Balance: ${account.balance}
-                            <c:if test="${account.tariff != null}"><li>Tariff: ${account.tariff.name}
+                            <c:if test="${account.tariff != null}"><li>Tariff: <c:out value="${account.tariff.name}" />
                             </c:if><li><a href="?action=logout">Log out</a>
                         </ul>
                     </li>
