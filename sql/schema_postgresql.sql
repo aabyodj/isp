@@ -7,6 +7,12 @@ CREATE TABLE IF NOT EXISTS tariff (
     price numeric(10,2) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS promotions (
+    id SERIAL8 PRIMARY KEY,
+    name varchar(25) NOT NULL,
+    description varchar(100) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL8 PRIMARY KEY,
     email character varying(25) UNIQUE NOT NULL,

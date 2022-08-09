@@ -12,7 +12,7 @@ public class DaoFactory {
     private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
     
     private final DataSource dataSource;
-    private final Map<Class<?>, CrudRepository<?>> repositories = new HashMap<>();
+    private final Map<Class<? extends CrudRepository<?>>, CrudRepository<?>> repositories = new HashMap<>();
     
     private DaoFactory() {
         Config config = Config.getInstance();
@@ -25,6 +25,7 @@ public class DaoFactory {
         repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
         repositories.put(CustomerAccountDao.class, new CustomerAccountDaoJdbc(
                 dataSource, getDao(TariffDao.class), getDao(UserDao.class)));
+        repositories.put(PromotionDao.class, new PromotionDaoJdbc(dataSource));
     }
     
     private static class BillPughSingleton {

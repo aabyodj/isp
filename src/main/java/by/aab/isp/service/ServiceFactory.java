@@ -3,11 +3,9 @@ package by.aab.isp.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import by.aab.isp.dao.CustomerAccountDao;
-import by.aab.isp.dao.DaoFactory;
-import by.aab.isp.dao.TariffDao;
-import by.aab.isp.dao.UserDao;
+import by.aab.isp.dao.*;
 import by.aab.isp.service.impl.CustomerAccountServiceImpl;
+import by.aab.isp.service.impl.PromotionServiceImpl;
 import by.aab.isp.service.impl.TariffServiceImpl;
 import by.aab.isp.service.impl.UserServiceImpl;
 
@@ -21,6 +19,7 @@ public class ServiceFactory {
         services.put(UserService.class, new UserServiceImpl(daoFactory.getDao(UserDao.class)));
         services.put(CustomerAccountService.class,
                 new CustomerAccountServiceImpl(daoFactory.getDao(CustomerAccountDao.class)));
+        services.put(PromotionService.class, new PromotionServiceImpl(daoFactory.getDao(PromotionDao.class)));
     }
     
     private static class BillPughSingleton {
