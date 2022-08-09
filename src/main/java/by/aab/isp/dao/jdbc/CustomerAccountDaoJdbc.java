@@ -34,12 +34,7 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
                         StringJoiner::add,
                         StringJoiner::merge);
         sqlSelectWhereId = sqlSelect + " WHERE user_id=";
-        sqlUpdateWhereId = "UPDATE " + tableName + " SET "
-                + FIELDS.stream()
-                        .reduce(new StringJoiner("=?, "),
-                                StringJoiner::add,
-                                StringJoiner::merge)
-                + " WHERE user_id=";
+        sqlUpdateWhereId = sqlUpdate + " WHERE user_id=";
         this.tariffDao = tariffDao;
         this.userDao = userDao;
     }
@@ -60,16 +55,7 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
             userDao.update(user);
         }
         account.setUser(user);
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sqlInsert);
-            mapObjectToRow(account, statement);
-            if (statement.executeUpdate() < 1) {
-                throw new DaoException("Could not save customer account");
-            }
-            return account;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+        return super.save(account);
     }
 
     @Override

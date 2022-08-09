@@ -27,6 +27,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     String sqlCount;
     String sqlSelect;
     String sqlSelectWhereId;
+    String sqlUpdate;
     String sqlUpdateWhereId;
     
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
@@ -46,12 +47,12 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         sqlCount = "SELECT count(*) FROM " + tableName;
         sqlSelect = "SELECT * FROM " + tableName;
         sqlSelectWhereId = sqlSelect + " WHERE id=";
-        sqlUpdateWhereId = "UPDATE " + tableName + " SET "
-                + fields.stream()
-                        .reduce(new StringJoiner("=?, "),
-                                StringJoiner::add,
-                                StringJoiner::merge)
-                + " WHERE id=";
+        sqlUpdate = "UPDATE " + tableName + " SET " + fields.stream()
+                .map(field -> field + " = ?")
+                .reduce(new StringJoiner(", "),
+                        StringJoiner::add,
+                        StringJoiner::merge);
+        sqlUpdateWhereId = sqlUpdate + " WHERE id=";
     }
 
     @Override
@@ -103,7 +104,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId());
             mapObjectToRow(entity, statement);
-            if (statement.executeUpdate() > 0) {
+            if (statement.executeUpdate() < 1) {
                 throw new DaoException("Could not update " + entity.getClass().getName());
             }
         } catch (SQLException e) {
