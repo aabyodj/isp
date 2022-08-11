@@ -25,8 +25,13 @@ public class EditUserCommand implements Command {
             userId = Long.parseLong(req.getParameter("id"));
         } catch (Exception ignore) {
         }
-        User user = userId != 0 ? userService.getById(userId)
-                                : new User();
+        User user;
+        if (userId != 0) {
+            user = userService.getById(userId);
+        } else {
+            user = new User();
+            user.setRole(User.Role.CUSTOMER);
+        }
         req.setAttribute("user", user);
         req.setAttribute("userRoles", User.Role.values());
         if (user.getRole() == User.Role.CUSTOMER) {

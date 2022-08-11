@@ -18,8 +18,6 @@ public class CustomerAccount implements Entity {
 
     public CustomerAccount(User user) {
         this.user = user;
-        balance = BigDecimal.ZERO;
-        permittedOverdraft = BigDecimal.ZERO;
     }
 
     @Override

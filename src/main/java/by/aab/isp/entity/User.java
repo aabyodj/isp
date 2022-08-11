@@ -9,11 +9,6 @@ public class User implements Entity {
     private String email;
     private Role role;
 
-    public User() {
-        email = "";
-        role = Role.CUSTOMER;
-    }
-
     public enum Role {
         ADMIN, MANAGER, CUSTOMER
     }
