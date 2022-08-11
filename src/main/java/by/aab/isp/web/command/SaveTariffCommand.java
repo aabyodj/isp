@@ -17,11 +17,11 @@ public class SaveTariffCommand implements Command {
 
     @Override
     public String apply(HttpServletRequest req) {
-        Tariff tariff = new Tariff(
-                Long.parseLong(req.getParameter("id")),
-                req.getParameter("name"),
-                req.getParameter("description"),
-                new BigDecimal(req.getParameter("price")));
+        Tariff tariff = new Tariff();
+        tariff.setId(Long.parseLong(req.getParameter("id")));
+        tariff.setName(req.getParameter("name"));
+        tariff.setDescription(req.getParameter("description"));
+        tariff.setPrice(new BigDecimal(req.getParameter("price")));
         tariffService.save(tariff);
         return SCHEMA_REDIRECT + req.getContextPath();
     }

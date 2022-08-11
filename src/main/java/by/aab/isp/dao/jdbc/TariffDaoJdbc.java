@@ -30,10 +30,12 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     @Override
     Tariff mapRowToObject(ResultSet row) {
         try {
-            return new Tariff(row.getLong("id"), 
-                              row.getString("name"), 
-                              row.getString("description"), 
-                              row.getBigDecimal("price"));
+            Tariff tariff = new Tariff();
+            tariff.setId(row.getLong("id"));
+            tariff.setName(row.getString("name"));
+            tariff.setDescription(row.getString("description"));
+            tariff.setPrice(row.getBigDecimal("price"));
+            return tariff;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

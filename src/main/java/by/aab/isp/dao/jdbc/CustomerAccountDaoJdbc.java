@@ -67,14 +67,15 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
             try {
                 long tariffId = row.getLong("tariff_id");
                 Timestamp payoffDate = row.getTimestamp("payoff_date");
-                return new CustomerAccount(
-                        user,
-                        tariffId != 0 ? tariffDao.findById(tariffId).orElseThrow()
-                                      : null,
-                        row.getBigDecimal("balance"),
-                        row.getBigDecimal("permitted_overdraft"),
-                        payoffDate != null ? payoffDate.toInstant()
-                                           : null);
+                CustomerAccount account = new CustomerAccount();
+                account.setUser(user);
+                account.setTariff(tariffId != 0 ? tariffDao.findById(tariffId).orElseThrow()
+                                                : null);
+                account.setBalance(row.getBigDecimal("balance"));
+                account.setPermittedOverdraft(row.getBigDecimal("permitted_overdraft"));
+                account.setPayoffDate(payoffDate != null ? payoffDate.toInstant()
+                                                         : null);
+                return account;
             } catch (SQLException e) {
                 throw new DaoException(e);
             }
@@ -102,15 +103,15 @@ public final class CustomerAccountDaoJdbc extends AbstractRepositoryJdbc<Custome
             long userId = row.getLong("user_id");
             long tariffId = row.getLong("tariff_id");
             Timestamp payoffDate = row.getTimestamp("payoff_date");
-            return new CustomerAccount(
-                    userDao.findById(userId).orElseThrow(),
-                    tariffId != 0 ? tariffDao.findById(tariffId).orElseThrow()
-                                  : null,
-                    row.getBigDecimal("balance"),
-                    row.getBigDecimal("permitted_overdraft"),
-                    payoffDate != null ? payoffDate.toInstant()
-                                       : null
-            );
+            CustomerAccount account = new CustomerAccount();
+            account.setUser(userDao.findById(userId).orElseThrow());
+            account.setTariff(tariffId != 0 ? tariffDao.findById(tariffId).orElseThrow()
+                                            : null);
+            account.setBalance(row.getBigDecimal("balance"));
+            account.setPermittedOverdraft(row.getBigDecimal("permitted_overdraft"));
+            account.setPayoffDate(payoffDate != null ? payoffDate.toInstant()
+                                                     : null);
+            return account;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

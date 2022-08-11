@@ -29,11 +29,11 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
     @Override
     Promotion mapRowToObject(ResultSet row) {
         try {
-            return new Promotion(
-                    row.getLong("id"),
-                    row.getString("name"),
-                    row.getString("description")
-            );
+            Promotion promotion = new Promotion();
+            promotion.setId(row.getLong("id"));
+            promotion.setName(row.getString("name"));
+            promotion.setDescription(row.getString("description"));
+            return promotion;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

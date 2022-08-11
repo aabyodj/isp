@@ -1,10 +1,8 @@
 package by.aab.isp.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class User implements Entity {
 
     private long id;

@@ -24,11 +24,10 @@ public class SaveUserCommand implements Command {
 
     @Override
     public String apply(HttpServletRequest req) {
-        User user = new User(
-                Long.parseLong(req.getParameter("id")),
-                req.getParameter("email"),
-                User.Role.valueOf(req.getParameter("role"))
-        );
+        User user = new User();
+        user.setId(Long.parseLong(req.getParameter("id")));
+        user.setEmail(req.getParameter("email"));
+        user.setRole(User.Role.valueOf(req.getParameter("role")));
         userService.save(user);
         if (user.getRole() == User.Role.CUSTOMER) {
             CustomerAccount account = accountService.getByUser(user);

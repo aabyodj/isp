@@ -16,11 +16,10 @@ public class SavePromotionCommand implements Command {
 
     @Override
     public String apply(HttpServletRequest req) {
-        Promotion promotion = new Promotion(
-                Long.parseLong(req.getParameter("id")),
-                req.getParameter("name"),
-                req.getParameter("description")
-        );
+        Promotion promotion = new Promotion();
+        promotion.setId(Long.parseLong(req.getParameter("id")));
+        promotion.setName(req.getParameter("name"));
+        promotion.setDescription(req.getParameter("description"));
         promotionService.save(promotion);
         return SCHEMA_REDIRECT + req.getContextPath();
     }

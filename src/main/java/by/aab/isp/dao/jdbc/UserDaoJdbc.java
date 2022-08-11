@@ -30,11 +30,11 @@ public class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao
     @Override
     User mapRowToObject(ResultSet row) {
         try {
-            return new User(
-                    row.getLong("id"),
-                    row.getString("email"),
-                    User.Role.values()[row.getInt("role_id")]
-            );
+            User user = new User();
+            user.setId(row.getLong("id"));
+            user.setEmail(row.getString("email"));
+            user.setRole(User.Role.values()[row.getInt("role_id")]);
+            return user;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

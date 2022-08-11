@@ -1,10 +1,8 @@
 package by.aab.isp.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class Promotion implements Entity {
 
     public Promotion() {
