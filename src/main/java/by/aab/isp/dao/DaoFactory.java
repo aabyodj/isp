@@ -10,6 +10,7 @@ import by.aab.isp.entity.User;
 public class DaoFactory {
 
     private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
+    private static final int DEFAULT_POOL_SIZE = 2;
     
     private final DataSource dataSource;
     private final Map<Class<? extends CrudRepository<?>>, CrudRepository<?>> repositories = new HashMap<>();
@@ -19,7 +20,7 @@ public class DaoFactory {
         String url = config.getString("db.url");
         String user = config.getString("db.user");
         String password = config.getString("db.password");
-        int poolSize = config.getInt("db.poolsize", 1);
+        int poolSize = config.getInt("db.poolsize", DEFAULT_POOL_SIZE);
         dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
         repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
