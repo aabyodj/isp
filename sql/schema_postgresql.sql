@@ -19,8 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS customers (
-    user_id bigint NOT NULL,
-    tariff_id bigint DEFAULT 0,
+    user_id bigint PRIMARY KEY,
     balance numeric(10,2) DEFAULT 0,
     permitted_overdraft numeric(10,2) DEFAULT 0,
     payoff_date timestamp,
@@ -28,7 +27,17 @@ CREATE TABLE IF NOT EXISTS customers (
 );
 
 CREATE TABLE IF NOT EXISTS employees (
-    user_id bigint NOT NULL,
+    user_id bigint PRIMARY KEY,
     role_id bigint NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+    id SERIAL8 PRIMARY KEY,
+    customer_id bigint NOT NULL,
+    tariff_id bigint NOT NULL,
+    price numeric(10, 2) NOT NULL,
+    active_since TIMESTAMP,
+    active_until TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(user_id)
 );

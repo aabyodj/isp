@@ -10,7 +10,6 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper=true)
 public class Customer extends User {
 
-    private Tariff tariff;  //TODO: Eliminate this. Use Subscription entity instead
     private BigDecimal balance;
     private BigDecimal permittedOverdraft;
     private Instant payoffDate;

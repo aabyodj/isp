@@ -23,8 +23,12 @@ public class DaoFactory {
         int poolSize = config.getInt("db.poolsize", DEFAULT_POOL_SIZE);
         dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
-        repositories.put(UserDao.class, new UserDaoJdbc(dataSource, getDao(TariffDao.class)));
+        repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
         repositories.put(PromotionDao.class, new PromotionDaoJdbc(dataSource));
+        repositories.put(SubscriptionDao.class, new SubscriptionDaoJdbc(
+                dataSource,
+                getDao(UserDao.class),
+                getDao(TariffDao.class)));
     }
     
     private static class BillPughSingleton {
@@ -38,7 +42,7 @@ public class DaoFactory {
     public <T extends CrudRepository<?>> T getDao(Class<T> clazz) {
         @SuppressWarnings("unchecked")
         T result = (T) repositories.get(clazz);
-        if (null == result) throw new IllegalArgumentException();
+        if (null == result) throw new IllegalStateException(clazz.getName() + " is not set");
         return result;
     }
 

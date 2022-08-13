@@ -24,8 +24,8 @@
                     <li>
                         <label for="tariff">Tariff: </label>
                         <select name="tariff">
-                            <option value="0"${customer.tariff == null ? ' selected' : ''}>no</option><c:forEach var="tariff" items="${tariffs}">
-                            <option value="${tariff.id}"${customer.tariff.id == tariff.id ? ' selected' : ''}><c:out value="${tariff.name}" /></option>
+                            <option value="0"${activeTariff == null ? ' selected' : ''}>no</option><c:forEach var="tariff" items="${tariffs}">
+                            <option value="${tariff.id}"${activeTariff.id == tariff.id ? ' selected' : ''}><c:out value="${tariff.name}" /></option>
                         </c:forEach></select>
                     </li>
                 </ul>

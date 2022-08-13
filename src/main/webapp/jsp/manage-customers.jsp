@@ -14,13 +14,11 @@
             <table>
                 <tr>
                     <th>Email</th>
-                    <th>Tariff</th>
                     <th>Balance</th>
                     <th></th>
                 </tr><c:forEach var="customer" items="${customers}">
                 <tr>
                     <td><c:out value="${customer.email}" /></td>
-                    <td><c:out value="${customer.tariff != null ? customer.tariff.name : 'none'}" /></td>
                     <td>${customer.balance}</td>
                     <td><a href="?action=edit_customer&id=${customer.id}">Edit customer</a></td>
                 </tr></c:forEach>

@@ -30,9 +30,14 @@ public class CommandFactory {
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(tariffService));
         commands.put("manage_customers", new ManageCustomersCommand(userService));
-        commands.put("edit_customer", new EditCustomerCommand(userService, tariffService));
+        commands.put("edit_customer", new EditCustomerCommand(
+                serviceFactory.getService(UserService.class),
+                serviceFactory.getService(SubscriptionService.class),
+                serviceFactory.getService(TariffService.class)));
         commands.put("new_customer", getCommand("edit_customer"));
-        commands.put("save_customer", new SaveCustomerCommand(userService, tariffService));
+        commands.put("save_customer", new SaveCustomerCommand(
+                serviceFactory.getService(UserService.class),
+                serviceFactory.getService(SubscriptionService.class)));
         commands.put("manage_employees", new ManageEmployeesCommand(userService));
         commands.put("edit_employee", new EditEmployeeCommand(userService));
         commands.put("new_employee", getCommand("edit_employee"));

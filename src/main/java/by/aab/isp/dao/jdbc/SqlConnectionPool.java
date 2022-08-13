@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+//TODO: add force close connection by timeout feature
 public class SqlConnectionPool implements DataSource {
     
     private final String url;

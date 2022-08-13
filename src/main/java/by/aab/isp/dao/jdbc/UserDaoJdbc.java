@@ -1,26 +1,29 @@
 package by.aab.isp.dao.jdbc;
 
 import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.TariffDao;
 import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+//FIXME: find where more than 2 connections needed
 public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
 
     private static final String USERS_TABLE_NAME = "users";
     private static final String CUSTOMERS_TABLE_NAME = "customers";
     private static final String EMPLOYEES_TABLE_NAME = "employees";
     private static final String SQL_INSERT_CUSTOMER = "INSERT INTO " + CUSTOMERS_TABLE_NAME
-            + " (user_id, tariff_id, balance, permitted_overdraft, payoff_date) VALUES (?, ?, ?, ?, ?)";
-    private static final int CUSTOMER_COLUMN_COUNT = 5;
+            + " (user_id, balance, permitted_overdraft, payoff_date) VALUES (?, ?, ?, ?)";
+    private static final int CUSTOMER_COLUMN_COUNT = 4;
     private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO " + EMPLOYEES_TABLE_NAME
             + " (user_id, role_id) VALUES (?, ?)";
     private static final int EMPLOYEE_COLUMN_COUNT = 2;
@@ -32,15 +35,12 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_COUNT_EMPLOYEES_WHERE_ROLE_ID = "SELECT count(*) FROM employees WHERE role_id=";
     private static final String SQL_UPDATE_CUSTOMER = "UPDATE " + CUSTOMERS_TABLE_NAME
-            + " SET user_id=?, tariff_id=?, balance=?, permitted_overdraft=?, payoff_date=? WHERE user_id=";
+            + " SET user_id=?, balance=?, permitted_overdraft=?, payoff_date=? WHERE user_id=";
     private static final String SQL_UPDATE_EMPLOYEE = "UPDATE " + EMPLOYEES_TABLE_NAME
             + " SET user_id=?, role_id=? WHERE user_id=";
 
-    private final TariffDao tariffDao;
-
-    public UserDaoJdbc(DataSource dataSource, TariffDao tariffDao) {
+    public UserDaoJdbc(DataSource dataSource) {
         super(dataSource, USERS_TABLE_NAME, List.of("email"));
-        this.tariffDao = tariffDao;
     }
 
     @Override
@@ -57,8 +57,6 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             int c = 0;
             row.setLong(++c, customer.getId());
-            row.setLong(++c, customer.getTariff() != null ? customer.getTariff().getId()
-                                                          : 0);
             row.setBigDecimal(++c, customer.getBalance());
             row.setBigDecimal(++c, customer.getPermittedOverdraft());
             row.setTimestamp(++c, customer.getPayoffDate() != null ? Timestamp.from(customer.getPayoffDate())
@@ -116,9 +114,6 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             Customer customer = new Customer();
             if (row.getMetaData().getColumnCount() > CUSTOMER_COLUMN_COUNT) mapRowToUser(row, customer);
-            long tariffId = row.getLong("tariff_id");
-            customer.setTariff(tariffId != 0 ? tariffDao.findById(tariffId).orElseThrow()
-                                             : null);
             customer.setBalance(row.getBigDecimal("balance"));
             customer.setPermittedOverdraft(row.getBigDecimal("permitted_overdraft"));
             Timestamp payoffDate = row.getTimestamp("payoff_date");

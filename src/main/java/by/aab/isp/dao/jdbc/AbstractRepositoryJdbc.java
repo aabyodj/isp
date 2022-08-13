@@ -113,6 +113,17 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
 
+    Iterable<? extends T> findMany(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, Iterable<? extends T>> mapper) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            filler.accept(statement);
+            ResultSet resultSet = statement.executeQuery();
+            return mapper.apply(resultSet);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
     Iterable<? extends T> findMany(String sql, Function<ResultSet, Iterable<? extends T>> mapper) {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
