@@ -1,7 +1,5 @@
 package by.aab.isp.service.impl;
 
-import java.util.Collection;
-
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.ServiceException;
@@ -16,7 +14,7 @@ public class TariffServiceImpl implements TariffService {
     }
 
     @Override
-    public Collection<Tariff> getAll() {
+    public Iterable<Tariff> getAll() {
         try {
             return tariffDao.findAll();
         } catch (Exception e) {

@@ -1,11 +1,11 @@
 package by.aab.isp.dao;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import by.aab.isp.config.Config;
 import by.aab.isp.dao.jdbc.*;
-import by.aab.isp.entity.User;
+import by.aab.isp.entity.Employee;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DaoFactory {
 
@@ -23,9 +23,7 @@ public class DaoFactory {
         int poolSize = config.getInt("db.poolsize", DEFAULT_POOL_SIZE);
         dataSource = new SqlConnectionPool(url, user, password, poolSize);
         repositories.put(TariffDao.class, new TariffDaoJdbc(dataSource));
-        repositories.put(UserDao.class, new UserDaoJdbc(dataSource));
-        repositories.put(CustomerAccountDao.class, new CustomerAccountDaoJdbc(
-                dataSource, getDao(TariffDao.class), getDao(UserDao.class)));
+        repositories.put(UserDao.class, new UserDaoJdbc(dataSource, getDao(TariffDao.class)));
         repositories.put(PromotionDao.class, new PromotionDaoJdbc(dataSource));
     }
     
@@ -45,14 +43,12 @@ public class DaoFactory {
     }
 
     public void init() {
-//        repositories.values().forEach(CrudRepository::init);
-
         //TODO: must create default admin somewhere else
         UserDao userDao = getDao(UserDao.class);
-        if (userDao.countByRoleId(User.Role.ADMIN.ordinal()) < 1) {
-            User defaultAdmin = new User();
+        if (userDao.countByRoleId(Employee.Role.ADMIN.ordinal()) < 1) {
+            Employee defaultAdmin = new Employee();
             defaultAdmin.setEmail(DEFAULT_ADMIN_EMAIL);
-            defaultAdmin.setRole(User.Role.ADMIN);
+            defaultAdmin.setRole(Employee.Role.ADMIN);
             userDao.save(defaultAdmin);
         }
     }

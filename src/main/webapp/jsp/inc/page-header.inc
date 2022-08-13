@@ -8,7 +8,8 @@
             </c:when>
             <c:when test="${activeUser.role == 'ADMIN'}">
                 <ul>
-                    <li><a href="?action=manage_users">Manage users</a>
+                    <li><a href="?action=manage_customers">Manage customers</a>
+                    <li><a href="?action=manage_employees">Manage employees</a>
                     <li>
                         <p><c:out value="${activeUser.email}" /></p>
                         <ul>
@@ -19,7 +20,7 @@
             </c:when>
             <c:when test="${activeUser.role == 'MANAGER'}">
                 <ul>
-                    <li><a href="?action=manage_users">Manage customers</a>
+                    <li><a href="?action=manage_customers">Manage customers</a>
                     <li>
                         <p>${activeUser.email}</p>
                         <ul>
@@ -28,7 +29,7 @@
                     </li>
                 </ul>
             </c:when>
-            <c:when test="${activeUser.role == 'CUSTOMER'}">
+            <c:otherwise>
                 <ul>
                     <li>
                         <p><c:out value="${activeUser.email}" /></p>
@@ -39,6 +40,6 @@
                         </ul>
                     </li>
                 </ul>
-            </c:when>
+            </c:otherwise>
             </c:choose></nav>
         </header>

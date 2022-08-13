@@ -23,12 +23,12 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     final DataSource dataSource;
     final String tableName;
 
-    String sqlInsert;
-    String sqlCount;
-    String sqlSelect;
-    String sqlSelectWhereId;
-    String sqlUpdate;
-    String sqlUpdateWhereId;
+    final String sqlInsert;
+    final String sqlCount;
+    final String sqlSelect;
+    final String sqlSelectWhereId;
+    final String sqlUpdate;
+    final String sqlUpdateWhereId;
     
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
         this.dataSource = dataSource;
@@ -89,9 +89,10 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return count(sqlCount);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<T> findAll() {
-        return findMany(sqlSelect, this::mapRowsToObjects);
+    public Iterable<T> findAll() {
+        return (Iterable<T>) findMany(sqlSelect, this::mapRowsToObjects);
     }
 
     @Override
@@ -112,7 +113,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
 
-    Collection<T> findMany(String sql, Function<ResultSet, Collection<T>> mapper) {
+    Iterable<? extends T> findMany(String sql, Function<ResultSet, Iterable<? extends T>> mapper) {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -145,10 +146,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
     
-    int executeUpdate(String sql) {
+    int executeUpdate(String sql, Consumer<PreparedStatement> filler) {
         try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            return statement.executeUpdate(sql);
+            PreparedStatement statement = connection.prepareStatement(sql);
+            filler.accept(statement);
+            return statement.executeUpdate();
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -158,7 +160,9 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         try {
             Collection<T> result = new LinkedList<>();
             while (rows.next()) {
-                result.add(mapRowToObject(rows));
+                try {
+                    result.add(mapRowToObject(rows));
+                } catch (DaoException ignore) {}
             }
             return result;
         } catch (SQLException e) {

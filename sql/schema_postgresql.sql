@@ -15,17 +15,20 @@ CREATE TABLE IF NOT EXISTS promotions (
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL8 PRIMARY KEY,
-    email character varying(25) UNIQUE NOT NULL,
-    role_id bigint NOT NULL
+    email character varying(25) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS customer_accounts (
+CREATE TABLE IF NOT EXISTS customers (
     user_id bigint NOT NULL,
     tariff_id bigint DEFAULT 0,
     balance numeric(10,2) DEFAULT 0,
     permitted_overdraft numeric(10,2) DEFAULT 0,
-    payoff_date timestamp without time zone,
+    payoff_date timestamp,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-INSERT INTO users (email, role_id) VALUES ('admin@example.com', 0);
+CREATE TABLE IF NOT EXISTS employees (
+    user_id bigint NOT NULL,
+    role_id bigint NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

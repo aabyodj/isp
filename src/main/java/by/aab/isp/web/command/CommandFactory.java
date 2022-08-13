@@ -10,15 +10,14 @@ public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
     private final Command index;
-    private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
+    private final ServiceFactory serviceFactory = ServiceFactory.getInstance(); //TODO: get rid of this
     private final UserUtil userUtil;
     
     private CommandFactory() {
         PromotionService promotionService = serviceFactory.getService(PromotionService.class);
         TariffService tariffService = serviceFactory.getService(TariffService.class);
-        CustomerAccountService accountService = serviceFactory.getService(CustomerAccountService.class);
         UserService userService = serviceFactory.getService(UserService.class);
-        userUtil = new UserUtil(accountService, userService);
+        userUtil = new UserUtil(userService);
         index = new HomeCommand(promotionService, tariffService);
         commands.put("login", (req) -> "jsp/login-form.jsp");
         commands.put("check_login", new CheckLoginCommand(userService));
@@ -30,10 +29,14 @@ public class CommandFactory {
         commands.put("new_tariff", getCommand("edit_tariff"));
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(tariffService));
-        commands.put("manage_users", new ManageUsersCommand(userService));
-        commands.put("edit_user", new EditUserCommand(accountService, userService, tariffService));
-        commands.put("new_user", getCommand("edit_user"));
-        commands.put("save_user", new SaveUserCommand(accountService, userService, tariffService));
+        commands.put("manage_customers", new ManageCustomersCommand(userService));
+        commands.put("edit_customer", new EditCustomerCommand(userService, tariffService));
+        commands.put("new_customer", getCommand("edit_customer"));
+        commands.put("save_customer", new SaveCustomerCommand(userService, tariffService));
+        commands.put("manage_employees", new ManageEmployeesCommand(userService));
+        commands.put("edit_employee", new EditEmployeeCommand(userService));
+        commands.put("new_employee", getCommand("edit_employee"));
+        commands.put("save_employee", new SaveEmployeeCommand(userService));
     }
     
     public Command getCommand(String commandName) {

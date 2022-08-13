@@ -1,6 +1,8 @@
 package by.aab.isp.service.impl;
 
 import by.aab.isp.dao.UserDao;
+import by.aab.isp.entity.Customer;
+import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.UserService;
@@ -14,8 +16,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Iterable<User> getAll() {
-        return userDao.findAll();
+    public Iterable<Customer> getAllCustomers() {
+        return userDao.findAllCustomers();
+    }
+
+    @Override
+    public Iterable<Employee> getAllEmployees() {
+        return userDao.findAllEmployees();
     }
 
     @Override

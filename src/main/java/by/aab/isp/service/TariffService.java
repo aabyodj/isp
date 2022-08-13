@@ -1,12 +1,10 @@
 package by.aab.isp.service;
 
-import java.util.Collection;
-
 import by.aab.isp.entity.Tariff;
 
 public interface TariffService {
     
-    Collection<Tariff> getAll();
+    Iterable<Tariff> getAll();
     
     Tariff getById(long id);
 
