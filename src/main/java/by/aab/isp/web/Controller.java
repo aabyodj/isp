@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 @WebServlet("/")
 public final class Controller extends HttpServlet {
@@ -26,15 +25,13 @@ public final class Controller extends HttpServlet {
         processRequest(req, resp);
     }
 
-    private static final Pattern PATTERN_REDIRECT = Pattern.compile("^" + Pattern.quote(SCHEMA_REDIRECT));
-
     private static void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String commandName = req.getParameter("action");
         CommandFactory commandFactory = CommandFactory.getInstance();
         Command command = commandFactory.getCommand(commandName);
         commandFactory.getUserUtil().setUserAttribute(req);
         String path = command.apply(req);
-        if (PATTERN_REDIRECT.matcher(path).find()) {
+        if (path.startsWith(SCHEMA_REDIRECT)) {
             resp.sendRedirect(path.substring(SCHEMA_REDIRECT.length()));
         } else {
             req.getRequestDispatcher(path).forward(req, resp);
