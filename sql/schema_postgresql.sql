@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS customers (
     user_id bigint PRIMARY KEY,
-    balance numeric(10,2) DEFAULT 0,
-    permitted_overdraft numeric(10,2) DEFAULT 0,
+    balance numeric(10,2) NOT NULL,
+    permitted_overdraft numeric(10,2) NOT NULL,
     payoff_date timestamp,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

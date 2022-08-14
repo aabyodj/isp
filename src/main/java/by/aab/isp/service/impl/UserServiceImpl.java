@@ -7,6 +7,8 @@ import by.aab.isp.entity.User;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.UserService;
 
+import java.math.BigDecimal;
+
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
@@ -58,5 +60,26 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public void updateCredentials(User user, String newEmail, String newPassword, String currentPassword) {
+        //TODO: validate email and password
+        user.setEmail(newEmail);
+        userDao.update(user);
+    }
+
+    @Override
+    public void replenishBalance(Customer customer, BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ServiceException("Cannot replenish balance by nonpositive amount");
+        }
+        BigDecimal balance = customer.getBalance();
+        balance = balance.add(amount);
+        customer.setBalance(balance);
+        if (balance.compareTo(BigDecimal.ZERO) >= 0) {
+            customer.setPayoffDate(null);
+        }
+        userDao.update(customer);
     }
 }

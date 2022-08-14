@@ -5,7 +5,13 @@ import by.aab.isp.entity.Subscription;
 
 public interface SubscriptionService {
 
+    Iterable<Subscription> getAll(Customer customer);
+
     Iterable<Subscription> getActiveSubscriptions(Customer customer);
 
-    void setOneTariffForCustomer(long tariffId, Customer customer);
+    void subscribe(Customer customer, long tariffId);
+
+    void setOneTariffForCustomer(Customer customer, long tariffId);
+
+    void cancelSubscription(Customer customer, long subscriptionId);
 }

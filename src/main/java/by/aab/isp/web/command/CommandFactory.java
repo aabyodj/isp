@@ -22,6 +22,17 @@ public class CommandFactory {
         commands.put("login", (req) -> "jsp/login-form.jsp");
         commands.put("check_login", new CheckLoginCommand(userService));
         commands.put("logout", new LogoutCommand());
+        commands.put("my_account", new MyAccountCommand(
+                serviceFactory.getService(SubscriptionService.class),
+                serviceFactory.getService(TariffService.class)));
+        commands.put("replenish_balance", new ReplenishBalanceCommand(
+                serviceFactory.getService(UserService.class)));
+        commands.put("subscribe", new SubscribeCommand(
+                serviceFactory.getService(SubscriptionService.class)));
+        commands.put("cancel_subscription", new CancelSubscriptionCommand(
+                serviceFactory.getService(SubscriptionService.class)));
+        commands.put("update_my_credentials", new UpdateMyCredentialsCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("edit_promotion", new EditPromotionCommand(promotionService));
         commands.put("new_promotion", getCommand("edit_promotion"));
         commands.put("save_promotion", new SavePromotionCommand(promotionService));

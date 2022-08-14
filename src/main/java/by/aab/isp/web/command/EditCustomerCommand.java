@@ -8,6 +8,8 @@ import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.stream.StreamSupport;
 
 public class EditCustomerCommand implements Command {
@@ -32,6 +34,9 @@ public class EditCustomerCommand implements Command {
         Customer customer = customerId != 0 ? (Customer) userService.getById(customerId)
                                             : new Customer();
         req.setAttribute("customer", customer);
+        if (customer.getPayoffDate() != null) {
+            req.setAttribute("payoffDate", LocalDate.ofInstant(customer.getPayoffDate(), ZoneId.systemDefault()));
+        }
         Tariff tariff = StreamSupport
                 .stream(subscriptionService.getActiveSubscriptions(customer).spliterator(), true)
                 .map(Subscription::getTariff)
