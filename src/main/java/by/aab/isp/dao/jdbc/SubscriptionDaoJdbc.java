@@ -105,7 +105,9 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     }
 
     private final String sqlSelectWhereCustomerAndPeriodContains = sqlSelect
-            + " WHERE customer_id = ? AND (NOT (active_since > ?)) AND (NOT (active_until < ?))";   //FIXME this does not work
+            + " WHERE customer_id = ?"
+            + " AND (active_since IS NOT DISTINCT FROM null OR active_since <= ?)"
+            + " AND (active_until IS NOT DISTINCT FROM null OR active_until >= ?)";   //TODO ensure this works with MySQL
 
     @SuppressWarnings("unchecked")
     @Override

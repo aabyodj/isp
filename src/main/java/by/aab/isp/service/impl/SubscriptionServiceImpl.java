@@ -8,8 +8,6 @@ import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class SubscriptionServiceImpl implements SubscriptionService {
 
@@ -23,13 +21,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Iterable<Subscription> getActiveSubscriptions(Customer customer) {
-        Instant now = Instant.now();
-        Iterable<Subscription> subscriptions = subscriptionDao.findByCustomerId(customer.getId());
-        return StreamSupport.stream(subscriptions.spliterator(), true)
-                .filter(subscription ->
-                        (subscription.getActiveSince() == null || subscription.getActiveSince().isBefore(now))
-                        && (subscription.getActiveUntil() == null || subscription.getActiveUntil().isAfter(now)))
-                .collect(Collectors.toList());
+        return subscriptionDao.findByCustomerIdAndActivePeriodContains(customer.getId(), Instant.now());
     }
 
     @Override
