@@ -14,6 +14,10 @@ public interface UserService {
 
     User getById(long id);
 
+    Customer getCustomerById(long id);
+
+    Employee getEmployeeById(long id);
+
     User save(User user);
 
     User login(String email, String password);

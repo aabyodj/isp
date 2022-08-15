@@ -1,7 +1,6 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
-import by.aab.isp.web.util.UserUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,17 +9,15 @@ public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
     private final Command index;
-    private final ServiceFactory serviceFactory = ServiceFactory.getInstance(); //TODO: get rid of this
-    private final UserUtil userUtil;
-    
+    private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
+
     private CommandFactory() {
-        PromotionService promotionService = serviceFactory.getService(PromotionService.class);
-        TariffService tariffService = serviceFactory.getService(TariffService.class);
-        UserService userService = serviceFactory.getService(UserService.class);
-        userUtil = new UserUtil(userService);
-        index = new HomeCommand(promotionService, tariffService);
-        commands.put("login", (req) -> "jsp/login-form.jsp");
-        commands.put("check_login", new CheckLoginCommand(userService));
+        index = new HomeCommand(
+                serviceFactory.getService(PromotionService.class), 
+                serviceFactory.getService(TariffService.class));
+        commands.put("login", (req) -> "jsp/login-form.jsp");   //TODO: create LoginCommand class
+        commands.put("check_login", new CheckLoginCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("logout", new LogoutCommand());
         commands.put("my_account", new MyAccountCommand(
                 serviceFactory.getService(SubscriptionService.class),
@@ -33,14 +30,19 @@ public class CommandFactory {
                 serviceFactory.getService(SubscriptionService.class)));
         commands.put("update_my_credentials", new UpdateMyCredentialsCommand(
                 serviceFactory.getService(UserService.class)));
-        commands.put("edit_promotion", new EditPromotionCommand(promotionService));
+        commands.put("edit_promotion", new EditPromotionCommand(
+                serviceFactory.getService(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
-        commands.put("save_promotion", new SavePromotionCommand(promotionService));
-        commands.put("edit_tariff", new EditTariffCommand(tariffService));
+        commands.put("save_promotion", new SavePromotionCommand(
+                serviceFactory.getService(PromotionService.class)));
+        commands.put("edit_tariff", new EditTariffCommand(
+                serviceFactory.getService(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));
         commands.put("view_tariff", getCommand("edit_tariff"));
-        commands.put("save_tariff", new SaveTariffCommand(tariffService));
-        commands.put("manage_customers", new ManageCustomersCommand(userService));
+        commands.put("save_tariff", new SaveTariffCommand(
+                serviceFactory.getService(TariffService.class)));
+        commands.put("manage_customers", new ManageCustomersCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("edit_customer", new EditCustomerCommand(
                 serviceFactory.getService(UserService.class),
                 serviceFactory.getService(SubscriptionService.class),
@@ -49,10 +51,13 @@ public class CommandFactory {
         commands.put("save_customer", new SaveCustomerCommand(
                 serviceFactory.getService(UserService.class),
                 serviceFactory.getService(SubscriptionService.class)));
-        commands.put("manage_employees", new ManageEmployeesCommand(userService));
-        commands.put("edit_employee", new EditEmployeeCommand(userService));
+        commands.put("manage_employees", new ManageEmployeesCommand(
+                serviceFactory.getService(UserService.class)));
+        commands.put("edit_employee", new EditEmployeeCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("new_employee", getCommand("edit_employee"));
-        commands.put("save_employee", new SaveEmployeeCommand(userService));
+        commands.put("save_employee", new SaveEmployeeCommand(
+                serviceFactory.getService(UserService.class)));
     }
     
     public Command getCommand(String commandName) {
@@ -60,11 +65,6 @@ public class CommandFactory {
         Command result = commands.get(commandName);
         if (null == result) throw new RuntimeException("Command '" + commandName + "' not found");
         return result;
-    }
-
-    //TODO: use a separate factory for this
-    public UserUtil getUserUtil() {
-        return userUtil;
     }
 
     private static class BillPughSingleton {

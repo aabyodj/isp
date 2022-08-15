@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-//FIXME: find where more than 2 connections needed
 public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
 
     private static final String USERS_TABLE_NAME = "users";
@@ -29,8 +28,16 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private static final int EMPLOYEE_COLUMN_COUNT = 2;
     private static final String SQL_SELECT_JOIN_CUSTOMERS = "SELECT * FROM " + USERS_TABLE_NAME
             + " JOIN " + CUSTOMERS_TABLE_NAME + " ON id = user_id";
+    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_ID = SQL_SELECT_JOIN_CUSTOMERS
+            + " WHERE id=";
+    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL = SQL_SELECT_JOIN_CUSTOMERS
+            + " WHERE email=?";
     private static final String SQL_SELECT_JOIN_EMPLOYEES = "SELECT * FROM " + USERS_TABLE_NAME
             + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
+    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_ID = SQL_SELECT_JOIN_EMPLOYEES
+            + " WHERE id=";
+    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL = SQL_SELECT_JOIN_EMPLOYEES
+            + " WHERE email=?";
     private static final String SQL_SELECT_CUSTOMERS_WHERE_ID = "SELECT * FROM " + CUSTOMERS_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_COUNT_EMPLOYEES_WHERE_ROLE_ID = "SELECT count(*) FROM employees WHERE role_id=";
@@ -88,9 +95,10 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             long id = row.getLong("id");
             String email = row.getString("email");
-            Optional<User> optional = findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer);
+            @SuppressWarnings("unchecked") Optional<User> optional = (Optional<User>) findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer);
             if (optional.isEmpty()) {
-                optional = findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee);
+                //noinspection unchecked
+                optional = (Optional<User>) findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee);
             }
             User user = optional.orElseThrow();
             user.setId(id);
@@ -198,13 +206,22 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         return (Iterable<Employee>) findMany(SQL_SELECT_JOIN_EMPLOYEES, this::mapRowsToEmployees);
     }
 
-    private final String sqlSelectWhereEmail = sqlSelect + " WHERE email = ?";
-
-    //TODO: implement findById(), findAll() and findByEmail() via SELECT JOIN
+    @SuppressWarnings("unchecked")
     @Override
-    public Optional<User> findByEmail(String email) {
-        return findOne(
-                sqlSelectWhereEmail,
+    public Optional<Customer> findCustomerById(long id) {
+        return (Optional<Customer>) findOne(SQL_SELECT_JOIN_CUSTOMER_WHERE_ID + id, this::mapRowToCustomer);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Optional<Employee> findEmployeeById(long id) {
+        return (Optional<Employee>) findOne(SQL_SELECT_JOIN_EMPLOYEE_WHERE_ID + id, this::mapRowToEmployee);
+    }
+
+    @SuppressWarnings("unchecked")
+    Optional<Customer> findCustomerByEmail(String email) {
+        return (Optional<Customer>) findOne(
+                SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL,
                 statement -> {
                     try {
                         statement.setString(1, email);
@@ -212,7 +229,30 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                         throw new DaoException(e);
                     }
                 },
-                this::mapRowToObject);
+                this::mapRowToCustomer);
+    }
+
+    @SuppressWarnings("unchecked")
+    Optional<Employee> findEmployeeByEmail(String email) {
+        return (Optional<Employee>) findOne(
+                SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL,
+                statement -> {
+                    try {
+                        statement.setString(1, email);
+                    } catch (SQLException e) {
+                        throw new DaoException(e);
+                    }
+                },
+                this::mapRowToEmployee
+        );
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(
+                findCustomerByEmail(email)
+                .map(customer -> (User) customer)
+                .orElse(findEmployeeByEmail(email).orElse(null)));
     }
 
     @Override

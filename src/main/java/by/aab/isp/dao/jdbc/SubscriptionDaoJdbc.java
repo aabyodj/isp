@@ -52,7 +52,7 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
         try {
             Subscription subscription = new Subscription();
             subscription.setId(row.getLong("id"));
-            Customer customer = (Customer) userDao.findById(row.getLong("customer_id")).orElseThrow();
+            Customer customer = userDao.findCustomerById(row.getLong("customer_id")).orElseThrow();
             subscription.setCustomer(customer);
             Tariff tariff = tariffDao.findById(row.getLong("tariff_id")).orElseThrow();
             subscription.setTariff(tariff);
@@ -88,7 +88,7 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
                 customers.put(row.getCustomer_id(), null);
                 tariffs.put(row.getTariff_id(), null);
             }
-            customers.replaceAll((id, customer) -> (Customer) userDao.findById(id).orElseThrow());
+            customers.replaceAll((id, customer) -> userDao.findCustomerById(id).orElseThrow());
             tariffs.replaceAll((id, tariff) -> tariffDao.findById(id).orElseThrow());
             return rows.stream()
                     .map(row -> row.toSubscription(customers, tariffs))

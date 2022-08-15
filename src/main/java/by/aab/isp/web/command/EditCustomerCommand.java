@@ -31,8 +31,7 @@ public class EditCustomerCommand implements Command {
             customerId = Long.parseLong(req.getParameter("id"));
         } catch (Exception ignore) {
         }
-        Customer customer = customerId != 0 ? (Customer) userService.getById(customerId)
-                                            : new Customer();
+        Customer customer = userService.getCustomerById(customerId);
         req.setAttribute("customer", customer);
         if (customer.getPayoffDate() != null) {
             req.setAttribute("payoffDate", LocalDate.ofInstant(customer.getPayoffDate(), ZoneId.systemDefault()));

@@ -12,6 +12,10 @@ public interface UserDao extends CrudRepository<User> {
 
     Iterable<Employee> findAllEmployees();
 
+    Optional<Customer> findCustomerById(long id);
+
+    Optional<Employee> findEmployeeById(long id);
+
     Optional<User> findByEmail(String email);
 
     long countByRoleId(long roleId);

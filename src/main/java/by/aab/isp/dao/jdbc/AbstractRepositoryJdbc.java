@@ -95,9 +95,10 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return (Iterable<T>) findMany(sqlSelect, this::mapRowsToObjects);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<T> findById(long id) {
-        return findOne(sqlSelectWhereId + id, this::mapRowToObject);
+        return (Optional<T>) findOne(sqlSelectWhereId + id, this::mapRowToObject);
     }
 
     @Override
@@ -134,7 +135,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
     
-    Optional<T> findOne(String sql, Function<ResultSet, T> mapper) {
+    Optional<? extends T> findOne(String sql, Function<ResultSet, T> mapper) {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -145,7 +146,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
 
-    Optional<T> findOne(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, T> mapper) {
+    Optional<? extends T> findOne(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, T> mapper) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             filler.accept(statement);
