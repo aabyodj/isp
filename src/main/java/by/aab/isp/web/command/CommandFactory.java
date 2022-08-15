@@ -1,7 +1,6 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
-import by.aab.isp.web.util.UserUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +10,8 @@ public class CommandFactory {
     private final Map<String, Command> commands = new HashMap<>();
     private final Command index;
     private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
-    private final UserUtil userUtil;
-    
+
     private CommandFactory() {
-        userUtil = new UserUtil(serviceFactory.getService(UserService.class));
         index = new HomeCommand(
                 serviceFactory.getService(PromotionService.class), 
                 serviceFactory.getService(TariffService.class));
@@ -68,11 +65,6 @@ public class CommandFactory {
         Command result = commands.get(commandName);
         if (null == result) throw new RuntimeException("Command '" + commandName + "' not found");
         return result;
-    }
-
-    //TODO: use a separate factory for this
-    public UserUtil getUserUtil() {
-        return userUtil;
     }
 
     private static class BillPughSingleton {

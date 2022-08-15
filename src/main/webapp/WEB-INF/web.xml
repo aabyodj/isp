@@ -5,4 +5,12 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
   version="2.5">
   <display-name>Archetype Created Web Application</display-name>
+  <filter>
+    <filter-name>userSessionFilter</filter-name>
+    <filter-class>by.aab.isp.web.filter.UserSessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>userSessionFilter</filter-name>
+    <url-pattern>/</url-pattern>
+  </filter-mapping>
 </web-app>
