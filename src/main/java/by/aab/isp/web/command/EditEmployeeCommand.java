@@ -18,8 +18,7 @@ public class EditEmployeeCommand implements Command {
             employeeId = Long.parseLong(req.getParameter("id"));
         } catch (Exception ignore) {
         }
-        Employee employee = employeeId != 0 ? (Employee) userService.getById(employeeId)
-                                            : new Employee();
+        Employee employee = userService.getEmployeeById(employeeId);
         req.setAttribute("employee", employee);
         req.setAttribute("roles", Employee.Role.values());
         return "jsp/edit-employee.jsp";

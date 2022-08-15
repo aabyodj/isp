@@ -37,6 +37,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Customer getCustomerById(long id) {
+        Customer customer;
+        if (0 == id) {
+            customer = new Customer();
+            customer.setBalance(BigDecimal.ZERO);
+            customer.setPermittedOverdraft(BigDecimal.ZERO);
+        } else {
+            customer = userDao.findCustomerById(id).orElseThrow();
+        }
+        return customer;
+    }
+
+    @Override
+    public Employee getEmployeeById(long id) {
+        Employee employee;
+        if (0 == id) {
+            employee = new Employee();
+            employee.setRole(Employee.Role.MANAGER);
+        } else {
+            employee = userDao.findEmployeeById(id).orElseThrow();
+        }
+        return employee;
+    }
+
+    @Override
     public User save(User user) {
         //TODO: validate email
         user.setEmail(user.getEmail().strip());
