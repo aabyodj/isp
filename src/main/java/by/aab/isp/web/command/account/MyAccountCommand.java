@@ -1,10 +1,11 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.account;
 
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;

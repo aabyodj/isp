@@ -1,8 +1,9 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.customer;
 
 import by.aab.isp.entity.Customer;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UserService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;

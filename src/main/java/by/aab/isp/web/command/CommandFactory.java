@@ -1,6 +1,23 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
+import by.aab.isp.web.command.account.CheckLoginCommand;
+import by.aab.isp.web.command.account.LogoutCommand;
+import by.aab.isp.web.command.account.MyAccountCommand;
+import by.aab.isp.web.command.account.UpdateMyCredentialsCommand;
+import by.aab.isp.web.command.customer.EditCustomerCommand;
+import by.aab.isp.web.command.customer.ManageCustomersCommand;
+import by.aab.isp.web.command.customer.ReplenishBalanceCommand;
+import by.aab.isp.web.command.customer.SaveCustomerCommand;
+import by.aab.isp.web.command.employee.EditEmployeeCommand;
+import by.aab.isp.web.command.employee.ManageEmployeesCommand;
+import by.aab.isp.web.command.employee.SaveEmployeeCommand;
+import by.aab.isp.web.command.promotion.EditPromotionCommand;
+import by.aab.isp.web.command.promotion.SavePromotionCommand;
+import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
+import by.aab.isp.web.command.subscription.SubscribeCommand;
+import by.aab.isp.web.command.tariff.EditTariffCommand;
+import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
 import java.util.HashMap;
 import java.util.Map;
