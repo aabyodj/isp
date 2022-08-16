@@ -21,6 +21,7 @@ import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class CommandFactory {
 
@@ -80,7 +81,7 @@ public class CommandFactory {
     public Command getCommand(String commandName) {
         if (null == commandName || commandName.isBlank()) return index;
         Command result = commands.get(commandName);
-        if (null == result) throw new RuntimeException("Command '" + commandName + "' not found");
+        if (null == result) throw new NoSuchElementException("Command '" + commandName + "' not found");
         return result;
     }
 
