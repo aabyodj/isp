@@ -32,6 +32,11 @@ public final class Controller extends HttpServlet {
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Command command = (Command) req.getAttribute("command");
+            if (null == command) {
+                log.error("Attempted to acquire a file '" + req.getServletPath() + "'");
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
             String path = command.apply(req);
             if (path.startsWith(SCHEMA_REDIRECT)) {
                 String redirect = path.substring(SCHEMA_REDIRECT.length());
