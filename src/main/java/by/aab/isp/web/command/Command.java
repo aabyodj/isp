@@ -1,8 +1,14 @@
 package by.aab.isp.web.command;
 
-import java.util.function.Function;
-
+import by.aab.isp.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 
-public interface Command extends Function<HttpServletRequest, String> {
+public abstract class Command {
+    public abstract String apply(HttpServletRequest req);
+
+    public abstract boolean isAllowedForUser(User user);
+
+    public boolean isAllowedForAnonymous() {
+        return isAllowedForUser(null);
+    }
 }

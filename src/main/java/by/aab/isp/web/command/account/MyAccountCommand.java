@@ -1,10 +1,12 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.account;
 
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.entity.User;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
@@ -14,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class MyAccountCommand implements Command {
+public class MyAccountCommand extends Command {
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;
 
@@ -63,6 +65,12 @@ public class MyAccountCommand implements Command {
                 req.setAttribute("tariffs", tariffs);
             }
         }
+        req.setAttribute("redirect", req.getQueryString());
         return "jsp/my-account.jsp";
+    }
+
+    @Override
+    public boolean isAllowedForUser(User user) {
+        return user != null;
     }
 }

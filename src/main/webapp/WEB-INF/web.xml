@@ -5,12 +5,61 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
   version="2.5">
   <display-name>Internet Server Provider</display-name>
+  <servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>by.aab.isp.web.Controller</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>directoryFilter</filter-name>
+    <filter-class>by.aab.isp.web.filter.DirectoryFilter</filter-class>
+  </filter>
   <filter>
     <filter-name>userSessionFilter</filter-name>
     <filter-class>by.aab.isp.web.filter.UserSessionFilter</filter-class>
   </filter>
+  <filter>
+    <filter-name>commandFilter</filter-name>
+    <filter-class>by.aab.isp.web.filter.CommandFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>authorizationFilter</filter-name>
+    <filter-class>by.aab.isp.web.filter.AuthorizationFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>directoryFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <filter-mapping>
     <filter-name>userSessionFilter</filter-name>
     <url-pattern>/</url-pattern>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>commandFilter</filter-name>
+    <url-pattern>/</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>authorizationFilter</filter-name>
+    <url-pattern>/</url-pattern>
+  </filter-mapping>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/jsp/login-form.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/jsp/error/403.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/jsp/error/404.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/jsp/error/default.jsp</location>
+  </error-page>
 </web-app>

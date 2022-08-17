@@ -12,6 +12,7 @@
             <h1>${tariff.id !=0 ? 'Edit' : 'New'} tariff plan</h1>
             <form action="?action=save_tariff" method="POST">
                 <input type="hidden" name="id" value="${tariff.id}">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="tariff-name">Tariff name</label>

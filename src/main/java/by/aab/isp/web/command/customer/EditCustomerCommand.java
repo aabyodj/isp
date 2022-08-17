@@ -1,18 +1,17 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.customer;
 
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Subscription;
-import by.aab.isp.entity.Tariff;
+import by.aab.isp.entity.*;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.stream.StreamSupport;
 
-public class EditCustomerCommand implements Command {
+public class EditCustomerCommand extends Command {
 
     private final UserService userService;
     private final SubscriptionService subscriptionService;
@@ -43,6 +42,12 @@ public class EditCustomerCommand implements Command {
                 .orElse(null);
         req.setAttribute("activeTariff", tariff);
         req.setAttribute("tariffs", tariffService.getAll());
+        req.setAttribute("redirect", "?action=manage_customers");   //TODO: determine a referer
         return "jsp/edit-customer.jsp";
+    }
+
+    @Override
+    public boolean isAllowedForUser(User user) {
+        return user instanceof Employee;
     }
 }

@@ -1,10 +1,13 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.promotion;
 
+import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Promotion;
+import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class EditPromotionCommand implements Command {
+public class EditPromotionCommand extends Command {
 
     private final PromotionService promotionService;
 
@@ -20,8 +23,14 @@ public class EditPromotionCommand implements Command {
         } catch (Exception ignore) {
         }
         Promotion promotion = promotionId != 0 ? promotionService.getById(promotionId)
-                                               : new Promotion();
+                                               : new Promotion();   //TODO: get this from promotionService
         req.setAttribute("promotion", promotion);
+        req.setAttribute("redirect", "?action=manage_promotions");  //TODO: determine a referer
         return "jsp/edit-promotion.jsp";
+    }
+
+    @Override
+    public boolean isAllowedForUser(User user) {
+        return user instanceof Employee;
     }
 }

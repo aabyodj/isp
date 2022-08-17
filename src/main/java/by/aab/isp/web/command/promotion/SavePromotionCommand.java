@@ -1,12 +1,15 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.promotion;
 
+import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Promotion;
+import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-public class SavePromotionCommand implements Command {
+public class SavePromotionCommand extends Command {
 
     private final PromotionService promotionService;
 
@@ -21,6 +24,12 @@ public class SavePromotionCommand implements Command {
         promotion.setName(req.getParameter("name"));
         promotion.setDescription(req.getParameter("description"));
         promotionService.save(promotion);
-        return SCHEMA_REDIRECT + req.getContextPath();
+        String redirect = req.getParameter("redirect");
+        return SCHEMA_REDIRECT + req.getContextPath() + redirect;
+    }
+
+    @Override
+    public boolean isAllowedForUser(User user) {
+        return user instanceof Employee;
     }
 }
