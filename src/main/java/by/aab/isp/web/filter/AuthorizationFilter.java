@@ -18,22 +18,22 @@ public class AuthorizationFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         Command command = (Command) req.getAttribute("command");
         if (command.isAllowedForAnonymous()) {
-            log.trace("Not requiring authentication for command '" + command.getClass().getSimpleName() + "'");
+            log.trace("Not requiring authentication for command '" + command.getClass() + "'");
             super.doFilter(req, res, chain);
             return;
         }
         User user = (User) req.getAttribute("activeUser");
         if (null == user) {
-            log.trace("Rejected anonymous user for command '" + command.getClass().getSimpleName() + "'");
+            log.trace("Rejected anonymous user for command '" + command.getClass() + "'");
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         if (command.isAllowedForUser(user)) {
-            log.warn("Accepted user " + user + " for command '" + command.getClass().getSimpleName() + "'");
+            log.warn("Accepted user " + user + " for command '" + command.getClass() + "'");
             super.doFilter(req, res, chain);
             return;
         }
-        log.warn("Rejected user " + user + " for command '" + command.getClass().getSimpleName() + "'");
+        log.warn("Rejected user " + user + " for command '" + command.getClass() + "'");
         res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 

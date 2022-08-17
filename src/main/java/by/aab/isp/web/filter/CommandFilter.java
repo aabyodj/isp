@@ -35,7 +35,7 @@ public class CommandFilter extends HttpFilter {
         try {
             Command command = commandFactory.getCommand(commandName);
             req.setAttribute("command", command);
-            log.trace("Found command '" + command.getClass().getName() + "' for name '" + commandName + "'");
+            log.trace("Found command '" + command.getClass() + "' for name '" + commandName + "'");
             chain.doFilter(req, res);
         } catch (NoSuchElementException e) {
             log.error("Unknown command '" + commandName + "'");
