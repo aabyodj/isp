@@ -11,6 +11,7 @@
         <main>
             <h1>${employee.id !=0 ? 'Edit' : 'New'} employee account</h1>
             <form action="?action=save_employee" method="POST">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <input type="hidden" name="id" value="${employee.id}">
                 <ul>
                     <li>

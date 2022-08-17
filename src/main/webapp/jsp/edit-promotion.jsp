@@ -12,6 +12,7 @@
             <h1>${promotion.id !=0 ? 'Edit' : 'New'} promotion</h1>
             <form action="?action=save_promotion" method="POST">
                 <input type="hidden" name="id" value="${promotion.id}">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="promotion-name">Promotion name</label>

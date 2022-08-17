@@ -16,6 +16,7 @@
                         <li>
                             <p${activeCustomer.balance < 0 ? ' class="negative"' : ''}>Balance: ${activeCustomer.balance}
                             <form action="?action=replenish_balance" method="POST">
+                                <input name="redirect" type="hidden" value="${redirect}">
                                 <label for="amount">Replenish balance by:</label>
                                 <input name="amount" type="number" required min="0.01" step="0.01">
                                 <input type="submit" value="Replenish">
@@ -54,6 +55,7 @@
                             </table>
                             <c:if test="${tariffs != null}">
                                 <form action="?action=subscribe" method="POST">
+                                    <input name="redirect" type="hidden" value="${redirect}">
                                     <label for="new-tariff">Subscribe to another tariff:</label>
                                     <select name="new-tariff" required>
                                         <c:forEach var="tariff" items="${tariffs}">
@@ -71,6 +73,7 @@
                 </c:when>
             </c:choose>
             <form action="?action=update_my_credentials" method="POST">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="email">Email:</label>

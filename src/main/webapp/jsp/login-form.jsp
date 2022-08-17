@@ -11,6 +11,7 @@
         <main>
             <h1>Log in</h1>
             <form action="?action=check_login" method="POST">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="user-email">Your email</label>

@@ -1,10 +1,7 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
-import by.aab.isp.web.command.account.CheckLoginCommand;
-import by.aab.isp.web.command.account.LogoutCommand;
-import by.aab.isp.web.command.account.MyAccountCommand;
-import by.aab.isp.web.command.account.UpdateMyCredentialsCommand;
+import by.aab.isp.web.command.account.*;
 import by.aab.isp.web.command.customer.EditCustomerCommand;
 import by.aab.isp.web.command.customer.ManageCustomersCommand;
 import by.aab.isp.web.command.customer.ReplenishBalanceCommand;
@@ -33,7 +30,7 @@ public class CommandFactory {
         index = new HomeCommand(
                 serviceFactory.getService(PromotionService.class), 
                 serviceFactory.getService(TariffService.class));
-        commands.put("login", (req) -> "jsp/login-form.jsp");   //TODO: create LoginCommand class
+        commands.put("login", new LoginCommand());
         commands.put("check_login", new CheckLoginCommand(
                 serviceFactory.getService(UserService.class)));
         commands.put("logout", new LogoutCommand());

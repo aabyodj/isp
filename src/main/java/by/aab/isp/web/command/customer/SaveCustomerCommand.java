@@ -1,6 +1,8 @@
 package by.aab.isp.web.command.customer;
 
 import by.aab.isp.entity.Customer;
+import by.aab.isp.entity.Employee;
+import by.aab.isp.entity.User;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
@@ -13,7 +15,7 @@ import java.time.ZoneId;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-public class SaveCustomerCommand implements Command {
+public class SaveCustomerCommand extends Command {
 
     private final UserService userService;
     private final SubscriptionService subscriptionService;
@@ -37,6 +39,12 @@ public class SaveCustomerCommand implements Command {
         userService.save(customer);
         long tariffId = Long.parseLong(req.getParameter("tariff"));
         subscriptionService.setOneTariffForCustomer(customer, tariffId);
-        return SCHEMA_REDIRECT + "?action=manage_customers";
+        String redirect = req.getParameter("redirect");
+        return SCHEMA_REDIRECT + req.getContextPath() + redirect;
+    }
+
+    @Override
+    public boolean isAllowedForUser(User user) {
+        return user instanceof Employee;
     }
 }

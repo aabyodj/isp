@@ -12,6 +12,7 @@
             <h1>${customer.id !=0 ? 'Edit' : 'New'} customer account</h1>
             <form action="?action=save_customer" method="POST">
                 <input type="hidden" name="id" value="${customer.id}">
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="email">Email:</label>
