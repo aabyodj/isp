@@ -11,21 +11,21 @@ import java.io.IOException;
 import java.util.Set;
 
 @Log4j2
-public class PathFilter extends HttpFilter {
+public class DirectoryFilter extends HttpFilter {
 
-    private static final Set<String> ALLOWED_PATH_SET = Set.of(
+    private static final Set<String> ALLOWED_DIRECTORIES = Set.of(
             "/", "/css/"
     );
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        String path = req.getServletPath();
-        path = path.substring(0, path.lastIndexOf('/') + 1);
-        if (ALLOWED_PATH_SET.contains(path)) {
-            log.trace("Accepted path '" + path + "'");
+        String directory = req.getServletPath();
+        directory = directory.substring(0, directory.lastIndexOf('/') + 1);
+        if (ALLOWED_DIRECTORIES.contains(directory)) {
+            log.trace("Accepted directory '" + directory + "'");
             chain.doFilter(req, res);
         } else {
-            log.warn("Rejected path '" + path +"'");
+            log.warn("Rejected directory '" + directory +"'");
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
