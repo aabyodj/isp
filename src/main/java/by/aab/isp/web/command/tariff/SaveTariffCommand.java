@@ -19,7 +19,7 @@ public class SaveTariffCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Tariff tariff = new Tariff();
         tariff.setId(Long.parseLong(req.getParameter("id")));
         tariff.setName(req.getParameter("name"));

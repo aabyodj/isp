@@ -15,7 +15,7 @@ public class UpdateMyCredentialsCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         User user = (User) req.getAttribute("activeUser");
         String newEmail = req.getParameter("email");
         String newPassword = req.getParameter("new-password1");

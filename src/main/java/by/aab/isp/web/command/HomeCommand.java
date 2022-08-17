@@ -16,7 +16,7 @@ public class HomeCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         req.setAttribute("promotions", promotionService.getAll());
         req.setAttribute("tariffs", tariffService.getAll());
         return "jsp/index.jsp";

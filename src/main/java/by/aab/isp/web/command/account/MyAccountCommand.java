@@ -40,7 +40,7 @@ public class MyAccountCommand extends Command {
     };
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         if (customer != null) {
             List<Subscription> subscriptions = StreamSupport

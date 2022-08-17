@@ -16,7 +16,7 @@ public class SubscribeCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         if (null == customer) throw new RuntimeException("Not implemented");    //TODO: implement this
         long tariffId = Long.parseLong(req.getParameter("new-tariff"));

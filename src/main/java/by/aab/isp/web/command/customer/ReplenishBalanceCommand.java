@@ -18,7 +18,7 @@ public class ReplenishBalanceCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         BigDecimal amount = new BigDecimal(req.getParameter("amount"));
         userService.replenishBalance(customer, amount);

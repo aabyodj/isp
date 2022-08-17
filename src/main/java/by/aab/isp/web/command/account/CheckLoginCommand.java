@@ -16,7 +16,7 @@ public class CheckLoginCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String redirect = req.getParameter("redirect");

@@ -16,7 +16,7 @@ public class EditPromotionCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         long promotionId = 0;
         try {
             promotionId = Long.parseLong(req.getParameter("id"));

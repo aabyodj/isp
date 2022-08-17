@@ -16,7 +16,7 @@ public class CancelSubscriptionCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         if (customer == null) throw new RuntimeException("Not implemented");    //TODO: implement this
         long subscriptionId = Long.parseLong(req.getParameter("subscription_id"));

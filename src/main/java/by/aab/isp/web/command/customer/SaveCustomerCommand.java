@@ -26,7 +26,7 @@ public class SaveCustomerCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         Customer customer = new Customer();
         customer.setId(Long.parseLong(req.getParameter("id")));
         customer.setEmail(req.getParameter("email"));
