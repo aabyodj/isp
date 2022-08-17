@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><!doctype html>
 <html>
@@ -11,7 +11,7 @@
         <main>
             <h1>Log in</h1>
             <form action="?action=check_login" method="POST">
-                <input name="redirect" type="hidden" value="${redirect}">
+                <input name="redirect" type="hidden" value="${redirect != null ? redirect : '?'.concat(pageContext.request.queryString)}">
                 <ul>
                     <li>
                         <label for="user-email">Your email</label>
