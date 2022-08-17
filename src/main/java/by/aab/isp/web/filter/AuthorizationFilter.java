@@ -29,7 +29,7 @@ public class AuthorizationFilter extends HttpFilter {
             return;
         }
         if (command.isAllowedForUser(user)) {
-            log.warn("Accepted user " + user + " for command '" + command.getClass() + "'");
+            log.trace("Accepted user " + user + " for command '" + command.getClass() + "'");
             super.doFilter(req, res, chain);
             return;
         }
