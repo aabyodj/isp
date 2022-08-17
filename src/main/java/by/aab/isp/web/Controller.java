@@ -33,7 +33,7 @@ public final class Controller extends HttpServlet {
         try {
             Command command = (Command) req.getAttribute("command");
             if (null == command) {
-                log.error("Attempted to acquire a file '" + req.getServletPath() + "'");
+                log.warn("Attempted to acquire a file '" + req.getServletPath() + "'");
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
