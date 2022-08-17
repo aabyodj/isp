@@ -3,7 +3,6 @@ package by.aab.isp.web;
 import by.aab.isp.web.command.Command;
 import by.aab.isp.web.command.CommandFactory;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 
 @Log4j2
-@WebServlet("/")
 public final class Controller extends HttpServlet {
 
     public static final String SCHEMA_REDIRECT = "redirect:";
