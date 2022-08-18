@@ -16,6 +16,7 @@
             <c:when test="${activeEmployee.role == 'MANAGER'}">
                 <ul>
                     <li><a href="?action=manage_promotions">Manage promotions</a>
+                    <li><a href="?action=manage_tariffs">Manage tariffs</a>
                     <li><a href="?action=manage_customers">Manage customers</a>
                     <li>
                         <p>${activeEmployee.email}</p>
@@ -29,6 +30,7 @@
             <c:when test="${activeEmployee.role == 'ADMIN'}">
                 <ul>
                     <li><a href="?action=manage_promotions">Manage promotions</a>
+                    <li><a href="?action=manage_tariffs">Manage tariffs</a>
                     <li><a href="?action=manage_customers">Manage customers</a>
                     <li><a href="?action=manage_employees">Manage employees</a>
                     <li>

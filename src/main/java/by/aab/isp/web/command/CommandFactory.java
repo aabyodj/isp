@@ -15,6 +15,7 @@ import by.aab.isp.web.command.promotion.SavePromotionCommand;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
+import by.aab.isp.web.command.tariff.ManageTariffsCommand;
 import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
 import java.util.HashMap;
@@ -53,6 +54,8 @@ public class CommandFactory {
         commands.put("new_promotion", getCommand("edit_promotion"));
         commands.put("save_promotion", new SavePromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
+        commands.put("manage_tariffs", new ManageTariffsCommand(
+                serviceFactory.getService(TariffService.class)));
         commands.put("edit_tariff", new EditTariffCommand(
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));
