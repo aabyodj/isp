@@ -10,6 +10,7 @@ import by.aab.isp.web.command.employee.EditEmployeeCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
 import by.aab.isp.web.command.promotion.EditPromotionCommand;
+import by.aab.isp.web.command.promotion.ManagePromotionsCommand;
 import by.aab.isp.web.command.promotion.SavePromotionCommand;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
@@ -45,6 +46,8 @@ public class CommandFactory {
                 serviceFactory.getService(SubscriptionService.class)));
         commands.put("update_my_credentials", new UpdateMyCredentialsCommand(
                 serviceFactory.getService(UserService.class)));
+        commands.put("manage_promotions", new ManagePromotionsCommand(
+                serviceFactory.getService(PromotionService.class)));
         commands.put("edit_promotion", new EditPromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
