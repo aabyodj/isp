@@ -20,12 +20,17 @@
                     <th></th>
                 </tr>
                 <c:forEach var="promotion" items="${promotions}">
-                    <tr>
-                        <td></td>
-                        <td></td>
+                    <tr${promotion.isActiveOn(now) ? ' class="active"' : ''}>
+                        <td>${promotion.activeSince != null ? promotion.activeSince : 'Since the Big Bang'}</td>
+                        <td>${promotion.activeUntil != null ? promotion.activeUntil : 'Until stopped'}</td>
                         <td><c:out value="${promotion.name}" /></td>
                         <td><c:out value="${promotion.description}" /></td>
-                        <td><a href="?action=edit_promotion&id=${promotion.id}">Edit</a></td>
+                        <td>
+                            <a href="?action=edit_promotion&id=${promotion.id}">Edit</a>
+                            <c:if test="${promotion.isActiveOn(now)}">
+                                <a href="?action=stop_promotion&id=${promotion.id}">Stop</a>
+                            </c:if>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${promotions == null}">

@@ -1,30 +1,26 @@
 package by.aab.isp.web.command.promotion;
 
 import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.Promotion;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.Instant;
+import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-public class ManagePromotionsCommand extends Command {
+public class StopPromotionCommand extends Command {
 
     private final PromotionService promotionService;
 
-    public ManagePromotionsCommand(PromotionService promotionService) {
+    public StopPromotionCommand(PromotionService promotionService) {
         this.promotionService = promotionService;
     }
 
     @Override
     public String execute(HttpServletRequest req) {
-        Iterable<Promotion> promotions = promotionService.getAll();
-        if (promotions.spliterator().estimateSize() > 0) {
-            req.setAttribute("promotions", promotions);
-            req.setAttribute("now", Instant.now());
-        }
-        return "jsp/manage-promotions.jsp";
+        long promotionId = Long.parseLong(req.getParameter("id"));
+        promotionService.stop(promotionId);
+        return SCHEMA_REDIRECT + "?action=manage_promotions";   //TODO: determine referer
     }
 
     @Override

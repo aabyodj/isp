@@ -7,6 +7,10 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
 public class SavePromotionCommand extends Command {
@@ -23,6 +27,16 @@ public class SavePromotionCommand extends Command {
         promotion.setId(Long.parseLong(req.getParameter("id")));
         promotion.setName(req.getParameter("name"));
         promotion.setDescription(req.getParameter("description"));
+        String since = req.getParameter("active-since");
+        if (since != null && !since.isBlank()) {
+            LocalDate activeSince = LocalDate.parse(since);
+            promotion.setActiveSince(Instant.from(activeSince.atStartOfDay(ZoneId.systemDefault())));
+        }
+        String until = req.getParameter("active-until");
+        if (until != null && !until.isBlank()) {
+            LocalDate activeUntil = LocalDate.parse(until);
+            promotion.setActiveUntil(Instant.from(activeUntil.atStartOfDay(ZoneId.systemDefault())));
+        }
         promotionService.save(promotion);
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;

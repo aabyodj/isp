@@ -1,5 +1,6 @@
 package by.aab.isp.web.command;
 
+import by.aab.isp.entity.Promotion;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
@@ -17,7 +18,10 @@ public class HomeCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        req.setAttribute("promotions", promotionService.getAll());
+        Iterable<Promotion> promotions = promotionService.getForHomepage();
+        if (promotions.spliterator().estimateSize() > 0) {
+            req.setAttribute("promotions", promotions);
+        }
         req.setAttribute("tariffs", tariffService.getAll());
         return "jsp/index.jsp";
     }

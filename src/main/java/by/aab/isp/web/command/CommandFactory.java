@@ -12,6 +12,7 @@ import by.aab.isp.web.command.employee.SaveEmployeeCommand;
 import by.aab.isp.web.command.promotion.EditPromotionCommand;
 import by.aab.isp.web.command.promotion.ManagePromotionsCommand;
 import by.aab.isp.web.command.promotion.SavePromotionCommand;
+import by.aab.isp.web.command.promotion.StopPromotionCommand;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
@@ -53,6 +54,8 @@ public class CommandFactory {
                 serviceFactory.getService(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
         commands.put("save_promotion", new SavePromotionCommand(
+                serviceFactory.getService(PromotionService.class)));
+        commands.put("stop_promotion", new StopPromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
         commands.put("manage_tariffs", new ManageTariffsCommand(
                 serviceFactory.getService(TariffService.class)));
