@@ -19,13 +19,15 @@
                     <th></th>
                 </tr>
                 <c:forEach var="tariff" items="${tariffs}">
-                    <tr>
+                    <tr${tariff.active ? ' class="active"' : ''}>
                         <td><c:out value="${tariff.name}" /></td>
                         <td><c:out value="${tariff.description}" /></td>
-                        <td></td>
-                        <td></td>
+                        <td>${util.formatBandwidth(tariff.bandwidth)}</td>
+                        <td>${util.formatTraffic(tariff.includedTraffic)}</td>
                         <td><c:out value="${tariff.price}" /></td>
-                        <td><a href="?action=edit_tariff&id=${tariff.id}">Edit</a></td>
+                        <td>
+                            <a href="?action=edit_tariff&id=${tariff.id}">Edit</a>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${tariffs == null}">

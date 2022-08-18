@@ -22,8 +22,20 @@
                         <textarea name="description" required maxlength=50 placeholder="Tariff description"><c:out value="${tariff.description}" /></textarea>
                     </li>
                     <li>
+                        <label for="bandwidth">Bandwidth, Kb/s (0 = unlimited)</label>
+                        <input name="bandwidth" type="number" required min=0 step=1 value=${tariff.bandwidth}>
+                    </li>
+                    <li>
+                        <label for="included-traffic">Included traffic, Mb (0 = unlimited)</label>
+                        <input name="included-traffic" type="number" required min=0 step=1 value=${tariff.includedTraffic / (1024 * 1024)}
+                    </li>
+                    <li>
                         <label for="price">Monthly price</label>
                         <input type="number" name="price" required min="0.01" step="0.01" value="${tariff.price}">
+                    </li>
+                    <li>
+                        <label for="active">Active</label>
+                        <input name="active" type="checkbox"${tariff.active ? ' checked' : ''}>
                     </li>
                 </ul>
                 <input type="submit" value="Submit">

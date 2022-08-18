@@ -1,9 +1,11 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.entity.Promotion;
+import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.web.Util;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class HomeCommand extends Command {
@@ -22,7 +24,11 @@ public class HomeCommand extends Command {
         if (promotions.spliterator().estimateSize() > 0) {
             req.setAttribute("promotions", promotions);
         }
-        req.setAttribute("tariffs", tariffService.getAll());
+        Iterable<Tariff> tariffs = tariffService.getForHomepage();
+        if (tariffs.spliterator().estimateSize() > 0) {
+            req.setAttribute("tariffs", tariffs);
+            req.setAttribute("util", Util.getInstance());
+        }
         return "jsp/index.jsp";
     }
 

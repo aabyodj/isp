@@ -24,7 +24,14 @@ public class SaveTariffCommand extends Command {
         tariff.setId(Long.parseLong(req.getParameter("id")));
         tariff.setName(req.getParameter("name"));
         tariff.setDescription(req.getParameter("description"));
+        int bandwidth = Integer.parseInt(req.getParameter("bandwidth"));
+        tariff.setBandwidth(bandwidth != 0 ? bandwidth
+                                           : null);
+        double traffic = Double.parseDouble(req.getParameter("included-traffic")) * 1024 * 1024;
+        tariff.setIncludedTraffic(traffic != 0 ? (long) traffic
+                                               : null);
         tariff.setPrice(new BigDecimal(req.getParameter("price")));
+        tariff.setActive(req.getParameter("active") != null);
         tariffService.save(tariff);
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
