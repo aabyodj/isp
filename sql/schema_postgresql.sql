@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS tariff (
 CREATE TABLE IF NOT EXISTS promotions (
     id SERIAL8 PRIMARY KEY,
     name varchar(25) NOT NULL,
-    description varchar(100) NOT NULL
+    description varchar(100) NOT NULL,
+    active_since TIMESTAMP,
+    active_until TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS users (

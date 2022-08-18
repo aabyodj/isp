@@ -24,7 +24,7 @@ public class EditCustomerCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         long customerId = 0;
         try {
             customerId = Long.parseLong(req.getParameter("id"));

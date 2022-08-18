@@ -16,7 +16,7 @@ public class EditTariffCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         long tariffId = 0;
         try {
             tariffId = Long.parseLong(req.getParameter("id"));

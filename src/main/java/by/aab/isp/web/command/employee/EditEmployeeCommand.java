@@ -14,7 +14,7 @@ public class EditEmployeeCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         long employeeId = 0;
         try {
             employeeId = Long.parseLong(req.getParameter("id"));

@@ -23,6 +23,14 @@
                         <label for="description">Promotion description</label>
                         <textarea name="description" required maxlength=100 placeholder="Promotion description"><c:out value="${promotion.description}" /></textarea>
                     </li>
+                    <li>
+                        <label for="active-since">Active since</label>
+                        <input name="active-since" type="date" value="${activeSince}">
+                    </li>
+                    <li>
+                        <label for="active-until">Active until</label>
+                        <input name="active-until" type="date" value="${activeUntil}">
+                    </li>
                 </ul>
                 <input type="submit" value="Submit">
             </form>

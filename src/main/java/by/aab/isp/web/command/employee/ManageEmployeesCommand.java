@@ -14,7 +14,7 @@ public class ManageEmployeesCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         req.setAttribute("employees", userService.getAllEmployees());
         return "jsp/manage-employees.jsp";
     }

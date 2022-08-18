@@ -172,9 +172,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         try {
             Collection<T> result = new LinkedList<>();
             while (rows.next()) {
-                try {
-                    result.add(mapRowToObject(rows));
-                } catch (DaoException ignore) {}
+                result.add(mapRowToObject(rows));
             }
             return result;
         } catch (SQLException e) {

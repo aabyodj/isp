@@ -10,10 +10,13 @@ import by.aab.isp.web.command.employee.EditEmployeeCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
 import by.aab.isp.web.command.promotion.EditPromotionCommand;
+import by.aab.isp.web.command.promotion.ManagePromotionsCommand;
 import by.aab.isp.web.command.promotion.SavePromotionCommand;
+import by.aab.isp.web.command.promotion.StopPromotionCommand;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
+import by.aab.isp.web.command.tariff.ManageTariffsCommand;
 import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
 import java.util.HashMap;
@@ -45,11 +48,17 @@ public class CommandFactory {
                 serviceFactory.getService(SubscriptionService.class)));
         commands.put("update_my_credentials", new UpdateMyCredentialsCommand(
                 serviceFactory.getService(UserService.class)));
+        commands.put("manage_promotions", new ManagePromotionsCommand(
+                serviceFactory.getService(PromotionService.class)));
         commands.put("edit_promotion", new EditPromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
         commands.put("save_promotion", new SavePromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
+        commands.put("stop_promotion", new StopPromotionCommand(
+                serviceFactory.getService(PromotionService.class)));
+        commands.put("manage_tariffs", new ManageTariffsCommand(
+                serviceFactory.getService(TariffService.class)));
         commands.put("edit_tariff", new EditTariffCommand(
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));

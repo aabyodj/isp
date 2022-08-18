@@ -15,7 +15,7 @@ public class ManageCustomersCommand extends Command {
     }
 
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         req.setAttribute("customers", userService.getAllCustomers());
         return "jsp/manage-customers.jsp";
     }

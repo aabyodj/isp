@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class LoginCommand extends Command {
     @Override
-    public String apply(HttpServletRequest req) {
+    public String execute(HttpServletRequest req) {
         if (req.getAttribute("redirect") == null) {
             String redirect = req.getParameter("redirect");
             if (null == redirect) redirect = "";

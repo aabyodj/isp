@@ -1,34 +1,34 @@
-package by.aab.isp.web.command;
+package by.aab.isp.web.command.promotion;
 
+import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Promotion;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
-import by.aab.isp.service.TariffService;
+import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class HomeCommand extends Command {
+import java.time.Instant;
+
+public class ManagePromotionsCommand extends Command {
 
     private final PromotionService promotionService;
-    private final TariffService tariffService;
 
-    public HomeCommand(PromotionService promotionService, TariffService tariffService) {
+    public ManagePromotionsCommand(PromotionService promotionService) {
         this.promotionService = promotionService;
-        this.tariffService = tariffService;
     }
 
     @Override
     public String execute(HttpServletRequest req) {
-        Iterable<Promotion> promotions = promotionService.getForHomepage();
+        Iterable<Promotion> promotions = promotionService.getAll();
         if (promotions.spliterator().estimateSize() > 0) {
             req.setAttribute("promotions", promotions);
+            req.setAttribute("now", Instant.now());
         }
-        req.setAttribute("tariffs", tariffService.getAll());
-        return "jsp/index.jsp";
+        return "jsp/manage-promotions.jsp";
     }
 
     @Override
     public boolean isAllowedForUser(User user) {
-        return true;
+        return user instanceof Employee;
     }
-
 }

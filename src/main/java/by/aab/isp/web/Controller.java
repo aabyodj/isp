@@ -35,7 +35,7 @@ public final class Controller extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            String path = command.apply(req);
+            String path = command.execute(req);
             if (path.startsWith(SCHEMA_REDIRECT)) {
                 String redirect = path.substring(SCHEMA_REDIRECT.length());
                 log.trace("Redirecting to '" + redirect + "'");
