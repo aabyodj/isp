@@ -30,8 +30,8 @@ public final class Controller extends HttpServlet {
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Command command = (Command) req.getAttribute("command");
-            if (null == command) {
-                log.warn("Attempted to acquire a file '" + req.getServletPath() + "'");
+            if (null == command) {  //TODO: move this to Filter
+                log.warn("Rejected file '" + req.getServletPath() + "'");
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }

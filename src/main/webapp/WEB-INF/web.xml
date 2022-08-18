@@ -14,9 +14,13 @@
     <servlet-name>Controller</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.css</url-pattern>
+  </servlet-mapping>
   <filter>
-    <filter-name>directoryFilter</filter-name>
-    <filter-class>by.aab.isp.web.filter.DirectoryFilter</filter-class>
+    <filter-name>pathFilter</filter-name>
+    <filter-class>by.aab.isp.web.filter.PathFilter</filter-class>
   </filter>
   <filter>
     <filter-name>userSessionFilter</filter-name>
@@ -31,7 +35,7 @@
     <filter-class>by.aab.isp.web.filter.AuthorizationFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>directoryFilter</filter-name>
+    <filter-name>pathFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
