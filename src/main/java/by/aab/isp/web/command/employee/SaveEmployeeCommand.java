@@ -20,6 +20,7 @@ public class SaveEmployeeCommand extends Command {
         Employee employee = new Employee();
         employee.setId(Long.parseLong(req.getParameter("id")));
         employee.setEmail(req.getParameter("email"));
+        employee.setActive(req.getParameter("active") != null);
         employee.setRole(Employee.Role.valueOf(req.getParameter("role")));
         userService.save(employee);
         String redirect = req.getParameter("redirect");

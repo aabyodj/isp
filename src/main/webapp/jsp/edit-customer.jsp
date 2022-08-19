@@ -36,6 +36,10 @@
                             <option value="${tariff.id}"${activeTariff.id == tariff.id ? ' selected' : ''}><c:out value="${tariff.name}" /></option>
                         </c:forEach></select>
                     </li>
+                    <li>
+                        <label for="active">Active</label>
+                        <input name="active" type="checkbox"${customer.active ? ' checked' : ''}>
+                    </li>
                 </ul>
                 <input type="submit" value="Submit">
             </form>

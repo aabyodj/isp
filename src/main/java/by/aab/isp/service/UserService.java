@@ -25,4 +25,6 @@ public interface UserService {
     void updateCredentials(User user, String newEmail, String newPassword, String currentPassword);
 
     void replenishBalance(Customer customer, BigDecimal amount);
+
+    void createDefaultAdmin();
 }

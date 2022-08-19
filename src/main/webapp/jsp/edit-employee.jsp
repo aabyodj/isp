@@ -23,6 +23,10 @@
                             <option value="${roleOption}"${roleOption == employee.role ? ' selected' : ''}>${roleOption.toString().toLowerCase()}</option>
                         </c:forEach></select>
                     </li>
+                    <li>
+                        <label for="active">Active</label>
+                        <input name="active" type="checkbox"${employee.active ? ' checked' : ''}>
+                    </li>
                 </ul>
                 <input type="submit" value="Submit">
             </form>

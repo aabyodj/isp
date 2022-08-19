@@ -2,14 +2,11 @@ package by.aab.isp.dao;
 
 import by.aab.isp.config.Config;
 import by.aab.isp.dao.jdbc.*;
-import by.aab.isp.entity.Employee;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DaoFactory {
-
-    private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
     private static final int DEFAULT_POOL_SIZE = 2;
     private static final int MINIMAL_POOL_SIZE = 2;
     
@@ -50,14 +47,6 @@ public class DaoFactory {
     }
 
     public void init() {
-        //TODO: must create default admin somewhere else
-        UserDao userDao = getDao(UserDao.class);
-        if (userDao.countByRoleId(Employee.Role.ADMIN.ordinal()) < 1) {
-            Employee defaultAdmin = new Employee();
-            defaultAdmin.setEmail(DEFAULT_ADMIN_EMAIL);
-            defaultAdmin.setRole(Employee.Role.ADMIN);
-            userDao.save(defaultAdmin);
-        }
     }
 
     public void destroy() {

@@ -30,6 +30,7 @@ public class SaveCustomerCommand extends Command {
         Customer customer = new Customer();
         customer.setId(Long.parseLong(req.getParameter("id")));
         customer.setEmail(req.getParameter("email"));
+        customer.setActive(req.getParameter("active") != null);
         customer.setBalance(new BigDecimal(req.getParameter("balance")));
         customer.setPermittedOverdraft(new BigDecimal(req.getParameter("permitted-overdraft")));
         String payoffDate = req.getParameter("payoff-date");

@@ -15,11 +15,16 @@
                     <th>Balance</th>
                     <th></th>
                 </tr><c:forEach var="customer" items="${customers}">
-                <tr>
+                <tr${customer.active ? ' class="active"' : ''}>
                     <td><c:out value="${customer.email}" /></td>
                     <td>${customer.balance}</td>
-                    <td><a href="?action=edit_customer&id=${customer.id}">Edit customer</a></td>
+                    <td><a href="?action=edit_customer&id=${customer.id}">Edit</a></td>
                 </tr></c:forEach>
+                <c:if test="${customers == null}">
+                    <tr>
+                        <td colspan=3>No customers</td>
+                    </tr>
+                </c:if>
             </table>
         </main>
     </body>

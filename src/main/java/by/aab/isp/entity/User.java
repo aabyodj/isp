@@ -7,5 +7,7 @@ public abstract class User implements Entity {
 
     private long id;
     private String email;
+    private byte[] passwordHash;
+    private boolean active;
 
 }

@@ -4,12 +4,15 @@ import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
+import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.UserService;
 
 import java.math.BigDecimal;
 
 public class UserServiceImpl implements UserService {
+
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
 
     private final UserDao userDao;
 
@@ -65,26 +68,27 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         //TODO: validate email
         user.setEmail(user.getEmail().strip());
-        try {
-            if (user.getId() == 0) {
-                return userDao.save(user);
-            } else {
-                userDao.update(user);
-                return user;
+        if (user.getId() == 0) {
+            return userDao.save(user);
+        } else {
+            if (user instanceof Employee) {
+                Employee employee = (Employee) user;
+                if (
+                        (employee.getRole() != Employee.Role.ADMIN || !employee.isActive())
+                        && userDao.countByNotIdAndRoleAndActive(user.getId(), Employee.Role.ADMIN, true) < 1) {
+                    throw new ServiceException("Unable to delete last admin");
+                }
             }
-        } catch (Exception e) {
-            throw new ServiceException(e);
+            userDao.update(user);
+            return user;
         }
     }
 
     @Override
     public User login(String email, String password) {
-        try {
-            //TODO: validate password
-            return userDao.findByEmail(email).orElseThrow();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+        //TODO: validate password
+        return userDao.findByEmailAndActive(email, true)
+                .orElseThrow(() -> new UnauthorizedException(email));
     }
 
     @Override
@@ -106,5 +110,16 @@ public class UserServiceImpl implements UserService {
             customer.setPayoffDate(null);
         }
         userDao.update(customer);
+    }
+
+    @Override
+    public void createDefaultAdmin() {
+        if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
+            Employee admin = getEmployeeById(0);
+            admin.setEmail(DEFAULT_ADMIN_EMAIL);
+            admin.setRole(Employee.Role.ADMIN);
+            admin.setActive(true);
+            userDao.save(admin);
+        }
     }
 }

@@ -30,24 +30,25 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             + " JOIN " + CUSTOMERS_TABLE_NAME + " ON id = user_id";
     private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_ID = SQL_SELECT_JOIN_CUSTOMERS
             + " WHERE id=";
-    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL = SQL_SELECT_JOIN_CUSTOMERS
-            + " WHERE email=?";
+    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL_AND_ACTIVE = SQL_SELECT_JOIN_CUSTOMERS
+            + " WHERE email=? AND active=?";
     private static final String SQL_SELECT_JOIN_EMPLOYEES = "SELECT * FROM " + USERS_TABLE_NAME
             + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
     private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_ID = SQL_SELECT_JOIN_EMPLOYEES
             + " WHERE id=";
-    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL = SQL_SELECT_JOIN_EMPLOYEES
-            + " WHERE email=?";
+    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL_AND_ACTIVE = SQL_SELECT_JOIN_EMPLOYEES
+            + " WHERE email=? AND active=?";
     private static final String SQL_SELECT_CUSTOMERS_WHERE_ID = "SELECT * FROM " + CUSTOMERS_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
-    private static final String SQL_COUNT_EMPLOYEES_WHERE_ROLE_ID = "SELECT count(*) FROM employees WHERE role_id=";
+    private static final String SQL_COUNT_JOIN_EMPLOYEES = "SELECT count(*) FROM " + USERS_TABLE_NAME
+            + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
     private static final String SQL_UPDATE_CUSTOMER = "UPDATE " + CUSTOMERS_TABLE_NAME
             + " SET user_id=?, balance=?, permitted_overdraft=?, payoff_date=? WHERE user_id=";
     private static final String SQL_UPDATE_EMPLOYEE = "UPDATE " + EMPLOYEES_TABLE_NAME
             + " SET user_id=?, role_id=? WHERE user_id=";
 
     public UserDaoJdbc(DataSource dataSource) {
-        super(dataSource, USERS_TABLE_NAME, List.of("email"));
+        super(dataSource, USERS_TABLE_NAME, List.of("email", "active"));
     }
 
     @Override
@@ -55,6 +56,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             int c = 0;
             row.setString(++c, user.getEmail());
+            row.setBoolean(++c, user.isActive());
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -95,14 +97,17 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             long id = row.getLong("id");
             String email = row.getString("email");
+            boolean active = row.getBoolean("active");
             @SuppressWarnings("unchecked") Optional<User> optional = (Optional<User>) findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer);
             if (optional.isEmpty()) {
                 //noinspection unchecked
                 optional = (Optional<User>) findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee);
             }
-            User user = optional.orElseThrow();
+            User user = optional.orElseThrow(() ->
+                    new DaoException("Inconsistent database: could not find neither Customer nor Employee for userId=" + id));
             user.setId(id);
             user.setEmail(email);
+            user.setActive(active);
             return user;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -113,6 +118,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             user.setId(row.getLong("id"));
             user.setEmail(row.getString("email"));
+            user.setActive(row.getBoolean("active"));
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -219,12 +225,14 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     }
 
     @SuppressWarnings("unchecked")
-    Optional<Customer> findCustomerByEmail(String email) {
+    Optional<Customer> findCustomerByEmailAndActive(String email, boolean active) {
         return (Optional<Customer>) findOne(
-                SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL,
+                SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL_AND_ACTIVE,
                 statement -> {
                     try {
-                        statement.setString(1, email);
+                        int c = 0;
+                        statement.setString(++c, email);
+                        statement.setBoolean(++c, active);
                     } catch (SQLException e) {
                         throw new DaoException(e);
                     }
@@ -233,12 +241,14 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     }
 
     @SuppressWarnings("unchecked")
-    Optional<Employee> findEmployeeByEmail(String email) {
+    Optional<Employee> findEmployeeByEmailAndActive(String email, boolean active) {
         return (Optional<Employee>) findOne(
-                SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL,
+                SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL_AND_ACTIVE,
                 statement -> {
                     try {
-                        statement.setString(1, email);
+                        int c = 0;
+                        statement.setString(++c, email);
+                        statement.setBoolean(++c, active);
                     } catch (SQLException e) {
                         throw new DaoException(e);
                     }
@@ -248,16 +258,26 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> findByEmailAndActive(String email, boolean active) {
         return Optional.ofNullable(
-                findCustomerByEmail(email)
+                findCustomerByEmailAndActive(email, active)
                 .map(customer -> (User) customer)
-                .orElse(findEmployeeByEmail(email).orElse(null)));
+                .orElse(findEmployeeByEmailAndActive(email, active).orElse(null)));
     }
 
     @Override
-    public long countByRoleId(long roleId) {
-        return count(SQL_COUNT_EMPLOYEES_WHERE_ROLE_ID + roleId);
+    public long countByRoleAndActive(Employee.Role role, boolean active) {
+        return count(SQL_COUNT_JOIN_EMPLOYEES
+                + " WHERE role_id = " + role.ordinal()
+                + " AND active = " + active);
+    }
+
+    @Override
+    public long countByNotIdAndRoleAndActive(long id, Employee.Role role, boolean active) {
+        return count(SQL_COUNT_JOIN_EMPLOYEES
+                + " WHERE id != " + id
+                + " AND role_id = " + role.ordinal()
+                + " AND active = " + active);
     }
 
     @Override

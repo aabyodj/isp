@@ -15,10 +15,14 @@
                     <th>Role</th>
                     <th></th>
                 </tr><c:forEach var="employee" items="${employees}">
-                <tr>
+                <tr${employee.active ? ' class="active"' : ''}>
                     <td><c:out value="${employee.email}" /></td>
                     <td><c:out value="${employee.role.toString().toLowerCase()}" /></td>
-                    <td><a href="?action=edit_employee&id=${employee.id}">Edit employee</a></td>
+                    <td>
+                        <c:if test="${employee.id != activeEmployee.id}">
+                            <a href="?action=edit_employee&id=${employee.id}">Edit</a>
+                        </c:if>
+                    </td>
                 </tr></c:forEach>
             </table>
         </main>
