@@ -55,7 +55,7 @@
                                 <form action="?action=subscribe" method="POST">
                                     <input name="redirect" type="hidden" value="${redirect}">
                                     <label for="new-tariff">Subscribe to another tariff:</label>
-                                    <select name="new-tariff" required>
+                                    <select name="tariff_id" required>
                                         <c:forEach var="tariff" items="${tariffs}">
                                             <option value="${tariff.id}"><c:out value="${tariff.name}" /></option>
                                         </c:forEach>
