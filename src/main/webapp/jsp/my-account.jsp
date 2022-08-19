@@ -38,8 +38,8 @@
                                 </c:if>
                                 <c:forEach var="subscription" items="${subscriptions}">
                                     <tr${subscription.isActiveOn(now) ? ' class="active"' : ''}>
-                                        <td>${subscription.activeSince}</td>
-                                        <td>${subscription.activeUntil != null ? subscription.activeUntil : 'Until cancelled'}</td>
+                                        <td>${util.formatDateTime(subscription.activeSince)}</td>
+                                        <td>${util.formatDateTime(subscription.activeUntil, 'Until cancelled')}</td>
                                         <td><c:out value="${subscription.tariff.name}" /></td>
                                         <td>${subscription.price}</td>
                                         <td>${util.formatBandwidth(subscription.tariff.bandwidth)}</td>

@@ -27,8 +27,8 @@ public class HomeCommand extends Command {
         Iterable<Tariff> tariffs = tariffService.getForHomepage();
         if (tariffs.spliterator().estimateSize() > 0) {
             req.setAttribute("tariffs", tariffs);
-            req.setAttribute("util", Util.getInstance());
         }
+        req.setAttribute("util", Util.getInstance());
         return "jsp/index.jsp";
     }
 

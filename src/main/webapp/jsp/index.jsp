@@ -20,7 +20,7 @@
                             <h2><c:out value="${promotion.name}" /></h2>
                             <div><c:out value="${promotion.description}" /></div>
                             <c:if test="${promotion.activeUntil != null}">
-                                <p>Active until ${promotion.activeUntil}
+                                <p>Active until ${util.formatDate(promotion.activeUntil)}
                             </c:if>
                         </a>
                     </li></c:forEach>
