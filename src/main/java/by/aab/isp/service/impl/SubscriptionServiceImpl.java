@@ -9,8 +9,17 @@ import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static by.aab.isp.entity.Subscription.SORT_BY_ACTIVE_SINCE;
+import static by.aab.isp.entity.Subscription.SORT_BY_ACTIVE_UNTIL;
 
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private static final Comparator<Subscription> SORT_BY_SINCE_THEN_BY_UNTIL =
+            SORT_BY_ACTIVE_SINCE.thenComparing(SORT_BY_ACTIVE_UNTIL);
 
     private final SubscriptionDao subscriptionDao;
     private final TariffService tariffService;
@@ -21,8 +30,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Iterable<Subscription> getAll(Customer customer) {
-        return subscriptionDao.findByCustomerId(customer.getId());
+    public Iterable<Subscription> getByCustomer(Customer customer) {
+        return StreamSupport
+                .stream(subscriptionDao.findByCustomerId(customer.getId()).spliterator(), true)
+                .sorted(SORT_BY_SINCE_THEN_BY_UNTIL)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,6 +66,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscription.setCustomer(customer);
             subscription.setTariff(tariff);
             subscription.setPrice(tariff.getPrice());
+            subscription.setTrafficPerPeriod(tariff.getIncludedTraffic());
             subscription.setActiveSince(now);
             subscription.setActiveUntil(null);
             subscriptionDao.save(subscription);

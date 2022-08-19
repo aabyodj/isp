@@ -37,15 +37,15 @@
                                     <tr><td colspan=8>No subscriptions</td></tr>
                                 </c:if>
                                 <c:forEach var="subscription" items="${subscriptions}">
-                                    <tr${subscription.activeUntil == null || subscription.activeUntil > now ? ' class="active"' : ''}>
+                                    <tr${subscription.isActiveOn(now) ? ' class="active"' : ''}>
                                         <td>${subscription.activeSince}</td>
                                         <td>${subscription.activeUntil != null ? subscription.activeUntil : 'Until cancelled'}</td>
                                         <td><c:out value="${subscription.tariff.name}" /></td>
                                         <td>${subscription.price}</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><c:if test="${subscription.activeUntil == null || subscription.activeUntil > now}">
+                                        <td>${util.formatBandwidth(subscription.tariff.bandwidth)}</td>
+                                        <td>${util.formatTraffic(subscription.trafficConsumed)}</td>
+                                        <td>${util.formatTraffic(subscription.trafficLeft)}</td>
+                                        <td><c:if test="${subscription.isActiveOn(now)}">
                                             <a href="?action=cancel_subscription&subscription_id=${subscription.id}">Cancel</a></c:if>
                                         </td>
                                     </tr>
