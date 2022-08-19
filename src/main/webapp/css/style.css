@@ -15,6 +15,10 @@ th {
     text-align: center;
 }
 
+th:last-child {
+    min-width: 1em;
+}
+
 tr.active {
     background: #bbffbb;
     color: #000;
