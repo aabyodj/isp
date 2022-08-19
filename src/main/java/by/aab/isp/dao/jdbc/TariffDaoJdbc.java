@@ -46,10 +46,8 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
             tariff.setId(row.getLong("id"));
             tariff.setName(row.getString("name"));
             tariff.setDescription(row.getString("description"));
-            tariff.setBandwidth(row.getInt("bandwidth"));
-            if (row.wasNull()) tariff.setBandwidth(null);
-            tariff.setIncludedTraffic(row.getLong("included_traffic"));
-            if (row.wasNull()) tariff.setIncludedTraffic(null);
+            tariff.setBandwidth(nullableInt(row, "bandwidth"));
+            tariff.setIncludedTraffic(nullableLong(row, "included_traffic"));
             tariff.setPrice(row.getBigDecimal("price"));
             tariff.setActive(row.getBoolean("active"));
             return tariff;
