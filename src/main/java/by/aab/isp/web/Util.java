@@ -24,7 +24,7 @@ public class Util {
         return bandwidth + BANDWIDTH_RANGES[BANDWIDTH_RANGES.length - 1];
     }
 
-    private static final String[] TRAFFIC_RANGES = {" B", " MB", " GB", " TB", " PB"};
+    private static final String[] TRAFFIC_RANGES = {" B", " KB", " MB", " GB", " TB", " PB"};
 
     public String formatTraffic(Long bytes) {
         if (null == bytes) return "unlimited";
