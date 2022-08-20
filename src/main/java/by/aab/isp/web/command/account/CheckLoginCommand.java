@@ -20,6 +20,9 @@ public class CheckLoginCommand extends Command {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String redirect = req.getParameter("redirect");
+        if ("?action=check_login".equals(redirect)) {   //FIXME: this is a dirty workaround. Must reliably determine referer instead
+            redirect = "";
+        }
         User user = userService.login(email, password);
         HttpSession session = req.getSession();
         session.setAttribute("userId", user.getId());

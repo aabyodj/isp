@@ -18,6 +18,14 @@
                             value="<c:out value="${customer.email}" />">
                     </li>
                     <li>
+                        <label for="password1">Password</label>
+                        <input name="password1" type="password"${customer.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
+                        <label for="password2">Confirm password</label>
+                        <input name="password2" type="password"${customer.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
                         <label for="balance">Balance:</label>
                         <input name="balance" type="number" required step="0.01" value="${customer.balance}">
                     </li>

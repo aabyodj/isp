@@ -75,7 +75,7 @@
                 <ul>
                     <li>
                         <label for="email">Email:</label>
-                        <input name="email" type="email" maxlength=25
+                        <input name="email" type="email" required maxlength=25
                             value="<c:out value="${activeUser.email}" />">
                     </li>
                     <li>

@@ -18,6 +18,14 @@
                             value="<c:out value="${employee.email}" />">
                     </li>
                     <li>
+                        <label for="password1">Password</label>
+                        <input name="password1" type="password"${employee.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
+                        <label for="password2">Confirm password</label>
+                        <input name="password2" type="password"${employee.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
                         <label for="role">User role</label>
                         <select name="role" required><c:forEach var="roleOption" items="${roles}">
                             <option value="${roleOption}"${roleOption == employee.role ? ' selected' : ''}>${roleOption.toString().toLowerCase()}</option>

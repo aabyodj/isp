@@ -6,10 +6,7 @@ import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,17 +39,30 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_COUNT_JOIN_EMPLOYEES = "SELECT count(*) FROM " + USERS_TABLE_NAME
             + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
+    private static final String SQL_UPDATE_USER_WITHOUT_HASH = "UPDATE " + USERS_TABLE_NAME
+            + " SET email=?, active=? WHERE id=";
     private static final String SQL_UPDATE_CUSTOMER = "UPDATE " + CUSTOMERS_TABLE_NAME
             + " SET user_id=?, balance=?, permitted_overdraft=?, payoff_date=? WHERE user_id=";
     private static final String SQL_UPDATE_EMPLOYEE = "UPDATE " + EMPLOYEES_TABLE_NAME
             + " SET user_id=?, role_id=? WHERE user_id=";
 
     public UserDaoJdbc(DataSource dataSource) {
-        super(dataSource, USERS_TABLE_NAME, List.of("email", "active"));
+        super(dataSource, USERS_TABLE_NAME, List.of("email", "password_hash", "active"));
     }
 
     @Override
     void mapObjectToRow(User user, PreparedStatement row) {
+        try {
+            int c = 0;
+            row.setString(++c, user.getEmail());
+            row.setBytes(++c, user.getPasswordHash());
+            row.setBoolean(++c, user.isActive());
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    void mapUserToRowWithoutHash(User user, PreparedStatement row) {
         try {
             int c = 0;
             row.setString(++c, user.getEmail());
@@ -97,6 +107,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             long id = row.getLong("id");
             String email = row.getString("email");
+            byte[] password_hash = row.getBytes("password_hash");
             boolean active = row.getBoolean("active");
             @SuppressWarnings("unchecked") Optional<User> optional = (Optional<User>) findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer);
             if (optional.isEmpty()) {
@@ -107,6 +118,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                     new DaoException("Inconsistent database: could not find neither Customer nor Employee for userId=" + id));
             user.setId(id);
             user.setEmail(email);
+            user.setPasswordHash(password_hash);
             user.setActive(active);
             return user;
         } catch (SQLException e) {
@@ -118,6 +130,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         try {
             user.setId(row.getLong("id"));
             user.setEmail(row.getString("email"));
+            user.setPasswordHash(row.getBytes("password_hash"));
             user.setActive(row.getBoolean("active"));
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -282,7 +295,16 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
 
     @Override
     public void update(User user) {
-        super.update(user);
+        if (user.getPasswordHash() != null) {
+            super.update(user);
+        } else {
+            int result = executeUpdate(
+                    SQL_UPDATE_USER_WITHOUT_HASH + user.getId(),
+                    row -> mapUserToRowWithoutHash(user, row));
+            if (result < 1) {
+                throw new DaoException("Could not update user");
+            }
+        }
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
             int result = executeUpdate(SQL_UPDATE_CUSTOMER + user.getId(), row -> mapCustomerToRow(customer, row));

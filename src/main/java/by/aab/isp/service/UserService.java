@@ -18,7 +18,7 @@ public interface UserService {
 
     Employee getEmployeeById(long id);
 
-    User save(User user);
+    User save(User user, String password);
 
     User login(String email, String password);
 

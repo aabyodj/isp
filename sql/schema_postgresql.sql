@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS promotions (
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL8 PRIMARY KEY,
     email character varying(25) UNIQUE NOT NULL,
+    password_hash bytea NOT NULL,
     active boolean NOT NULL
 );
 

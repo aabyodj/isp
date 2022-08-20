@@ -5,6 +5,8 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Objects;
+
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
 public class UpdateMyCredentialsCommand extends Command {
@@ -19,12 +21,13 @@ public class UpdateMyCredentialsCommand extends Command {
         User user = (User) req.getAttribute("activeUser");
         String newEmail = req.getParameter("email");
         String newPassword = req.getParameter("new-password1");
-        String currentPassword = req.getParameter("current-password");
-        if (newPassword != null && (
-                !newPassword.equals(req.getParameter("new-password2"))
-                || currentPassword == null)) {
-            throw new RuntimeException("Passwords do not match");  //TODO: implement this
+        if (!Objects.equals(newPassword, req.getParameter("new-password2"))) {
+            throw new RuntimeException("Passwords do not match. Handler unimplemented");  //TODO: implement this
         }
+        if (null != newPassword && newPassword.isBlank()) {
+            newPassword = null;
+        }
+        String currentPassword = req.getParameter("current-password");
         userService.updateCredentials(user, newEmail, newPassword, currentPassword);
         String redirect = req.getParameter("redirect");
         req.getSession().invalidate();
