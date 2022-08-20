@@ -89,8 +89,7 @@ public class UserServiceImpl implements UserService {
         } else {
             if (user instanceof Employee) {
                 Employee employee = (Employee) user;
-                if ((employee.getRole() != Employee.Role.ADMIN || !employee.isActive())
-                        && userDao.countByNotIdAndRoleAndActive(user.getId(), Employee.Role.ADMIN, true) < 1) {
+                if (!isActiveAdmin(employee) && noMoreAdmins(employee)) {
                     throw new ServiceException("Unable to delete last admin");
                 }
             }
@@ -98,6 +97,14 @@ public class UserServiceImpl implements UserService {
         }
         user.setPasswordHash(null);
         return user;
+    }
+
+    private static boolean isActiveAdmin(Employee employee) {
+        return employee.getRole() == Employee.Role.ADMIN && employee.isActive();
+    }
+
+    private boolean noMoreAdmins(Employee employee) {
+        return userDao.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
     private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
