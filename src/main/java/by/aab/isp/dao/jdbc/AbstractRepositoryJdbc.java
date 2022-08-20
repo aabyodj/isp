@@ -170,13 +170,17 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
 
     static Integer nullableInt(ResultSet resultSet, String name) throws SQLException {
         Integer result = resultSet.getInt(name);
-        if (resultSet.wasNull()) result = null;
+        if (resultSet.wasNull()) {
+            result = null;
+        }
         return result;
     }
 
     static Long nullableLong(ResultSet resultSet, String name) throws SQLException {
         Long result = resultSet.getLong(name);
-        if (resultSet.wasNull()) result = null;
+        if (resultSet.wasNull()) {
+            result = null;
+        }
         return result;
     }
 
@@ -196,6 +200,6 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     abstract T mapRowToObject(ResultSet row);
     
-    abstract T objectWithId(T object, long id);
+    abstract T objectWithId(T object, Long id);
 
 }

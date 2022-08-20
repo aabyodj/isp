@@ -21,7 +21,9 @@ public class ManageEmployeesCommand extends Command {
 
     @Override
     public boolean isAllowedForUser(User user) {
-        if (!(user instanceof Employee)) return false;
+        if (!(user instanceof Employee)) {
+            return false;
+        }
         Employee employee = (Employee) user;
         return employee.getRole() == Employee.Role.ADMIN;
     }

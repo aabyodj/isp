@@ -20,13 +20,13 @@ public class PathFilter extends HttpFilter {
         String path = req.getServletPath();
         if ("/".equals(path)) {
             log.trace("Accepted path '/'");
-            super.doFilter(req, res, chain);
+            chain.doFilter(req, res);
             return;
         }
         String directory = path.substring(0, path.lastIndexOf('/') + 1);
         if (ALLOWED_PASSTHROUGH_DIRECTORIES.contains(directory)) {
             log.trace("Accepted directory '" + directory + "'");
-            super.doFilter(req, res, chain);
+            chain.doFilter(req, res);
             return;
         }
         log.warn("Rejected path '" + path +"'");

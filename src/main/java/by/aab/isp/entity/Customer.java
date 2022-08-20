@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper=true)
@@ -14,6 +14,6 @@ public class Customer extends User {
 
     private BigDecimal balance;
     private BigDecimal permittedOverdraft;
-    private Instant payoffDate;
+    private LocalDateTime payoffDate;
 
 }

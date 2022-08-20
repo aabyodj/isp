@@ -7,8 +7,6 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.stream.StreamSupport;
 
 public class EditCustomerCommand extends Command {
@@ -25,22 +23,18 @@ public class EditCustomerCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long customerId = 0;
-        try {
-            customerId = Long.parseLong(req.getParameter("id"));
-        } catch (Exception ignore) {
-        }
-        Customer customer = userService.getCustomerById(customerId);
+        String id = req.getParameter("id");
+        Customer customer = userService.getCustomerById(id != null ? Long.parseLong(id)
+                                                                   : null);
         req.setAttribute("customer", customer);
-        if (customer.getPayoffDate() != null) {
-            req.setAttribute("payoffDate", LocalDate.ofInstant(customer.getPayoffDate(), ZoneId.systemDefault()));
+        if (customer.getId() != null) {
+            Tariff tariff = StreamSupport
+                    .stream(subscriptionService.getActiveSubscriptions(customer).spliterator(), true)
+                    .map(Subscription::getTariff)
+                    .findAny()
+                    .orElse(null);
+            req.setAttribute("activeTariff", tariff);
         }
-        Tariff tariff = StreamSupport
-                .stream(subscriptionService.getActiveSubscriptions(customer).spliterator(), true)
-                .map(Subscription::getTariff)
-                .findAny()
-                .orElse(null);
-        req.setAttribute("activeTariff", tariff);
         req.setAttribute("tariffs", tariffService.getAll());
         req.setAttribute("redirect", "?action=manage_customers");   //TODO: determine a referer
         return "jsp/edit-customer.jsp";

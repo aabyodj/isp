@@ -19,7 +19,9 @@ public class SaveEmployeeCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long id = Long.parseLong(req.getParameter("id"));
+        String idString = req.getParameter("id");
+        Long id = idString != null && !idString.isBlank() ? Long.parseLong(idString)
+                                                          : null;
         String password = req.getParameter("password1");
         if (!Objects.equals(password, req.getParameter("password2"))) {
             throw new RuntimeException("Passwords do not match. Handler unimplemented"); //TODO: implement this
@@ -39,7 +41,9 @@ public class SaveEmployeeCommand extends Command {
 
     @Override
     public boolean isAllowedForUser(User user) {
-        if (!(user instanceof Employee)) return false;
+        if (!(user instanceof Employee)) {
+            return false;
+        }
         Employee employee = (Employee) user;
         return employee.getRole() == Employee.Role.ADMIN;
     }

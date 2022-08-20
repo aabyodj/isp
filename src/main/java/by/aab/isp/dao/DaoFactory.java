@@ -42,7 +42,9 @@ public class DaoFactory {
     public <T extends CrudRepository<?>> T getDao(Class<T> clazz) {
         @SuppressWarnings("unchecked")
         T result = (T) repositories.get(clazz);
-        if (null == result) throw new IllegalStateException(clazz.getName() + " is not set");
+        if (null == result) {
+            throw new IllegalStateException(clazz.getName() + " is not set");
+        }
         return result;
     }
 

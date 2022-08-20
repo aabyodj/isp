@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -25,11 +25,11 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
             int c = 0;
             row.setString(++c, promotion.getName());
             row.setString(++c, promotion.getDescription());
-            Instant since = promotion.getActiveSince();
-            row.setTimestamp(++c, since != null ? Timestamp.from(since)
+            LocalDateTime since = promotion.getActiveSince();
+            row.setTimestamp(++c, since != null ? Timestamp.valueOf(since)
                                                 : null);
-            Instant until = promotion.getActiveUntil();
-            row.setTimestamp(++c, until != null ? Timestamp.from(until)
+            LocalDateTime until = promotion.getActiveUntil();
+            row.setTimestamp(++c, until != null ? Timestamp.valueOf(until)
                                                 : null);
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -44,9 +44,13 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
             promotion.setName(row.getString("name"));
             promotion.setDescription(row.getString("description"));
             Timestamp since = row.getTimestamp("active_since");
-            if (since != null)  promotion.setActiveSince(since.toInstant());
+            if (since != null) {
+                promotion.setActiveSince(since.toLocalDateTime());
+            }
             Timestamp until = row.getTimestamp("active_until");
-            if (until != null) promotion.setActiveUntil(until.toInstant());
+            if (until != null) {
+                promotion.setActiveUntil(until.toLocalDateTime());
+            }
             return promotion;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -54,7 +58,7 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
     }
 
     @Override
-    Promotion objectWithId(Promotion promotion, long id) {
+    Promotion objectWithId(Promotion promotion, Long id) {
         promotion.setId(id);
         return promotion;
     }
@@ -65,19 +69,19 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Promotion> findByActivePeriodContains(Instant instant) {
+    public Iterable<Promotion> findByActivePeriodContains(LocalDateTime instant) {
         return (Iterable<Promotion>) findMany(
                 sqlSelectWherePeriodContains,
                 fillWithTwoInstants(instant, instant),
                 this::mapRowsToObjects);
     }
 
-    private Consumer<PreparedStatement> fillWithTwoInstants(Instant i1, Instant i2) {
+    private Consumer<PreparedStatement> fillWithTwoInstants(LocalDateTime i1, LocalDateTime i2) {
         return statement -> {
             try {
                 int c = 0;
-                statement.setTimestamp(++c, Timestamp.from(i1));
-                statement.setTimestamp(++c, Timestamp.from(i2));
+                statement.setTimestamp(++c, Timestamp.valueOf(i1));
+                statement.setTimestamp(++c, Timestamp.valueOf(i2));
             } catch (SQLException e) {
                 throw new DaoException(e);
             }

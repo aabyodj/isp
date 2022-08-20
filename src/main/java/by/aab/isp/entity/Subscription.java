@@ -3,27 +3,27 @@ package by.aab.isp.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 @Data
 public class Subscription implements Entity {
 
-    private long id;
+    private Long id;
     private Customer customer;
     private Tariff tariff;
     private BigDecimal price;
     private long trafficConsumed;
     private Long trafficPerPeriod;
-    private Instant activeSince;
-    private Instant activeUntil;
+    private LocalDateTime activeSince;
+    private LocalDateTime activeUntil;
 
     public Long getTrafficLeft() {
         return trafficPerPeriod != null ? trafficPerPeriod - trafficConsumed
                                         : null;
     }
 
-    public boolean isActiveOn(Instant instant) {
+    public boolean isActiveOn(LocalDateTime instant) {
         return !(activeSince != null && activeSince.isAfter(instant)
                 || activeUntil != null && activeUntil.isBefore(instant));
     }
@@ -32,8 +32,12 @@ public class Subscription implements Entity {
         if (s1.getActiveSince() != null && s2.getActiveSince() != null) {
             return s1.getActiveSince().compareTo(s2.getActiveSince());
         }
-        if (s1.getActiveSince() != null) return 1;
-        if (s2.getActiveSince() != null) return -1;
+        if (s1.getActiveSince() != null) {
+            return 1;
+        }
+        if (s2.getActiveSince() != null) {
+            return -1;
+        }
         return 0;
     };
 
@@ -41,8 +45,12 @@ public class Subscription implements Entity {
         if (s1.getActiveUntil() != null && s2.getActiveUntil() != null) {
             return s1.getActiveUntil().compareTo(s2.getActiveUntil());
         }
-        if (s1.getActiveUntil() != null) return -1;
-        if (s2.getActiveUntil() != null) return 1;
+        if (s1.getActiveUntil() != null) {
+            return -1;
+        }
+        if (s2.getActiveUntil() != null) {
+            return 1;
+        }
         return 0;
     };
 }

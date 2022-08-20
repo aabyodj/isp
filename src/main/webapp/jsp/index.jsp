@@ -20,7 +20,7 @@
                             <h2><c:out value="${promotion.name}" /></h2>
                             <div><c:out value="${promotion.description}" /></div>
                             <c:if test="${promotion.activeUntil != null}">
-                                <p>Active until ${util.formatDate(promotion.activeUntil)}</p>
+                                <p>Active until ${promotion.activeUntil.toLocalDate()}</p>
                             </c:if>
                             <c:if test="${activeEmployee != null}">
                                 <a href="?action=edit_promotion&id=${promotion.id}">Edit</a>

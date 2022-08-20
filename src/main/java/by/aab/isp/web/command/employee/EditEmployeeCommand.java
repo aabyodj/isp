@@ -15,12 +15,9 @@ public class EditEmployeeCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long employeeId = 0;
-        try {
-            employeeId = Long.parseLong(req.getParameter("id"));
-        } catch (Exception ignore) {
-        }
-        Employee employee = userService.getEmployeeById(employeeId);
+        String id = req.getParameter("id");
+        Employee employee = userService.getEmployeeById(id != null ? Long.parseLong(id)
+                                                                   : null);
         req.setAttribute("employee", employee);
         req.setAttribute("roles", Employee.Role.values());
         req.setAttribute("redirect", "?action=manage_employees");   //TODO: determine a referer
@@ -29,7 +26,9 @@ public class EditEmployeeCommand extends Command {
 
     @Override
     public boolean isAllowedForUser(User user) {
-        if (!(user instanceof Employee)) return false;
+        if (!(user instanceof Employee)) {
+            return false;
+        }
         Employee employee = (Employee) user;
         return employee.getRole() == Employee.Role.ADMIN;
     }

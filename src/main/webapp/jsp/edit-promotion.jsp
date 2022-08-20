@@ -23,11 +23,11 @@
                     </li>
                     <li>
                         <label for="active-since">Active since</label>
-                        <input name="active-since" type="date" value="${activeSince}">
+                        <input name="active-since" type="date" value="${promotion.activeSince.toLocalDate()}">
                     </li>
                     <li>
                         <label for="active-until">Active until</label>
-                        <input name="active-until" type="date" value="${activeUntil}">
+                        <input name="active-until" type="date" value="${promotion.activeUntil.toLocalDate()}">
                     </li>
                 </ul>
                 <input type="submit" value="Submit">

@@ -57,7 +57,7 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     }
 
     @Override
-    Tariff objectWithId(Tariff tariff, long id) {
+    Tariff objectWithId(Tariff tariff, Long id) {
         tariff.setId(id);
         return tariff;
     }

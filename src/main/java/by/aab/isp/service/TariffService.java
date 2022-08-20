@@ -8,7 +8,7 @@ public interface TariffService {
 
     Iterable<Tariff> getForHomepage();
     
-    Tariff getById(long id);
+    Tariff getById(Long id);
 
     Tariff save(Tariff tariff);
 }

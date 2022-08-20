@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Customer getCustomerById(long id) {
+    public Customer getCustomerById(Long id) {
         Customer customer;
-        if (0 == id) {
+        if (null == id) {
             customer = new Customer();
             customer.setBalance(BigDecimal.ZERO);
             customer.setPermittedOverdraft(BigDecimal.ZERO);
@@ -59,9 +59,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Employee getEmployeeById(long id) {
+    public Employee getEmployeeById(Long id) {
         Employee employee;
-        if (0 == id) {
+        if (null == id) {
             employee = new Employee();
             employee.setRole(Employee.Role.MANAGER);
         } else {
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
             }
             user.setPasswordHash(hashPassword(password));
         }
-        if (user.getId() == 0) {
+        if (user.getId() == null) {
             if (null == password) {
                 throw new ServiceException("Password required");
             }
@@ -89,8 +89,7 @@ public class UserServiceImpl implements UserService {
         } else {
             if (user instanceof Employee) {
                 Employee employee = (Employee) user;
-                if ((employee.getRole() != Employee.Role.ADMIN || !employee.isActive())
-                        && userDao.countByNotIdAndRoleAndActive(user.getId(), Employee.Role.ADMIN, true) < 1) {
+                if (!isActiveAdmin(employee) && noMoreAdmins(employee)) {
                     throw new ServiceException("Unable to delete last admin");
                 }
             }
@@ -98,6 +97,14 @@ public class UserServiceImpl implements UserService {
         }
         user.setPasswordHash(null);
         return user;
+    }
+
+    private static boolean isActiveAdmin(Employee employee) {
+        return employee.getRole() == Employee.Role.ADMIN && employee.isActive();
+    }
+
+    private boolean noMoreAdmins(Employee employee) {
+        return userDao.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
     private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
@@ -129,7 +136,9 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByEmailAndActive(email, true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
-            if (!Arrays.equals(hash, savedHash)) user = null;
+            if (!Arrays.equals(hash, savedHash)) {
+                user = null;
+            }
         }
         if (null == user) {
             throw new UnauthorizedException(email);
@@ -167,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createDefaultAdmin() {
         if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
-            Employee admin = getEmployeeById(0);
+            Employee admin = getEmployeeById(null);
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
             admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);

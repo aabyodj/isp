@@ -8,7 +8,7 @@ import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -39,7 +39,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Iterable<Subscription> getActiveSubscriptions(Customer customer) {
-        return subscriptionDao.findByCustomerIdAndActivePeriodContains(customer.getId(), Instant.now());
+        return subscriptionDao.findByCustomerIdAndActivePeriodContains(customer.getId(), LocalDateTime.now());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void setOneTariffForCustomer(Customer customer, long tariffId) {
         Iterable<Subscription> subscriptions = getActiveSubscriptions(customer);
         boolean alreadySet = false;
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         for (Subscription subscription : subscriptions) {
             if (subscription.getTariff().getId() == tariffId) {
                 alreadySet = true;
@@ -60,7 +60,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscriptionDao.update(subscription);
             }
         }
-        if (!alreadySet && tariffId != 0) {
+        if (!alreadySet) {
             Tariff tariff = tariffService.getById(tariffId);
             Subscription subscription = new Subscription();
             subscription.setCustomer(customer);
@@ -76,10 +76,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void cancelSubscription(Customer customer, long subscriptionId) {
         Subscription subscription = subscriptionDao.findById(subscriptionId).orElseThrow();
-        if (customer.getId() != subscription.getCustomer().getId()) {
+        if ((long) customer.getId() != subscription.getCustomer().getId()) {
             throw new ServiceException("The subscription does not belong to the customer");
         }
-        subscription.setActiveUntil(Instant.now());
+        subscription.setActiveUntil(LocalDateTime.now());
         subscriptionDao.update(subscription);
     }
 }

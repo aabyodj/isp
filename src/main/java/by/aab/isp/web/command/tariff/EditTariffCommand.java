@@ -17,13 +17,12 @@ public class EditTariffCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long tariffId = 0;
-        try {
-            tariffId = Long.parseLong(req.getParameter("id"));
-        } catch (Exception ignore) {
+        String id = req.getParameter("id");
+        Tariff tariff = tariffService.getById(id != null ? Long.parseLong(id)
+                                                         : null);
+        if (tariff.getBandwidth() == null) {
+            tariff.setBandwidth(0);
         }
-        Tariff tariff = tariffService.getById(tariffId);
-        if (tariff.getBandwidth() == null) tariff.setBandwidth(0);
         req.setAttribute("tariff", tariff);
         req.setAttribute("redirect", "?action=manage_tariffs"); //TODO: determine a referer
         return "jsp/edit-tariff.jsp";

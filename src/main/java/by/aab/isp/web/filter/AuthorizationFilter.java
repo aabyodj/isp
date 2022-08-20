@@ -19,7 +19,7 @@ public class AuthorizationFilter extends HttpFilter {
         Command command = (Command) req.getAttribute("command");
         if (command.isAllowedForAnonymous()) {
             log.trace("Not requiring authentication for command '" + command.getClass() + "'");
-            super.doFilter(req, res, chain);
+            chain.doFilter(req, res);
             return;
         }
         User user = (User) req.getAttribute("activeUser");
@@ -30,7 +30,7 @@ public class AuthorizationFilter extends HttpFilter {
         }
         if (command.isAllowedForUser(user)) {
             log.trace("Accepted user " + user + " for command '" + command.getClass() + "'");
-            super.doFilter(req, res, chain);
+            chain.doFilter(req, res);
             return;
         }
         log.warn("Rejected user " + user + " for command '" + command.getClass() + "'");

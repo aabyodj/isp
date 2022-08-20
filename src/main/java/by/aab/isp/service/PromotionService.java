@@ -8,7 +8,7 @@ public interface PromotionService {
 
     Iterable<Promotion> getForHomepage();
 
-    Promotion getById(long id);
+    Promotion getById(Long id);
 
     Promotion save(Promotion promotion);
 
