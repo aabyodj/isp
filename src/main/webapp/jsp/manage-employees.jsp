@@ -8,7 +8,7 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1>Manage employees</h1>
-            <a href="?action=new_employee">Add new employee</a>
+            <p><a href="?action=new_employee">Add new employee</a>
             <table>
                 <tr>
                     <th>Email</th>

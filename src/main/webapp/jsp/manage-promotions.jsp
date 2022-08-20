@@ -8,7 +8,7 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1>Manage discounts and promotions</h1>
-            <a href="?action=new_promotion">Add new promotion</a>
+            <p><a href="?action=new_promotion">Add new promotion</a>
             <form action="?action=generate_promotions" method="POST">
                 <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}"
                 <label for="quantity">Automatically generate</label>

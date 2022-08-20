@@ -15,7 +15,7 @@
                 <section>
                     <h1>Discounts and promotions</h1>
                     <c:if test="${activeEmployee != null}">
-                        <a href="?action=new_promotion">Add new promotion</a>
+                        <p><a href="?action=new_promotion">Add new promotion</a>
                     </c:if>
                     <ul><c:forEach var="promotion" items="${promotions}">
                         <li>
@@ -36,7 +36,7 @@
                 <section>
                     <h1>Our tariff plans</h1>
                     <c:if test="${activeEmployee != null}">
-                        <a href="?action=new_tariff">Add new tariff plan</a>
+                        <p><a href="?action=new_tariff">Add new tariff plan</a>
                     </c:if>
                     <ul><c:forEach var="tariff" items="${tariffs}">
                         <li>
