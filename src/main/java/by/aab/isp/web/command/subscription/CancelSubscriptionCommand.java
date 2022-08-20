@@ -18,7 +18,9 @@ public class CancelSubscriptionCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
-        if (customer == null) throw new RuntimeException("Not implemented");    //TODO: implement this
+        if (customer == null) {
+            throw new RuntimeException("Not implemented");    //TODO: implement this
+        }
         long subscriptionId = Long.parseLong(req.getParameter("subscription_id"));
         subscriptionService.cancelSubscription(customer, subscriptionId);
         String redirect = req.getParameter("redirect");

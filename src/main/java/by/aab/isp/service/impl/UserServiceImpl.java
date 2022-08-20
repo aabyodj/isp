@@ -136,7 +136,9 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByEmailAndActive(email, true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
-            if (!Arrays.equals(hash, savedHash)) user = null;
+            if (!Arrays.equals(hash, savedHash)) {
+                user = null;
+            }
         }
         if (null == user) {
             throw new UnauthorizedException(email);

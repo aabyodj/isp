@@ -85,9 +85,13 @@ public class CommandFactory {
     }
     
     public Command getCommand(String commandName) {
-        if (null == commandName || commandName.isBlank()) return index;
+        if (null == commandName || commandName.isBlank()) {
+            return index;
+        }
         Command result = commands.get(commandName);
-        if (null == result) throw new NoSuchElementException("Command '" + commandName + "' not found");
+        if (null == result) {
+            throw new NoSuchElementException("Command '" + commandName + "' not found");
+        }
         return result;
     }
 

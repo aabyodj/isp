@@ -140,7 +140,9 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private Customer mapRowToCustomer(ResultSet row) {
         try {
             Customer customer = new Customer();
-            if (row.getMetaData().getColumnCount() > CUSTOMER_COLUMN_COUNT) mapRowToUser(row, customer);
+            if (row.getMetaData().getColumnCount() > CUSTOMER_COLUMN_COUNT) {
+                mapRowToUser(row, customer);
+            }
             customer.setBalance(row.getBigDecimal("balance"));
             customer.setPermittedOverdraft(row.getBigDecimal("permitted_overdraft"));
             Timestamp payoffDate = row.getTimestamp("payoff_date");
@@ -155,7 +157,9 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private Employee mapRowToEmployee(ResultSet row) {
         try {
             Employee employee = new Employee();
-            if (row.getMetaData().getColumnCount() > EMPLOYEE_COLUMN_COUNT) mapRowToUser(row, employee);
+            if (row.getMetaData().getColumnCount() > EMPLOYEE_COLUMN_COUNT) {
+                mapRowToUser(row, employee);
+            }
             employee.setRole(Employee.Role.values()[row.getInt("role_id")]);
             return employee;
         } catch (SQLException e) {

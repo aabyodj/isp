@@ -23,8 +23,12 @@ public class Promotion implements Entity {
         if (p1.getActiveSince() != null && p2.getActiveSince() != null) {
             return p1.getActiveSince().compareTo(p2.getActiveSince());
         }
-        if (p1.getActiveSince() != null) return 1;
-        if (p2.getActiveSince() != null) return -1;
+        if (p1.getActiveSince() != null) {
+            return 1;
+        }
+        if (p2.getActiveSince() != null) {
+            return -1;
+        }
         return 0;
     };
 
@@ -32,8 +36,12 @@ public class Promotion implements Entity {
         if (p1.getActiveUntil() != null && p2.getActiveUntil() != null) {
             return p1.getActiveUntil().compareTo(p2.getActiveUntil());
         }
-        if (p1.getActiveUntil() != null) return -1;
-        if (p2.getActiveUntil() != null) return 1;
+        if (p1.getActiveUntil() != null) {
+            return -1;
+        }
+        if (p2.getActiveUntil() != null) {
+            return 1;
+        }
         return 0;
     };
 

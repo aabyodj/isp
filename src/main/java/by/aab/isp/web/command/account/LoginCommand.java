@@ -9,7 +9,9 @@ public class LoginCommand extends Command {
     public String execute(HttpServletRequest req) {
         if (req.getAttribute("redirect") == null) {
             String redirect = req.getParameter("redirect");
-            if (null == redirect) redirect = "";
+            if (null == redirect) {
+                redirect = "";
+            }
             req.setAttribute("redirect", redirect);
         }
         return "jsp/login-form.jsp";

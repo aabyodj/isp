@@ -32,8 +32,12 @@ public class Subscription implements Entity {
         if (s1.getActiveSince() != null && s2.getActiveSince() != null) {
             return s1.getActiveSince().compareTo(s2.getActiveSince());
         }
-        if (s1.getActiveSince() != null) return 1;
-        if (s2.getActiveSince() != null) return -1;
+        if (s1.getActiveSince() != null) {
+            return 1;
+        }
+        if (s2.getActiveSince() != null) {
+            return -1;
+        }
         return 0;
     };
 
@@ -41,8 +45,12 @@ public class Subscription implements Entity {
         if (s1.getActiveUntil() != null && s2.getActiveUntil() != null) {
             return s1.getActiveUntil().compareTo(s2.getActiveUntil());
         }
-        if (s1.getActiveUntil() != null) return -1;
-        if (s2.getActiveUntil() != null) return 1;
+        if (s1.getActiveUntil() != null) {
+            return -1;
+        }
+        if (s2.getActiveUntil() != null) {
+            return 1;
+        }
         return 0;
     };
 }

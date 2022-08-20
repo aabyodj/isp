@@ -34,7 +34,9 @@ public class ServiceFactory {
     public <T> T getService(Class<T> clazz) {
         @SuppressWarnings("unchecked")
         T result = (T) services.get(clazz);
-        if (null == result) throw new IllegalStateException(clazz.getName() + " is not set");
+        if (null == result) {
+            throw new IllegalStateException(clazz.getName() + " is not set");
+        }
         return result;
     }
 

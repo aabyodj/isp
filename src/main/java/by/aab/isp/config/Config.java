@@ -22,7 +22,9 @@ public class Config {
             properties.load(in);
             ENV_VARIABLE_NAMES.forEach((env, prop) -> {
                 String value = System.getenv(env);
-                if (value != null) properties.setProperty(prop, value);
+                if (value != null) {
+                    properties.setProperty(prop, value);
+                }
             });
         } catch (IOException e) {
             throw new RuntimeException(e);

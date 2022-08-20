@@ -44,9 +44,13 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
             promotion.setName(row.getString("name"));
             promotion.setDescription(row.getString("description"));
             Timestamp since = row.getTimestamp("active_since");
-            if (since != null)  promotion.setActiveSince(since.toInstant());
+            if (since != null) {
+                promotion.setActiveSince(since.toInstant());
+            }
             Timestamp until = row.getTimestamp("active_until");
-            if (until != null) promotion.setActiveUntil(until.toInstant());
+            if (until != null) {
+                promotion.setActiveUntil(until.toInstant());
+            }
             return promotion;
         } catch (SQLException e) {
             throw new DaoException(e);
