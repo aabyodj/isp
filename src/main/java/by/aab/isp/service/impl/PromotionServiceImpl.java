@@ -74,6 +74,21 @@ public class PromotionServiceImpl implements PromotionService {
         }
     }
 
+    @Override
+    public void generatePromotions(int quantity, boolean active) {
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 1; i <= quantity; i++) {
+            Promotion promotion = new Promotion();
+            promotion.setName("Generated " + i);
+            promotion.setDescription("Automatically generated promotion #" + i);
+            promotion.setActiveSince(now);
+            if (!active) {
+                promotion.setActiveUntil(now);
+            }
+            promotionDao.save(promotion);
+        }
+    }
+
     private static Iterable<Promotion> sorted(Iterable<Promotion> promotions, Comparator<Promotion> comparator) {
         return StreamSupport
                 .stream(promotions.spliterator(), true)

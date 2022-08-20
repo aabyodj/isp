@@ -9,10 +9,7 @@ import by.aab.isp.web.command.customer.SaveCustomerCommand;
 import by.aab.isp.web.command.employee.EditEmployeeCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
-import by.aab.isp.web.command.promotion.EditPromotionCommand;
-import by.aab.isp.web.command.promotion.ManagePromotionsCommand;
-import by.aab.isp.web.command.promotion.SavePromotionCommand;
-import by.aab.isp.web.command.promotion.StopPromotionCommand;
+import by.aab.isp.web.command.promotion.*;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
@@ -53,6 +50,8 @@ public class CommandFactory {
         commands.put("edit_promotion", new EditPromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
+        commands.put("generate_promotions", new GeneratePromotionsCommand(
+                serviceFactory.getService(PromotionService.class)));
         commands.put("save_promotion", new SavePromotionCommand(
                 serviceFactory.getService(PromotionService.class)));
         commands.put("stop_promotion", new StopPromotionCommand(
