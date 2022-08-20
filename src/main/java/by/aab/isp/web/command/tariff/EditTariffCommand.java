@@ -17,12 +17,9 @@ public class EditTariffCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long tariffId = 0;
-        try {
-            tariffId = Long.parseLong(req.getParameter("id"));
-        } catch (Exception ignore) {
-        }
-        Tariff tariff = tariffService.getById(tariffId);
+        String id = req.getParameter("id");
+        Tariff tariff = tariffService.getById(id != null ? Long.parseLong(id)
+                                                         : null);
         if (tariff.getBandwidth() == null) {
             tariff.setBandwidth(0);
         }

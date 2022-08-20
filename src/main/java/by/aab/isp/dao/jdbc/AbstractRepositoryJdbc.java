@@ -200,6 +200,6 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     abstract T mapRowToObject(ResultSet row);
     
-    abstract T objectWithId(T object, long id);
+    abstract T objectWithId(T object, Long id);
 
 }

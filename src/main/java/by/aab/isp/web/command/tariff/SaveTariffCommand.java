@@ -21,7 +21,9 @@ public class SaveTariffCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         Tariff tariff = new Tariff();
-        tariff.setId(Long.parseLong(req.getParameter("id")));
+        String id = req.getParameter("id");
+        tariff.setId(id != null && !id.isBlank() ? Long.parseLong(id)
+                                                 : null);
         tariff.setName(req.getParameter("name"));
         tariff.setDescription(req.getParameter("description"));
         int bandwidth = Integer.parseInt(req.getParameter("bandwidth"));

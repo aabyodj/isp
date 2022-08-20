@@ -22,7 +22,9 @@ public class SavePromotionCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         Promotion promotion = new Promotion();
-        promotion.setId(Long.parseLong(req.getParameter("id")));
+        String id = req.getParameter("id");
+        promotion.setId(id != null && !id.isBlank() ? Long.parseLong(id)
+                                                    : null);
         promotion.setName(req.getParameter("name"));
         promotion.setDescription(req.getParameter("description"));
         String since = req.getParameter("active-since");

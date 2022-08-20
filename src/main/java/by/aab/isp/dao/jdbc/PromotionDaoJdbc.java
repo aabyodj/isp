@@ -58,7 +58,7 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
     }
 
     @Override
-    Promotion objectWithId(Promotion promotion, long id) {
+    Promotion objectWithId(Promotion promotion, Long id) {
         promotion.setId(id);
         return promotion;
     }

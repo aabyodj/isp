@@ -14,9 +14,9 @@ public interface UserService {
 
     User getById(long id);
 
-    Customer getCustomerById(long id);
+    Customer getCustomerById(Long id);
 
-    Employee getEmployeeById(long id);
+    Employee getEmployeeById(Long id);
 
     User save(User user, String password);
 

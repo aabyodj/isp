@@ -108,7 +108,7 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     }
 
     @Override
-    Subscription objectWithId(Subscription subscription, long id) {
+    Subscription objectWithId(Subscription subscription, Long id) {
         subscription.setId(id);
         return subscription;
     }

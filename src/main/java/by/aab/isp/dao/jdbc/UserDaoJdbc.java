@@ -111,13 +111,13 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             String email = row.getString("email");
             byte[] password_hash = row.getBytes("password_hash");
             boolean active = row.getBoolean("active");
-            @SuppressWarnings("unchecked") Optional<User> optional = (Optional<User>) findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer);
-            if (optional.isEmpty()) {
-                //noinspection unchecked
-                optional = (Optional<User>) findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee);
+            User user = findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer).orElse(null);
+            if (null == user) {
+                user = findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee).orElse(null);
             }
-            User user = optional.orElseThrow(() ->
-                    new DaoException("Inconsistent database: could not find neither Customer nor Employee for userId=" + id));
+            if (null == user) {
+                throw new DaoException("Inconsistent database: could not find neither Customer nor Employee for userId=" + id);
+            }
             user.setId(id);
             user.setEmail(email);
             user.setPasswordHash(password_hash);
@@ -198,7 +198,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     }
 
     @Override
-    User objectWithId(User user, long id) {
+    User objectWithId(User user, Long id) {
         user.setId(id);
         return user;
     }
@@ -324,7 +324,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                 throw new DaoException("Could not update employee");
             }
         } else {
-            throw new RuntimeException("Unimplemented for " + user.getClass());
+            throw new DaoException("Unimplemented for " + user.getClass());
         }
     }
 }

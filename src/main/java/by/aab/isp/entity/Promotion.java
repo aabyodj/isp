@@ -8,7 +8,7 @@ import java.util.Comparator;
 @Data
 public class Promotion implements Entity {
 
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private LocalDateTime activeSince;

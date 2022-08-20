@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Customer getCustomerById(long id) {
+    public Customer getCustomerById(Long id) {
         Customer customer;
-        if (0 == id) {
+        if (null == id) {
             customer = new Customer();
             customer.setBalance(BigDecimal.ZERO);
             customer.setPermittedOverdraft(BigDecimal.ZERO);
@@ -59,9 +59,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Employee getEmployeeById(long id) {
+    public Employee getEmployeeById(Long id) {
         Employee employee;
-        if (0 == id) {
+        if (null == id) {
             employee = new Employee();
             employee.setRole(Employee.Role.MANAGER);
         } else {
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
             }
             user.setPasswordHash(hashPassword(password));
         }
-        if (user.getId() == 0) {
+        if (user.getId() == null) {
             if (null == password) {
                 throw new ServiceException("Password required");
             }
@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createDefaultAdmin() {
         if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
-            Employee admin = getEmployeeById(0);
+            Employee admin = getEmployeeById(null);
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
             admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);

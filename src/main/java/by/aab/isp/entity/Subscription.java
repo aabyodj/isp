@@ -9,7 +9,7 @@ import java.util.Comparator;
 @Data
 public class Subscription implements Entity {
 
-    private long id;
+    private Long id;
     private Customer customer;
     private Tariff tariff;
     private BigDecimal price;

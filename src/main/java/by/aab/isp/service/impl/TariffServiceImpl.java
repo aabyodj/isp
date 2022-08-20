@@ -28,9 +28,9 @@ public class TariffServiceImpl implements TariffService {
     }
 
     @Override
-    public Tariff getById(long id) {
-        return id != 0 ? tariffDao.findById(id).orElseThrow()
-                       : new Tariff();
+    public Tariff getById(Long id) {
+        return id != null ? tariffDao.findById(id).orElseThrow()
+                          : new Tariff();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class TariffServiceImpl implements TariffService {
         tariff.setName(tariff.getName().strip());
         tariff.setDescription(tariff.getDescription().strip());
         try {
-            if (tariff.getId() == 0) {
+            if (tariff.getId() == null) {
                 return tariffDao.save(tariff);
             } else {
                tariffDao.update(tariff);

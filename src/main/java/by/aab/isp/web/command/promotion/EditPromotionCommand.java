@@ -17,12 +17,9 @@ public class EditPromotionCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        long promotionId = 0;
-        try {
-            promotionId = Long.parseLong(req.getParameter("id"));
-        } catch (Exception ignore) {
-        }
-        Promotion promotion = promotionService.getById(promotionId);
+        String id = req.getParameter("id");
+        Promotion promotion = promotionService.getById(id != null ? Long.parseLong(id)
+                                                                  : null);
         req.setAttribute("promotion", promotion);
         req.setAttribute("redirect", "?action=manage_promotions");  //TODO: determine a referer
         return "jsp/edit-promotion.jsp";

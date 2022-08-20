@@ -60,7 +60,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscriptionDao.update(subscription);
             }
         }
-        if (!alreadySet && tariffId != 0) {
+        if (!alreadySet) {
             Tariff tariff = tariffService.getById(tariffId);
             Subscription subscription = new Subscription();
             subscription.setCustomer(customer);
@@ -76,7 +76,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void cancelSubscription(Customer customer, long subscriptionId) {
         Subscription subscription = subscriptionDao.findById(subscriptionId).orElseThrow();
-        if (customer.getId() != subscription.getCustomer().getId()) {
+        if ((long) customer.getId() != subscription.getCustomer().getId()) {
             throw new ServiceException("The subscription does not belong to the customer");
         }
         subscription.setActiveUntil(LocalDateTime.now());

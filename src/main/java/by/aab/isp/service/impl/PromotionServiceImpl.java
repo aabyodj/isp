@@ -39,8 +39,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion getById(long id) {
-        if (id != 0) {
+    public Promotion getById(Long id) {
+        if (id != null) {
             return promotionDao.findById(id).orElseThrow();
         }
         Promotion promotion = new Promotion();
@@ -53,7 +53,7 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setName(promotion.getName().strip());
         promotion.setDescription(promotion.getDescription().strip());
         try {
-            if (promotion.getId() == 0) {
+            if (promotion.getId() == null) {
                 return promotionDao.save(promotion);
             } else {
                 promotionDao.update(promotion);
