@@ -14,7 +14,9 @@
             <c:if test="${promotions != null || activeEmployee != null}">
                 <section>
                     <h1>Discounts and promotions</h1>
-                    <a href="?action=new_promotion">Add new promotion</a>
+                    <c:if test="${activeEmployee != null}">
+                        <a href="?action=new_promotion">Add new promotion</a>
+                    </c:if>
                     <ul><c:forEach var="promotion" items="${promotions}">
                         <li>
                             <h2><c:out value="${promotion.name}" /></h2>
