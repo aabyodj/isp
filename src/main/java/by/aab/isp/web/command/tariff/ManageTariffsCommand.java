@@ -4,6 +4,7 @@ import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.web.Util;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class ManageTariffsCommand extends by.aab.isp.web.command.Command {
@@ -19,6 +20,7 @@ public class ManageTariffsCommand extends by.aab.isp.web.command.Command {
         Iterable<Tariff> tariffs = tariffService.getAll();
         if (tariffs.spliterator().estimateSize() > 0) {
             req.setAttribute("tariffs", tariffs);
+            req.setAttribute("util", Util.getInstance());
         }
         return "jsp/manage-tariffs.jsp";
     }

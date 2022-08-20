@@ -22,8 +22,8 @@ public class EditTariffCommand extends Command {
             tariffId = Long.parseLong(req.getParameter("id"));
         } catch (Exception ignore) {
         }
-        Tariff tariff = tariffId != 0 ? tariffService.getById(tariffId)
-                                      : new Tariff();   //TODO obtain this via tariffService
+        Tariff tariff = tariffService.getById(tariffId);
+        if (tariff.getBandwidth() == null) tariff.setBandwidth(0);
         req.setAttribute("tariff", tariff);
         req.setAttribute("redirect", "?action=manage_tariffs"); //TODO: determine a referer
         return "jsp/edit-tariff.jsp";

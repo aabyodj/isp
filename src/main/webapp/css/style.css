@@ -1,0 +1,29 @@
+table {
+    background: #ddd;
+    border-collapse: collapse;
+    color: #333;
+}
+
+th, td {
+    border: 1px solid black;
+}
+
+th {
+    background: #bbb;
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+}
+
+th:last-child {
+    min-width: 1em;
+}
+
+tr.active {
+    background: #bbffbb;
+    color: #000;
+}
+
+.negative {
+    color: #dd0000;
+}

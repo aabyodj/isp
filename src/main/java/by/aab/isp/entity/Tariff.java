@@ -10,6 +10,19 @@ public class Tariff implements Entity {
     private long id;
     private String name;
     private String description;
+
+    /**
+     * Kb/s
+     * null = unlimited
+     */
+    private Integer bandwidth;
+
+    /**
+     * Bytes
+     * null = unlimited
+     */
+    private Long includedTraffic;
+
     private BigDecimal price;
-    
+    private boolean active;
 }

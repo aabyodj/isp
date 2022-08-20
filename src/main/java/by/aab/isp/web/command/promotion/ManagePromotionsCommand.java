@@ -4,6 +4,7 @@ import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Promotion;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.web.Util;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,6 +24,7 @@ public class ManagePromotionsCommand extends Command {
         if (promotions.spliterator().estimateSize() > 0) {
             req.setAttribute("promotions", promotions);
             req.setAttribute("now", Instant.now());
+            req.setAttribute("util", Util.getInstance());
         }
         return "jsp/manage-promotions.jsp";
     }

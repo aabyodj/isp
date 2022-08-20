@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title>My account | Internet Service Provider</title>
     </head>
     <body>
@@ -39,15 +37,15 @@
                                     <tr><td colspan=8>No subscriptions</td></tr>
                                 </c:if>
                                 <c:forEach var="subscription" items="${subscriptions}">
-                                    <tr${subscription.activeUntil == null || subscription.activeUntil > now ? ' class="active"' : ''}>
-                                        <td>${subscription.activeSince}</td>
-                                        <td>${subscription.activeUntil != null ? subscription.activeUntil : 'Until cancelled'}</td>
+                                    <tr${subscription.isActiveOn(now) ? ' class="active"' : ''}>
+                                        <td>${util.formatDateTime(subscription.activeSince)}</td>
+                                        <td>${util.formatDateTime(subscription.activeUntil, 'Until cancelled')}</td>
                                         <td><c:out value="${subscription.tariff.name}" /></td>
                                         <td>${subscription.price}</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><c:if test="${subscription.activeUntil == null || subscription.activeUntil > now}">
+                                        <td>${util.formatBandwidth(subscription.tariff.bandwidth)}</td>
+                                        <td>${util.formatTraffic(subscription.trafficConsumed)}</td>
+                                        <td>${util.formatTraffic(subscription.trafficLeft)}</td>
+                                        <td><c:if test="${subscription.isActiveOn(now)}">
                                             <a href="?action=cancel_subscription&subscription_id=${subscription.id}">Cancel</a></c:if>
                                         </td>
                                     </tr>
@@ -57,7 +55,7 @@
                                 <form action="?action=subscribe" method="POST">
                                     <input name="redirect" type="hidden" value="${redirect}">
                                     <label for="new-tariff">Subscribe to another tariff:</label>
-                                    <select name="new-tariff" required>
+                                    <select name="tariff_id" required>
                                         <c:forEach var="tariff" items="${tariffs}">
                                             <option value="${tariff.id}"><c:out value="${tariff.name}" /></option>
                                         </c:forEach>
@@ -77,7 +75,7 @@
                 <ul>
                     <li>
                         <label for="email">Email:</label>
-                        <input name="email" type="email" maxlength=25
+                        <input name="email" type="email" required maxlength=25
                             value="<c:out value="${activeUser.email}" />">
                     </li>
                     <li>

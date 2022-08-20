@@ -1,5 +1,6 @@
 package by.aab.isp.web;
 
+import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.web.command.Command;
 import by.aab.isp.web.command.CommandFactory;
 import jakarta.servlet.ServletException;
@@ -30,8 +31,8 @@ public final class Controller extends HttpServlet {
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Command command = (Command) req.getAttribute("command");
-            if (null == command) {
-                log.warn("Attempted to acquire a file '" + req.getServletPath() + "'");
+            if (null == command) {  //TODO: move this to Filter
+                log.warn("Rejected file '" + req.getServletPath() + "'");
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
@@ -44,6 +45,9 @@ public final class Controller extends HttpServlet {
                 log.trace("Forwarding to '" + path + "'");
                 req.getRequestDispatcher(path).forward(req, resp);
             }
+        } catch (UnauthorizedException e) {
+            log.warn("Login failure. Email = '" + e.getMessage() + "'");
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);    //TODO: put a message on the login form
         } catch (Throwable e) {
             log.error("Error processing request '" + req.getRequestURL() + "'", e);
             throw e;

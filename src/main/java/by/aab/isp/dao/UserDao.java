@@ -16,7 +16,9 @@ public interface UserDao extends CrudRepository<User> {
 
     Optional<Employee> findEmployeeById(long id);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndActive(String email, boolean active);
 
-    long countByRoleId(long roleId);
+    long countByRoleAndActive(Employee.Role role, boolean active);
+
+    long countByNotIdAndRoleAndActive(long id, Employee.Role role, boolean active);
 }

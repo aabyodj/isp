@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title><c:out value="${employee.email}" />${employee.id !=0 ? ' | Edit' : 'New'} employee account | Internet Service Provider</title>
     </head>
     <body>
@@ -20,10 +18,22 @@
                             value="<c:out value="${employee.email}" />">
                     </li>
                     <li>
+                        <label for="password1">Password</label>
+                        <input name="password1" type="password"${employee.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
+                        <label for="password2">Confirm password</label>
+                        <input name="password2" type="password"${employee.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
                         <label for="role">User role</label>
                         <select name="role" required><c:forEach var="roleOption" items="${roles}">
                             <option value="${roleOption}"${roleOption == employee.role ? ' selected' : ''}>${roleOption.toString().toLowerCase()}</option>
                         </c:forEach></select>
+                    </li>
+                    <li>
+                        <label for="active">Active</label>
+                        <input name="active" type="checkbox"${employee.active ? ' checked' : ''}>
                     </li>
                 </ul>
                 <input type="submit" value="Submit">

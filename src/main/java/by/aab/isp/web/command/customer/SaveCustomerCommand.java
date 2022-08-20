@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
@@ -27,16 +28,25 @@ public class SaveCustomerCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
+        long id = Long.parseLong(req.getParameter("id"));
+        String password = req.getParameter("password1");
+        if (!Objects.equals(password, req.getParameter("password2"))) {
+            throw new RuntimeException("Passwords do not match. Handler unimplemented"); //TODO: implement this
+        }
+        if (null != password && password.isBlank()) {
+            password = null;
+        }
         Customer customer = new Customer();
-        customer.setId(Long.parseLong(req.getParameter("id")));
+        customer.setId(id);
         customer.setEmail(req.getParameter("email"));
+        customer.setActive(req.getParameter("active") != null);
         customer.setBalance(new BigDecimal(req.getParameter("balance")));
         customer.setPermittedOverdraft(new BigDecimal(req.getParameter("permitted-overdraft")));
         String payoffDate = req.getParameter("payoff-date");
         if (payoffDate != null && !payoffDate.isBlank()) {
             customer.setPayoffDate(Instant.from(LocalDate.parse(payoffDate).atStartOfDay(ZoneId.systemDefault())));
         }
-        userService.save(customer);
+        userService.save(customer, password);   //TODO: terminate their session
         long tariffId = Long.parseLong(req.getParameter("tariff"));
         subscriptionService.setOneTariffForCustomer(customer, tariffId);
         String redirect = req.getParameter("redirect");

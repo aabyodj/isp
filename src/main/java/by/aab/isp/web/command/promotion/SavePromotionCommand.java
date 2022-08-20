@@ -7,9 +7,7 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
@@ -34,8 +32,8 @@ public class SavePromotionCommand extends Command {
         }
         String until = req.getParameter("active-until");
         if (until != null && !until.isBlank()) {
-            LocalDate activeUntil = LocalDate.parse(until);
-            promotion.setActiveUntil(Instant.from(activeUntil.atStartOfDay(ZoneId.systemDefault())));
+            LocalDateTime activeUntil = LocalDate.parse(until).plusDays(1).atStartOfDay();
+            promotion.setActiveUntil(activeUntil.toInstant(OffsetDateTime.now().getOffset()));  //FIXME: this doesn't work properly
         }
         promotionService.save(promotion);
         String redirect = req.getParameter("redirect");

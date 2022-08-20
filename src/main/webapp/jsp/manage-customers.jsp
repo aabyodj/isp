@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title>Manage customers | Internet Service Provider</title>
     </head>
     <body>
@@ -17,11 +15,16 @@
                     <th>Balance</th>
                     <th></th>
                 </tr><c:forEach var="customer" items="${customers}">
-                <tr>
+                <tr${customer.active ? ' class="active"' : ''}>
                     <td><c:out value="${customer.email}" /></td>
                     <td>${customer.balance}</td>
-                    <td><a href="?action=edit_customer&id=${customer.id}">Edit customer</a></td>
+                    <td><a href="?action=edit_customer&id=${customer.id}">Edit</a></td>
                 </tr></c:forEach>
+                <c:if test="${customers == null}">
+                    <tr>
+                        <td colspan=3>No customers</td>
+                    </tr>
+                </c:if>
             </table>
         </main>
     </body>

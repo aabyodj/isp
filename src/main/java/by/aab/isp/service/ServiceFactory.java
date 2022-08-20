@@ -40,6 +40,7 @@ public class ServiceFactory {
 
     public void init() {
         daoFactory.init();
+        getService(UserService.class).createDefaultAdmin();
     }
 
     public void destroy() {

@@ -7,10 +7,7 @@ import by.aab.isp.entity.Tariff;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
@@ -23,7 +20,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
 
     public SubscriptionDaoJdbc(DataSource dataSource, UserDao userDao, TariffDao tariffDao) {
         super(dataSource, "subscriptions", List.of(
-                "customer_id", "tariff_id", "price", "active_since", "active_until"
+                "customer_id", "tariff_id", "price",
+                "traffic_consumed", "traffic_per_period", "active_since", "active_until"
         ));
         this.userDao = userDao;
         this.tariffDao = tariffDao;
@@ -36,6 +34,13 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             row.setLong(++c, subscription.getCustomer().getId());
             row.setLong(++c, subscription.getTariff().getId());
             row.setBigDecimal(++c, subscription.getPrice());
+            row.setLong(++c, subscription.getTrafficConsumed());
+            Long totalTraffic = subscription.getTrafficPerPeriod();
+            if (totalTraffic != null) {
+                row.setLong(++c, totalTraffic);
+            } else {
+                row.setNull(++c, Types.BIGINT);
+            }
             Instant activeSince = subscription.getActiveSince();
             row.setTimestamp(++c, activeSince != null ? Timestamp.from(activeSince)
                                                       : null);
@@ -57,6 +62,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             Tariff tariff = tariffDao.findById(row.getLong("tariff_id")).orElseThrow();
             subscription.setTariff(tariff);
             subscription.setPrice(row.getBigDecimal("price"));
+            subscription.setTrafficConsumed(row.getLong("traffic_consumed"));
+            subscription.setTrafficPerPeriod(nullableLong(row, "traffic_per_period"));
             Timestamp activeSince = row.getTimestamp("active_since");
             subscription.setActiveSince(activeSince != null ? activeSince.toInstant()
                                                             : null);
@@ -81,6 +88,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
                         resultSet.getLong("customer_id"),
                         resultSet.getLong("tariff_id"),
                         resultSet.getBigDecimal("price"),
+                        resultSet.getLong("traffic_consumed"),
+                        nullableLong(resultSet, "traffic_per_period"),
                         resultSet.getTimestamp("active_since"),
                         resultSet.getTimestamp("active_until")
                 );
@@ -145,6 +154,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
         private final long customer_id;
         private final long tariff_id;
         private final BigDecimal price;
+        private final long trafficConsumed;
+        private final Long trafficPerPeriod;
         private final Timestamp activeSince;
         private final Timestamp activeUntil;
 
@@ -154,6 +165,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             subscription.setCustomer(customers.get(customer_id));
             subscription.setTariff(tariffs.get(tariff_id));
             subscription.setPrice(price);
+            subscription.setTrafficConsumed(trafficConsumed);
+            subscription.setTrafficPerPeriod(trafficPerPeriod);
             subscription.setActiveSince(activeSince != null ? activeSince.toInstant()
                                                             : null);
             subscription.setActiveUntil(activeUntil != null ? activeUntil.toInstant()

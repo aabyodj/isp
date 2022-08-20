@@ -5,7 +5,7 @@ import by.aab.isp.entity.Subscription;
 
 public interface SubscriptionService {
 
-    Iterable<Subscription> getAll(Customer customer);
+    Iterable<Subscription> getByCustomer(Customer customer);
 
     Iterable<Subscription> getActiveSubscriptions(Customer customer);
 

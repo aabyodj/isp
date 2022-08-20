@@ -4,7 +4,10 @@ CREATE TABLE IF NOT EXISTS tariff (
     id SERIAL8 PRIMARY KEY,
     name character varying(15) NOT NULL,
     description character varying(50) NOT NULL,
-    price numeric(10,2) NOT NULL
+    bandwidth int,
+    included_traffic bigint,
+    price numeric(10,2) NOT NULL,
+    active boolean NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS promotions (
@@ -17,7 +20,9 @@ CREATE TABLE IF NOT EXISTS promotions (
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL8 PRIMARY KEY,
-    email character varying(25) UNIQUE NOT NULL
+    email character varying(25) UNIQUE NOT NULL,
+    password_hash bytea NOT NULL,
+    active boolean NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS customers (
@@ -39,6 +44,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     customer_id bigint NOT NULL,
     tariff_id bigint NOT NULL,
     price numeric(10, 2) NOT NULL,
+    traffic_consumed bigint NOT NULL,
+    traffic_per_period bigint,
     active_since TIMESTAMP,
     active_until TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(user_id)

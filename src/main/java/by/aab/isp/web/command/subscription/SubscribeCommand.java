@@ -19,7 +19,7 @@ public class SubscribeCommand extends Command {
     public String execute(HttpServletRequest req) {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         if (null == customer) throw new RuntimeException("Not implemented");    //TODO: implement this
-        long tariffId = Long.parseLong(req.getParameter("new-tariff"));
+        long tariffId = Long.parseLong(req.getParameter("tariff_id"));
         subscriptionService.subscribe(customer, tariffId);
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;

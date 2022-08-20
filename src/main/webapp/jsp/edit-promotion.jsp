@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title><c:out value="${promotion.name}" />${promotion.id !=0 ? ' | Edit' : 'New'} promotion | Internet Service Provider</title>
     </head>
     <body>

@@ -23,12 +23,14 @@ public class TariffServiceImpl implements TariffService {
     }
 
     @Override
+    public Iterable<Tariff> getForHomepage() {
+        return tariffDao.findByActive(true);
+    }
+
+    @Override
     public Tariff getById(long id) {
-        try {
-        return tariffDao.findById(id).orElseThrow();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+        return id != 0 ? tariffDao.findById(id).orElseThrow()
+                       : new Tariff();
     }
 
     @Override

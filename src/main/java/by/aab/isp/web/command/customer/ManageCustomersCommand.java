@@ -1,5 +1,6 @@
 package by.aab.isp.web.command.customer;
 
+import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
@@ -16,7 +17,10 @@ public class ManageCustomersCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        req.setAttribute("customers", userService.getAllCustomers());
+        Iterable<Customer> customers = userService.getAllCustomers();
+        if (customers.spliterator().estimateSize() > 0) {
+            req.setAttribute("customers", customers);
+        }
         return "jsp/manage-customers.jsp";
     }
 

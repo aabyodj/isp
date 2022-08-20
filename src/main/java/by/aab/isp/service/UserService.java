@@ -18,11 +18,13 @@ public interface UserService {
 
     Employee getEmployeeById(long id);
 
-    User save(User user);
+    User save(User user, String password);
 
     User login(String email, String password);
 
     void updateCredentials(User user, String newEmail, String newPassword, String currentPassword);
 
     void replenishBalance(Customer customer, BigDecimal amount);
+
+    void createDefaultAdmin();
 }

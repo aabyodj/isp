@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title>Manage promotions | Internet Service Provider</title>
     </head>
     <body>
@@ -21,8 +19,8 @@
                 </tr>
                 <c:forEach var="promotion" items="${promotions}">
                     <tr${promotion.isActiveOn(now) ? ' class="active"' : ''}>
-                        <td>${promotion.activeSince != null ? promotion.activeSince : 'Since the Big Bang'}</td>
-                        <td>${promotion.activeUntil != null ? promotion.activeUntil : 'Until stopped'}</td>
+                        <td>${util.formatDate(promotion.activeSince, 'Since the Big Bang')}</td>
+                        <td>${util.formatDate(promotion.activeUntil, 'Until stopped')}</td>
                         <td><c:out value="${promotion.name}" /></td>
                         <td><c:out value="${promotion.description}" /></td>
                         <td>

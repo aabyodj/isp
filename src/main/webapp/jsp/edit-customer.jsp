@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><!doctype html>
+<%@ include file="/jsp/inc/html-start.inc" %>
 <html>
     <head>
-        <meta charset="UTF-8">
+<%@ include file="/jsp/inc/html-head.inc" %>
         <title><c:out value="${customer.email}" />${customer.id !=0 ? ' | Edit' : 'New'} customer account | Internet Service Provider</title>
     </head>
     <body>
@@ -18,6 +16,14 @@
                         <label for="email">Email:</label>
                         <input type="email" name="email" required maxlength=25 placeholder="user@example.com"
                             value="<c:out value="${customer.email}" />">
+                    </li>
+                    <li>
+                        <label for="password1">Password</label>
+                        <input name="password1" type="password"${customer.id == 0 ? ' required' : ''}>
+                    </li>
+                    <li>
+                        <label for="password2">Confirm password</label>
+                        <input name="password2" type="password"${customer.id == 0 ? ' required' : ''}>
                     </li>
                     <li>
                         <label for="balance">Balance:</label>
@@ -37,6 +43,10 @@
                             <option value="0"${activeTariff == null ? ' selected' : ''}>no</option><c:forEach var="tariff" items="${tariffs}">
                             <option value="${tariff.id}"${activeTariff.id == tariff.id ? ' selected' : ''}><c:out value="${tariff.name}" /></option>
                         </c:forEach></select>
+                    </li>
+                    <li>
+                        <label for="active">Active</label>
+                        <input name="active" type="checkbox"${customer.active ? ' checked' : ''}>
                     </li>
                 </ul>
                 <input type="submit" value="Submit">
