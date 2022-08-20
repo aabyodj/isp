@@ -9,9 +9,7 @@ import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
@@ -44,7 +42,7 @@ public class SaveCustomerCommand extends Command {
         customer.setPermittedOverdraft(new BigDecimal(req.getParameter("permitted-overdraft")));
         String payoffDate = req.getParameter("payoff-date");
         if (payoffDate != null && !payoffDate.isBlank()) {
-            customer.setPayoffDate(Instant.from(LocalDate.parse(payoffDate).atStartOfDay(ZoneId.systemDefault())));
+            customer.setPayoffDate(LocalDate.parse(payoffDate).plusDays(1).atStartOfDay().minusNanos(1000));
         }
         userService.save(customer, password);   //TODO: terminate their session
         long tariffId = Long.parseLong(req.getParameter("tariff"));

@@ -7,6 +7,7 @@ import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,8 +79,9 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             row.setLong(++c, customer.getId());
             row.setBigDecimal(++c, customer.getBalance());
             row.setBigDecimal(++c, customer.getPermittedOverdraft());
-            row.setTimestamp(++c, customer.getPayoffDate() != null ? Timestamp.from(customer.getPayoffDate())
-                                                                   : null);
+            LocalDateTime payoffDate = customer.getPayoffDate();
+            row.setTimestamp(++c, payoffDate != null ? Timestamp.valueOf(payoffDate)
+                                                     : null);
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -146,7 +148,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             customer.setBalance(row.getBigDecimal("balance"));
             customer.setPermittedOverdraft(row.getBigDecimal("permitted_overdraft"));
             Timestamp payoffDate = row.getTimestamp("payoff_date");
-            customer.setPayoffDate(payoffDate != null ? payoffDate.toInstant()
+            customer.setPayoffDate(payoffDate != null ? payoffDate.toLocalDateTime()
                                                       : null);
             return customer;
         } catch (SQLException e) {

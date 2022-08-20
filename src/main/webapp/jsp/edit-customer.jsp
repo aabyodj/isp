@@ -35,7 +35,7 @@
                     </li>
                     <li>
                         <label for="payoff-date">Payoff date:</label>
-                        <input name="payoff-date" type="date" value=${payoffDate}>
+                        <input name="payoff-date" type="date" value=${customer.payoffDate.toLocalDate()}>
                     </li>
                     <li>
                         <label for="tariff">Tariff:</label>

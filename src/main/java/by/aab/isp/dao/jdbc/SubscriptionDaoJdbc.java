@@ -8,7 +8,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -41,11 +41,11 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             } else {
                 row.setNull(++c, Types.BIGINT);
             }
-            Instant activeSince = subscription.getActiveSince();
-            row.setTimestamp(++c, activeSince != null ? Timestamp.from(activeSince)
+            LocalDateTime activeSince = subscription.getActiveSince();
+            row.setTimestamp(++c, activeSince != null ? Timestamp.valueOf(activeSince)
                                                       : null);
-            Instant activeUntil = subscription.getActiveUntil();
-            row.setTimestamp(++c, activeUntil != null ? Timestamp.from(activeUntil)
+            LocalDateTime activeUntil = subscription.getActiveUntil();
+            row.setTimestamp(++c, activeUntil != null ? Timestamp.valueOf(activeUntil)
                                                       : null);
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -65,10 +65,10 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             subscription.setTrafficConsumed(row.getLong("traffic_consumed"));
             subscription.setTrafficPerPeriod(nullableLong(row, "traffic_per_period"));
             Timestamp activeSince = row.getTimestamp("active_since");
-            subscription.setActiveSince(activeSince != null ? activeSince.toInstant()
+            subscription.setActiveSince(activeSince != null ? activeSince.toLocalDateTime()
                                                             : null);
             Timestamp activeUntil = row.getTimestamp("active_until");
-            subscription.setActiveUntil(activeUntil != null ? activeUntil.toInstant()
+            subscription.setActiveUntil(activeUntil != null ? activeUntil.toLocalDateTime()
                                                             : null);
             return subscription;
         } catch (SQLException e) {
@@ -120,7 +120,7 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Subscription> findByCustomerIdAndActivePeriodContains(long customerId, Instant instant) {
+    public Iterable<Subscription> findByCustomerIdAndActivePeriodContains(long customerId, LocalDateTime instant) {
         return (Iterable<Subscription>) findMany(
                 sqlSelectWhereCustomerAndPeriodContains,
                 fillWithCustomerIdAndTwoInstants(customerId, instant, instant),
@@ -135,13 +135,13 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
         return (Iterable<Subscription>) findMany(sqlSelectWhereCustomerId + customerId, this::mapRowsToObjects);
     }
 
-    private Consumer<PreparedStatement> fillWithCustomerIdAndTwoInstants(long customerId, Instant instant1, Instant instant2) {
+    private Consumer<PreparedStatement> fillWithCustomerIdAndTwoInstants(long customerId, LocalDateTime i1, LocalDateTime i2) {
         return statement -> {
             try {
                 int c = 0;
                 statement.setLong(++c, customerId);
-                statement.setTimestamp(++c, Timestamp.from(instant1));
-                statement.setTimestamp(++c, Timestamp.from(instant2));
+                statement.setTimestamp(++c, Timestamp.valueOf(i1));
+                statement.setTimestamp(++c, Timestamp.valueOf(i2));
             } catch (SQLException e) {
                 throw new DaoException(e);
             }
@@ -167,9 +167,9 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
             subscription.setPrice(price);
             subscription.setTrafficConsumed(trafficConsumed);
             subscription.setTrafficPerPeriod(trafficPerPeriod);
-            subscription.setActiveSince(activeSince != null ? activeSince.toInstant()
+            subscription.setActiveSince(activeSince != null ? activeSince.toLocalDateTime()
                                                             : null);
-            subscription.setActiveUntil(activeUntil != null ? activeUntil.toInstant()
+            subscription.setActiveUntil(activeUntil != null ? activeUntil.toLocalDateTime()
                                                             : null);
             return subscription;
         }

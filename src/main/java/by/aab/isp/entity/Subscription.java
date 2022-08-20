@@ -3,7 +3,7 @@ package by.aab.isp.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 @Data
@@ -15,15 +15,15 @@ public class Subscription implements Entity {
     private BigDecimal price;
     private long trafficConsumed;
     private Long trafficPerPeriod;
-    private Instant activeSince;
-    private Instant activeUntil;
+    private LocalDateTime activeSince;
+    private LocalDateTime activeUntil;
 
     public Long getTrafficLeft() {
         return trafficPerPeriod != null ? trafficPerPeriod - trafficConsumed
                                         : null;
     }
 
-    public boolean isActiveOn(Instant instant) {
+    public boolean isActiveOn(LocalDateTime instant) {
         return !(activeSince != null && activeSince.isAfter(instant)
                 || activeUntil != null && activeUntil.isBefore(instant));
     }

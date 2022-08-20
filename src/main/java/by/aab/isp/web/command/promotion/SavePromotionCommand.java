@@ -27,13 +27,12 @@ public class SavePromotionCommand extends Command {
         promotion.setDescription(req.getParameter("description"));
         String since = req.getParameter("active-since");
         if (since != null && !since.isBlank()) {
-            LocalDate activeSince = LocalDate.parse(since);
-            promotion.setActiveSince(Instant.from(activeSince.atStartOfDay(ZoneId.systemDefault())));
+            promotion.setActiveSince(LocalDate.parse(since).atStartOfDay());
         }
         String until = req.getParameter("active-until");
         if (until != null && !until.isBlank()) {
-            LocalDateTime activeUntil = LocalDate.parse(until).plusDays(1).atStartOfDay();
-            promotion.setActiveUntil(activeUntil.toInstant(OffsetDateTime.now().getOffset()));  //FIXME: this doesn't work properly
+            LocalDateTime activeUntil = LocalDate.parse(until).plusDays(1).atStartOfDay().minusNanos(1000);
+            promotion.setActiveUntil(activeUntil);
         }
         promotionService.save(promotion);
         String redirect = req.getParameter("redirect");

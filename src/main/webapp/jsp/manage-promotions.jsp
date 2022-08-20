@@ -19,8 +19,8 @@
                 </tr>
                 <c:forEach var="promotion" items="${promotions}">
                     <tr${promotion.isActiveOn(now) ? ' class="active"' : ''}>
-                        <td>${util.formatDate(promotion.activeSince, 'Since the Big Bang')}</td>
-                        <td>${util.formatDate(promotion.activeUntil, 'Until stopped')}</td>
+                        <td>${promotion.activeSince != null ? promotion.activeSince : 'Since the Big Bang'}</td>
+                        <td>${promotion.activeUntil != null ? promotion.activeUntil : 'Until stopped'}</td>
                         <td><c:out value="${promotion.name}" /></td>
                         <td><c:out value="${promotion.description}" /></td>
                         <td>

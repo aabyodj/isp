@@ -1,11 +1,5 @@
 package by.aab.isp.web;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-
 public class Util {
     private Util() {}
 
@@ -58,28 +52,4 @@ public class Util {
         return traffic + TRAFFIC_RANGES[TRAFFIC_RANGES.length - 1];
     }
 
-    public String formatDate(Instant instant, String defaultValue) {
-        if (null == instant) {
-            return defaultValue;
-        }
-        LocalDate localDate = LocalDate.ofInstant(instant, ZoneId.systemDefault());
-        return DateTimeFormatter.ISO_LOCAL_DATE.format(localDate);
-    }
-
-    public String formatDate(Instant instant) {
-        return formatDate(instant, "");
-    }
-
-    public String formatDateTime(Instant instant, String defaultValue) {
-        if (null == instant) {
-            return defaultValue;
-        }
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        localDateTime = localDateTime.withNano(0);
-        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(localDateTime);
-    }
-
-    public String formatDateTime(Instant instant) {
-        return formatDateTime(instant, "");
-    }
 }

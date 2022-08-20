@@ -6,7 +6,7 @@ import by.aab.isp.entity.Promotion;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.ServiceException;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -35,7 +35,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public Iterable<Promotion> getForHomepage() {
-        return sorted(promotionDao.findByActivePeriodContains(Instant.now()), SORT_BY_SINCE_REVERSED_THEN_BY_UNTIL);
+        return sorted(promotionDao.findByActivePeriodContains(LocalDateTime.now()), SORT_BY_SINCE_REVERSED_THEN_BY_UNTIL);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PromotionServiceImpl implements PromotionService {
             return promotionDao.findById(id).orElseThrow();
         }
         Promotion promotion = new Promotion();
-        promotion.setActiveSince(Instant.now());
+        promotion.setActiveSince(LocalDateTime.now());
         return promotion;
     }
 
@@ -67,7 +67,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public void stop(long id) {
         Promotion promotion = promotionDao.findById(id).orElseThrow();
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         if (promotion.getActiveUntil() == null || promotion.getActiveUntil().isAfter(now)) {
             promotion.setActiveUntil(now);
             promotionDao.update(promotion);

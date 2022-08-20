@@ -2,7 +2,7 @@ package by.aab.isp.entity;
 
 import lombok.Data;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 @Data
@@ -11,10 +11,10 @@ public class Promotion implements Entity {
     private long id;
     private String name;
     private String description;
-    private Instant activeSince;
-    private Instant activeUntil;
+    private LocalDateTime activeSince;
+    private LocalDateTime activeUntil;
 
-    public boolean isActiveOn(Instant instant) {
+    public boolean isActiveOn(LocalDateTime instant) {
         return !(activeSince != null && activeSince.isAfter(instant)
                 || activeUntil != null && activeUntil.isBefore(instant));
     }

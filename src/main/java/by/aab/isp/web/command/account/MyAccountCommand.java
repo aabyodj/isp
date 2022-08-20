@@ -10,7 +10,7 @@ import by.aab.isp.web.Util;
 import by.aab.isp.web.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class MyAccountCommand extends Command {
         Customer customer = (Customer) req.getAttribute("activeCustomer");
         if (customer != null) {
             Iterable<Subscription> subscriptions = subscriptionService.getByCustomer(customer);
-            Instant now = Instant.now();
+            LocalDateTime now = LocalDateTime.now();
             if (subscriptions.spliterator().estimateSize() > 0) {
                 req.setAttribute("subscriptions", subscriptions);
                 req.setAttribute("now", now);
