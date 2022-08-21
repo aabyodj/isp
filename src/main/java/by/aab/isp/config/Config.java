@@ -12,7 +12,8 @@ public class Config {
             "ISP_DB_URL", "db.url",
             "ISP_DB_USER", "db.user",
             "ISP_DB_PASSWORD", "db.password",
-            "ISP_DB_POOLSIZE", "db.poolsize"
+            "ISP_DB_POOLSIZE", "db.poolsize",
+            "ISP_HOMEPAGE_PROMOTIONS_COUNT", "homepage.promotionsCount"
     );
     
     private final Properties properties = new Properties();
@@ -42,7 +43,7 @@ public class Config {
     public int getInt(String name, int defaultValue) {
         try {
             return Integer.parseInt(properties.getProperty(name));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignore) {
             return defaultValue;
         }
     }
