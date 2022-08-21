@@ -63,15 +63,18 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
         return promotion;
     }
 
-    private final String sqlSelectWherePeriodContains = sqlSelect
+    private final String sqlSelectWherePeriodContainsOrderBySinceReversedThenByUntil = sqlSelect
             + " WHERE (active_since IS NOT DISTINCT FROM null OR active_since <= ?)"
-            + " AND (active_until IS NOT DISTINCT FROM null OR active_until >= ?)";   //TODO check if this works with MySQL
+            + " AND (active_until IS NOT DISTINCT FROM null OR active_until >= ?)"   //TODO check if this works with MySQL
+            + " ORDER BY active_since DESC NULLS FIRST,"
+            + " active_until ASC NULLS LAST";
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Promotion> findByActivePeriodContains(LocalDateTime instant) {
+    public Iterable<Promotion> findByActivePeriodContainsOrderBySinceReversedThenByUntil(
+            LocalDateTime instant, long skip, int limit) {
         return (Iterable<Promotion>) findMany(
-                sqlSelectWherePeriodContains,
+                sqlSelectWherePeriodContainsOrderBySinceReversedThenByUntil + " LIMIT " + limit + " OFFSET " + skip,
                 fillWithTwoInstants(instant, instant),
                 this::mapRowsToObjects);
     }

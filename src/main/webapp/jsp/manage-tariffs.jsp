@@ -8,7 +8,7 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1>Manage tariff plans</h1>
-            <a href="?action=new_tariff">Add new tariff</a>
+            <p><a href="?action=new_tariff">Add new tariff</a>
             <table>
                 <tr>
                     <th>Name</th>

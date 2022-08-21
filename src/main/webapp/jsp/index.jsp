@@ -14,7 +14,9 @@
             <c:if test="${promotions != null || activeEmployee != null}">
                 <section>
                     <h1>Discounts and promotions</h1>
-                    <a href="?action=new_promotion">Add new promotion</a>
+                    <c:if test="${activeEmployee != null}">
+                        <p><a href="?action=new_promotion">Add new promotion</a>
+                    </c:if>
                     <ul><c:forEach var="promotion" items="${promotions}">
                         <li>
                             <h2><c:out value="${promotion.name}" /></h2>
@@ -34,7 +36,7 @@
                 <section>
                     <h1>Our tariff plans</h1>
                     <c:if test="${activeEmployee != null}">
-                        <a href="?action=new_tariff">Add new tariff plan</a>
+                        <p><a href="?action=new_tariff">Add new tariff plan</a>
                     </c:if>
                     <ul><c:forEach var="tariff" items="${tariffs}">
                         <li>

@@ -4,7 +4,7 @@
 <%@ include file="/jsp/inc/html-head.inc" %>
         <title>My account | Internet Service Provider</title>
     </head>
-    <body>
+    <body id="my-account">
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1>My account</h1>

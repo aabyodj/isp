@@ -13,4 +13,6 @@ public interface PromotionService {
     Promotion save(Promotion promotion);
 
     void stop(long id);
+
+    void generatePromotions(int quantity, boolean active);
 }
