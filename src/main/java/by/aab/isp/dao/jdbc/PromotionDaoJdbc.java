@@ -63,11 +63,24 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
         return promotion;
     }
 
+    private final String sqlSelectOrderBySinceThenByUntil = sqlSelect
+            + " ORDER BY active_since ASC NULLS FIRST,"
+            + " active_until ASC NULLS LAST";
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterable<Promotion> findAllOrderBySinceThenByUntil(long skip, int limit) {
+        return (Iterable<Promotion>) findMany(
+                sqlSelectOrderBySinceThenByUntil + " LIMIT " + limit + " OFFSET " + skip,
+                this::mapRowsToObjects);
+    }
+
     private final String sqlSelectWherePeriodContainsOrderBySinceReversedThenByUntil = sqlSelect
             + " WHERE (active_since IS NOT DISTINCT FROM null OR active_since <= ?)"
             + " AND (active_until IS NOT DISTINCT FROM null OR active_until >= ?)"   //TODO check if this works with MySQL
             + " ORDER BY active_since DESC NULLS FIRST,"
             + " active_until ASC NULLS LAST";
+
 
     @SuppressWarnings("unchecked")
     @Override

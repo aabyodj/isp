@@ -4,21 +4,14 @@ import by.aab.isp.config.Config;
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.PromotionDao;
 import by.aab.isp.entity.Promotion;
+import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.ServiceException;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static by.aab.isp.entity.Promotion.SORT_BY_ACTIVE_SINCE;
-import static by.aab.isp.entity.Promotion.SORT_BY_ACTIVE_UNTIL;
+import java.util.List;
 
 public class PromotionServiceImpl implements PromotionService {
-
-    private static final Comparator<Promotion> SORT_BY_SINCE_THEN_BY_UNTIL =
-            SORT_BY_ACTIVE_SINCE.thenComparing(SORT_BY_ACTIVE_UNTIL);
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
@@ -31,8 +24,22 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Iterable<Promotion> getAll() {
-        return sorted(promotionDao.findAll(), SORT_BY_SINCE_THEN_BY_UNTIL);
+    public Iterable<Promotion> getAll(Pagination pagination) {
+        long count = promotionDao.count();
+        pagination.setTotalItemsCount(count);
+        long offset = pagination.getOffset();
+        if (offset >= count) {
+            pagination.setPageNumber(pagination.getLastPageNumber());
+        } else {
+            pagination.setOffset(Long.max(0, offset));
+        }
+        if (count > 0) {
+            return promotionDao.findAllOrderBySinceThenByUntil(
+                    pagination.getOffset(),
+                    pagination.getPageSize());
+        } else {
+            return List.of();
+        }
     }
 
     @Override
@@ -92,13 +99,6 @@ public class PromotionServiceImpl implements PromotionService {
             }
             promotionDao.save(promotion);
         }
-    }
-
-    private static Iterable<Promotion> sorted(Iterable<Promotion> promotions, Comparator<Promotion> comparator) {
-        return StreamSupport
-                .stream(promotions.spliterator(), true)
-                .sorted(comparator)
-                .collect(Collectors.toList());
     }
 
 }

@@ -20,14 +20,16 @@
             </form>
             <table>
                 <tr>
+                    <th></th>
                     <th>Since</th>
                     <th>Until</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th></th>
                 </tr>
-                <c:forEach var="promotion" items="${promotions}">
+                <c:forEach var="promotion" items="${promotions}" varStatus="status">
                     <tr${promotion.isActiveOn(now) ? ' class="active"' : ''}>
+                        <td>${pagination.offset + status.count}</td>
                         <td>${promotion.activeSince != null ? promotion.activeSince : 'Since the Big Bang'}</td>
                         <td>${promotion.activeUntil != null ? promotion.activeUntil : 'Until stopped'}</td>
                         <td><c:out value="${promotion.name}" /></td>
@@ -46,6 +48,19 @@
                     </tr>
                 </c:if>
             </table>
+            <c:if test="${pagination.lastPageNumber > 0}">
+                <p>
+                    <c:if test="${pagination.pageNumber > 0}">
+                        <a href="?action=manage_promotions&page=0">First</a>
+                        <a href="?action=manage_promotions&page=${pagination.pageNumber - 1}">Prev</a>
+                    </c:if>
+                    ${pagination.pageNumber}
+                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
+                        <a href="?action=manage_promotions&page=${pagination.pageNumber + 1}">Next</a>
+                        <a href="?action=manage_promotions&page=${pagination.lastPageNumber}">Last</a>
+                    </c:if>
+                </p>
+            </c:if>
         </main>
     </body>
 </html>
