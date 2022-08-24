@@ -8,6 +8,8 @@ public interface TariffService {
 
     Iterable<Tariff> getAll(Pagination pagination);
 
+    Iterable<Tariff> getActive();
+
     Iterable<Tariff> getForHomepage();
     
     Tariff getById(Long id);

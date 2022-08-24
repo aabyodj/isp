@@ -2,10 +2,7 @@ package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
 import by.aab.isp.web.command.account.*;
-import by.aab.isp.web.command.customer.EditCustomerCommand;
-import by.aab.isp.web.command.customer.ManageCustomersCommand;
-import by.aab.isp.web.command.customer.ReplenishBalanceCommand;
-import by.aab.isp.web.command.customer.SaveCustomerCommand;
+import by.aab.isp.web.command.customer.*;
 import by.aab.isp.web.command.employee.EditEmployeeCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
@@ -74,6 +71,8 @@ public class CommandFactory {
                 serviceFactory.getService(SubscriptionService.class),
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_customer", getCommand("edit_customer"));
+        commands.put("generate_customers", new GenerateCustomersCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("save_customer", new SaveCustomerCommand(
                 serviceFactory.getService(UserService.class),
                 serviceFactory.getService(SubscriptionService.class)));

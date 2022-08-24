@@ -47,6 +47,11 @@ public class TariffServiceImpl implements TariffService {
     }
 
     @Override
+    public Iterable<Tariff> getActive() {
+        return tariffDao.findByActive(true);
+    }
+
+    @Override
     public Iterable<Tariff> getForHomepage() {
         return tariffDao.findByActive(true);
     }

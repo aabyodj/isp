@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 public interface UserService {
 
-    Iterable<Customer> getAllCustomers();
+    Iterable<Customer> getAllCustomers(Pagination pagination);
 
     Iterable<Employee> getAllEmployees();
 
@@ -27,4 +27,6 @@ public interface UserService {
     void replenishBalance(Customer customer, BigDecimal amount);
 
     void createDefaultAdmin();
+
+    void generateCustomers(int quantity, boolean active);
 }

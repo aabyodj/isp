@@ -26,6 +26,8 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private static final int EMPLOYEE_COLUMN_COUNT = 2;
     private static final String SQL_SELECT_JOIN_CUSTOMERS = "SELECT * FROM " + USERS_TABLE_NAME
             + " JOIN " + CUSTOMERS_TABLE_NAME + " ON id = user_id";
+    private static final String SQL_SELECT_JOIN_CUSTOMERS_ORDER_BY_EMAIL = SQL_SELECT_JOIN_CUSTOMERS
+            + " ORDER BY email ASC";
     private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_ID = SQL_SELECT_JOIN_CUSTOMERS
             + " WHERE id=";
     private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL_AND_ACTIVE = SQL_SELECT_JOIN_CUSTOMERS
@@ -38,6 +40,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             + " WHERE email=? AND active=?";
     private static final String SQL_SELECT_CUSTOMERS_WHERE_ID = "SELECT * FROM " + CUSTOMERS_TABLE_NAME + " WHERE user_id=";
     private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
+    private static final String SQL_COUNT_CUSTOMERS = "SELECT count(*) FROM " + CUSTOMERS_TABLE_NAME;
     private static final String SQL_COUNT_JOIN_EMPLOYEES = "SELECT count(*) FROM " + USERS_TABLE_NAME
             + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
     private static final String SQL_UPDATE_USER_WITHOUT_HASH = "UPDATE " + USERS_TABLE_NAME
@@ -221,8 +224,10 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Customer> findAllCustomers() {
-        return (Iterable<Customer>) findMany(SQL_SELECT_JOIN_CUSTOMERS, this::mapRowsToCustomers);
+    public Iterable<Customer> findAllCustomers(long skip, int limit) {
+        return (Iterable<Customer>) findMany(
+                SQL_SELECT_JOIN_CUSTOMERS_ORDER_BY_EMAIL + " LIMIT " + limit + " OFFSET " + skip,
+                this::mapRowsToCustomers);
     }
 
     @SuppressWarnings("unchecked")
@@ -282,6 +287,11 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                 findCustomerByEmailAndActive(email, active)
                 .map(customer -> (User) customer)
                 .orElse(findEmployeeByEmailAndActive(email, active).orElse(null)));
+    }
+
+    @Override
+    public long countCustomers() {
+        return count(SQL_COUNT_CUSTOMERS);
     }
 
     @Override

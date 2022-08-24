@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UserDao extends CrudRepository<User> {
 
-    Iterable<Customer> findAllCustomers();
+    Iterable<Customer> findAllCustomers(long skip, int limit);
 
     Iterable<Employee> findAllEmployees();
 
@@ -17,6 +17,8 @@ public interface UserDao extends CrudRepository<User> {
     Optional<Employee> findEmployeeById(long id);
 
     Optional<User> findByEmailAndActive(String email, boolean active);
+
+    long countCustomers();
 
     long countByRoleAndActive(Employee.Role role, boolean active);
 
