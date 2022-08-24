@@ -13,6 +13,7 @@ import by.aab.isp.web.command.promotion.*;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
+import by.aab.isp.web.command.tariff.GenerateTariffsCommand;
 import by.aab.isp.web.command.tariff.ManageTariffsCommand;
 import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
@@ -61,6 +62,8 @@ public class CommandFactory {
         commands.put("edit_tariff", new EditTariffCommand(
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));
+        commands.put("generate_tariffs", new GenerateTariffsCommand(
+                serviceFactory.getService(TariffService.class)));
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(
                 serviceFactory.getService(TariffService.class)));

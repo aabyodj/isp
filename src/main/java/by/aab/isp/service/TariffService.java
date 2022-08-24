@@ -11,4 +11,6 @@ public interface TariffService {
     Tariff getById(Long id);
 
     Tariff save(Tariff tariff);
+
+    void generateTariffs(int quantity, boolean active);
 }
