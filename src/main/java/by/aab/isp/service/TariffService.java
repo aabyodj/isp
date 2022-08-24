@@ -6,6 +6,8 @@ public interface TariffService {
     
     Iterable<Tariff> getAll();
 
+    Iterable<Tariff> getAll(Pagination pagination);
+
     Iterable<Tariff> getForHomepage();
     
     Tariff getById(Long id);

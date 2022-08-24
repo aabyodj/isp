@@ -20,6 +20,7 @@
             </form>
             <table>
                 <tr>
+                    <th></th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Bandwidth</th>
@@ -27,8 +28,9 @@
                     <th>Price</th>
                     <th></th>
                 </tr>
-                <c:forEach var="tariff" items="${tariffs}">
+                <c:forEach var="tariff" items="${tariffs}" varStatus="status">
                     <tr${tariff.active ? ' class="active"' : ''}>
+                        <td>${pagination.offset + status.count}</td>
                         <td><c:out value="${tariff.name}" /></td>
                         <td><c:out value="${tariff.description}" /></td>
                         <td>${util.formatBandwidth(tariff.bandwidth)}</td>
@@ -45,6 +47,19 @@
                     </tr>
                 </c:if>
             </table>
+            <c:if test="${pagination.lastPageNumber > 0}">
+                <p>
+                    <c:if test="${pagination.pageNumber > 0}">
+                        <a href="?action=manage_tariffs&page=0">First</a>
+                        <a href="?action=manage_tariffs&page=${pagination.pageNumber - 1}">Prev</a>
+                    </c:if>
+                    ${pagination.pageNumber}
+                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
+                        <a href="?action=manage_tariffs&page=${pagination.pageNumber + 1}">Next</a>
+                        <a href="?action=manage_tariffs&page=${pagination.lastPageNumber}">Last</a>
+                    </c:if>
+                </p>
+            </c:if>
         </main>
     </body>
 </html>

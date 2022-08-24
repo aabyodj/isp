@@ -67,6 +67,14 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
 
     @SuppressWarnings("unchecked")
     @Override
+    public Iterable<Tariff> findAll(long skip, int limit) { //TODO: move this to AbstractDaoJdbc
+        return (Iterable<Tariff>) findMany(
+                sqlSelect + " LIMIT " + limit + " OFFSET " + skip,
+                this::mapRowsToObjects);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public Iterable<Tariff> findByActive(boolean active) {
         return (Iterable<Tariff>) findMany(sqlSelectWhereActive + active, this::mapRowsToObjects);
     }

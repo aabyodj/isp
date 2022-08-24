@@ -2,10 +2,12 @@ package by.aab.isp.service.impl;
 
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.TariffService;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Random;
 
 public class TariffServiceImpl implements TariffService {
@@ -22,6 +24,25 @@ public class TariffServiceImpl implements TariffService {
             return tariffDao.findAll();
         } catch (Exception e) {
             throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public Iterable<Tariff> getAll(Pagination pagination) {
+        long count = tariffDao.count();
+        pagination.setTotalItemsCount(count);
+        long offset = pagination.getOffset();
+        if (offset >= count) {
+            pagination.setPageNumber(pagination.getLastPageNumber());
+        } else {
+            pagination.setOffset(Long.max(0, offset));
+        }
+        if (count > 0) {
+            return tariffDao.findAll( //TODO: add "order" field to Tariff
+                    pagination.getOffset(),
+                    pagination.getPageSize());
+        } else {
+            return List.of();
         }
     }
 
