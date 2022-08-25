@@ -17,12 +17,15 @@ public class ServiceFactory {
     
     private ServiceFactory() {
         services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
-        services.put(UserService.class, new UserServiceImpl(daoFactory.getDao(UserDao.class)));
         services.put(PromotionService.class, new PromotionServiceImpl(
                 daoFactory.getDao(PromotionDao.class), Config.getInstance()));
         services.put(SubscriptionService.class, new SubscriptionServiceImpl(
                 daoFactory.getDao(SubscriptionDao.class),
                 getService(TariffService.class)));
+        services.put(UserService.class, new UserServiceImpl(
+                daoFactory.getDao(UserDao.class),
+                getService(TariffService.class),
+                getService(SubscriptionService.class)));
     }
     
     private static class BillPughSingleton {

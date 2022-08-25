@@ -3,15 +3,17 @@ package by.aab.isp.service.impl;
 import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
+import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
-import by.aab.isp.service.ServiceException;
-import by.aab.isp.service.UnauthorizedException;
-import by.aab.isp.service.UserService;
+import by.aab.isp.service.*;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.StreamSupport;
 
 public class UserServiceImpl implements UserService {
 
@@ -22,19 +24,52 @@ public class UserServiceImpl implements UserService {
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
 
     private final UserDao userDao;
+    private final TariffService tariffService;
+    private final SubscriptionService subscriptionService;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, TariffService tariffService, SubscriptionService subscriptionService) {
         this.userDao = userDao;
+        this.tariffService = tariffService;
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
-    public Iterable<Customer> getAllCustomers() {
-        return userDao.findAllCustomers();
+    public Iterable<Customer> getAllCustomers(Pagination pagination) {
+        long count = userDao.countCustomers();
+        pagination.setTotalItemsCount(count);
+        long offset = pagination.getOffset();
+        if (offset >= count) {
+            pagination.setPageNumber(pagination.getLastPageNumber());
+        } else {
+            pagination.setOffset(Long.max(0, offset));
+        }
+        if (count > 0) {
+            return userDao.findAllCustomers(
+                    pagination.getOffset(),
+                    pagination.getPageSize());
+        } else {
+            return List.of();
+        }
     }
 
     @Override
-    public Iterable<Employee> getAllEmployees() {
-        return userDao.findAllEmployees();
+    public Iterable<Employee> getAllEmployees(Pagination pagination) {
+        long count = userDao.countEmployees();
+        pagination.setTotalItemsCount(count);
+        long offset = pagination.getOffset();
+        if (offset >= count) {
+            pagination.setPageNumber(pagination.getLastPageNumber());
+        } else {
+            pagination.setOffset(Long.max(0, offset));
+        }
+        if (count > 0) {
+            return userDao.findAllEmployees(
+                    pagination.getOffset(),
+                    pagination.getPageSize()
+            );
+        } else {
+            return List.of();
+        }
     }
 
     @Override
@@ -182,6 +217,61 @@ public class UserServiceImpl implements UserService {
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
             userDao.save(admin);
+        }
+    }
+
+    private static final String GENERATED_EMAIL_DOMAIN = "@generated.example.com";
+    private static final String GENERATED_CUSTOMER_EMAIL_NAME = "customer";
+    private static final double GENERATED_CUSTOMER_MIN_BALANCE = -10.0;
+    private static final double GENERATED_CUSTOMER_MAX_BALANCE = 100;
+    private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
+
+    @Override
+    public void generateCustomers(int quantity, boolean active) {
+        Tariff[] tariffs = StreamSupport
+                .stream(tariffService.getActive().spliterator(), true)
+                .toArray(Tariff[]::new);
+        Random random = new Random();
+        int i = 1;
+        while (quantity > 0) {
+            String emailName = GENERATED_CUSTOMER_EMAIL_NAME + i++;
+            Customer customer = new Customer();
+            customer.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
+            customer.setPasswordHash(hashPassword(emailName));
+            customer.setBalance(BigDecimal.valueOf(
+                    random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
+                            + GENERATED_CUSTOMER_MIN_BALANCE));
+            customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
+            customer.setActive(active);
+            try {
+                customer = (Customer) userDao.save(customer);
+                int tariffIndex = random.nextInt(tariffs.length + 1);
+                if (tariffIndex < tariffs.length) {
+                    subscriptionService.subscribe(customer, tariffs[tariffIndex].getId());
+                }
+                quantity--;
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    @Override
+    public void generateEmployees(int quantity, boolean active) {
+        Employee.Role[] roles = Employee.Role.values();
+        Random random = new Random();
+        int i = 1;
+        while (quantity > 0) {
+            String emailName = GENERATED_EMPLOYEE_EMAIL_NAME + i++;
+            Employee employee = new Employee();
+            employee.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
+            employee.setPasswordHash(hashPassword(emailName));
+            employee.setRole(roles[random.nextInt(roles.length)]);
+            employee.setActive(active);
+            try {
+                userDao.save(employee);
+                quantity--;
+            } catch (Exception ignore) {
+            }
         }
     }
 }

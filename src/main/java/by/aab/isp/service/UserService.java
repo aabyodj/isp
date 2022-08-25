@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 
 public interface UserService {
 
-    Iterable<Customer> getAllCustomers();
+    Iterable<Customer> getAllCustomers(Pagination pagination);
 
-    Iterable<Employee> getAllEmployees();
+    Iterable<Employee> getAllEmployees(Pagination pagination);
 
     User getById(long id);
 
@@ -27,4 +27,8 @@ public interface UserService {
     void replenishBalance(Customer customer, BigDecimal amount);
 
     void createDefaultAdmin();
+
+    void generateCustomers(int quantity, boolean active);
+
+    void generateEmployees(int quantity, boolean active);
 }

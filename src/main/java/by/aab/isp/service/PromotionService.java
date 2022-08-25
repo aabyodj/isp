@@ -4,7 +4,7 @@ import by.aab.isp.entity.Promotion;
 
 public interface PromotionService {
 
-    Iterable<Promotion> getAll();
+    Iterable<Promotion> getAll(Pagination pagination);
 
     Iterable<Promotion> getForHomepage();
 

@@ -2,17 +2,16 @@ package by.aab.isp.web.command;
 
 import by.aab.isp.service.*;
 import by.aab.isp.web.command.account.*;
-import by.aab.isp.web.command.customer.EditCustomerCommand;
-import by.aab.isp.web.command.customer.ManageCustomersCommand;
-import by.aab.isp.web.command.customer.ReplenishBalanceCommand;
-import by.aab.isp.web.command.customer.SaveCustomerCommand;
+import by.aab.isp.web.command.customer.*;
 import by.aab.isp.web.command.employee.EditEmployeeCommand;
+import by.aab.isp.web.command.employee.GenerateEmployeesCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
 import by.aab.isp.web.command.promotion.*;
 import by.aab.isp.web.command.subscription.CancelSubscriptionCommand;
 import by.aab.isp.web.command.subscription.SubscribeCommand;
 import by.aab.isp.web.command.tariff.EditTariffCommand;
+import by.aab.isp.web.command.tariff.GenerateTariffsCommand;
 import by.aab.isp.web.command.tariff.ManageTariffsCommand;
 import by.aab.isp.web.command.tariff.SaveTariffCommand;
 
@@ -61,6 +60,8 @@ public class CommandFactory {
         commands.put("edit_tariff", new EditTariffCommand(
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));
+        commands.put("generate_tariffs", new GenerateTariffsCommand(
+                serviceFactory.getService(TariffService.class)));
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(
                 serviceFactory.getService(TariffService.class)));
@@ -71,6 +72,8 @@ public class CommandFactory {
                 serviceFactory.getService(SubscriptionService.class),
                 serviceFactory.getService(TariffService.class)));
         commands.put("new_customer", getCommand("edit_customer"));
+        commands.put("generate_customers", new GenerateCustomersCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("save_customer", new SaveCustomerCommand(
                 serviceFactory.getService(UserService.class),
                 serviceFactory.getService(SubscriptionService.class)));
@@ -79,6 +82,8 @@ public class CommandFactory {
         commands.put("edit_employee", new EditEmployeeCommand(
                 serviceFactory.getService(UserService.class)));
         commands.put("new_employee", getCommand("edit_employee"));
+        commands.put("generate_employees", new GenerateEmployeesCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("save_employee", new SaveEmployeeCommand(
                 serviceFactory.getService(UserService.class)));
     }
