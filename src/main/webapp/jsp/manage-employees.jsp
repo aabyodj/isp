@@ -20,11 +20,13 @@
             </form>
             <table>
                 <tr>
+                    <th></th>
                     <th>Email</th>
                     <th>Role</th>
                     <th></th>
-                </tr><c:forEach var="employee" items="${employees}">
+                </tr><c:forEach var="employee" items="${employees}" varStatus="status">
                 <tr${employee.active ? ' class="active"' : ''}>
+                    <td>${pagination.offset + status.count}</td>
                     <td><c:out value="${employee.email}" /></td>
                     <td><c:out value="${employee.role.toString().toLowerCase()}" /></td>
                     <td>
@@ -34,6 +36,19 @@
                     </td>
                 </tr></c:forEach>
             </table>
+            <c:if test="${pagination.lastPageNumber > 0}">
+                <p>
+                    <c:if test="${pagination.pageNumber > 0}">
+                        <a href="?action=manage_employees&page=0">First</a>
+                        <a href="?action=manage_employees&page=${pagination.pageNumber - 1}">Prev</a>
+                    </c:if>
+                    ${pagination.pageNumber}
+                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
+                        <a href="?action=manage_employees&page=${pagination.pageNumber + 1}">Next</a>
+                        <a href="?action=manage_employees&page=${pagination.lastPageNumber}">Last</a>
+                    </c:if>
+                </p>
+            </c:if>
         </main>
     </body>
 </html>

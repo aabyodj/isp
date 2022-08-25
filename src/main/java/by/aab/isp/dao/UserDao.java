@@ -10,7 +10,7 @@ public interface UserDao extends CrudRepository<User> {
 
     Iterable<Customer> findAllCustomers(long skip, int limit);
 
-    Iterable<Employee> findAllEmployees();
+    Iterable<Employee> findAllEmployees(long skip, int limit);
 
     Optional<Customer> findCustomerById(long id);
 
@@ -19,6 +19,8 @@ public interface UserDao extends CrudRepository<User> {
     Optional<User> findByEmailAndActive(String email, boolean active);
 
     long countCustomers();
+
+    long countEmployees();
 
     long countByRoleAndActive(Employee.Role role, boolean active);
 

@@ -10,7 +10,7 @@ public interface UserService {
 
     Iterable<Customer> getAllCustomers(Pagination pagination);
 
-    Iterable<Employee> getAllEmployees();
+    Iterable<Employee> getAllEmployees(Pagination pagination);
 
     User getById(long id);
 

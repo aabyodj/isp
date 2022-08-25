@@ -53,8 +53,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Iterable<Employee> getAllEmployees() {
-        return userDao.findAllEmployees();
+    public Iterable<Employee> getAllEmployees(Pagination pagination) {
+        long count = userDao.countEmployees();
+        pagination.setTotalItemsCount(count);
+        long offset = pagination.getOffset();
+        if (offset >= count) {
+            pagination.setPageNumber(pagination.getLastPageNumber());
+        } else {
+            pagination.setOffset(Long.max(0, offset));
+        }
+        if (count > 0) {
+            return userDao.findAllEmployees(
+                    pagination.getOffset(),
+                    pagination.getPageSize()
+            );
+        } else {
+            return List.of();
+        }
     }
 
     @Override
