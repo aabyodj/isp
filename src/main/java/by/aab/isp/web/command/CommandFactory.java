@@ -4,6 +4,7 @@ import by.aab.isp.service.*;
 import by.aab.isp.web.command.account.*;
 import by.aab.isp.web.command.customer.*;
 import by.aab.isp.web.command.employee.EditEmployeeCommand;
+import by.aab.isp.web.command.employee.GenerateEmployeesCommand;
 import by.aab.isp.web.command.employee.ManageEmployeesCommand;
 import by.aab.isp.web.command.employee.SaveEmployeeCommand;
 import by.aab.isp.web.command.promotion.*;
@@ -81,6 +82,8 @@ public class CommandFactory {
         commands.put("edit_employee", new EditEmployeeCommand(
                 serviceFactory.getService(UserService.class)));
         commands.put("new_employee", getCommand("edit_employee"));
+        commands.put("generate_employees", new GenerateEmployeesCommand(
+                serviceFactory.getService(UserService.class)));
         commands.put("save_employee", new SaveEmployeeCommand(
                 serviceFactory.getService(UserService.class)));
     }

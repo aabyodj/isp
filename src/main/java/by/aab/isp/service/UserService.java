@@ -29,4 +29,6 @@ public interface UserService {
     void createDefaultAdmin();
 
     void generateCustomers(int quantity, boolean active);
+
+    void generateEmployees(int quantity, boolean active);
 }

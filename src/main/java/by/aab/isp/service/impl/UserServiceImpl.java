@@ -205,10 +205,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private static final String GENERATED_EMAIL_DOMAIN = "@generated.example.com";
     private static final String GENERATED_CUSTOMER_EMAIL_NAME = "customer";
-    private static final String GENERATED_CUSTOMER_EMAIL_DOMAIN = "@generated.example.com";
     private static final double GENERATED_CUSTOMER_MIN_BALANCE = -10.0;
     private static final double GENERATED_CUSTOMER_MAX_BALANCE = 100;
+    private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
     @Override
     public void generateCustomers(int quantity, boolean active) {
@@ -220,7 +221,7 @@ public class UserServiceImpl implements UserService {
         while (quantity > 0) {
             String emailName = GENERATED_CUSTOMER_EMAIL_NAME + i++;
             Customer customer = new Customer();
-            customer.setEmail(emailName + GENERATED_CUSTOMER_EMAIL_DOMAIN);
+            customer.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
             customer.setPasswordHash(hashPassword(emailName));
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
@@ -233,6 +234,26 @@ public class UserServiceImpl implements UserService {
                 if (tariffIndex < tariffs.length) {
                     subscriptionService.subscribe(customer, tariffs[tariffIndex].getId());
                 }
+                quantity--;
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    @Override
+    public void generateEmployees(int quantity, boolean active) {
+        Employee.Role[] roles = Employee.Role.values();
+        Random random = new Random();
+        int i = 1;
+        while (quantity > 0) {
+            String emailName = GENERATED_EMPLOYEE_EMAIL_NAME + i++;
+            Employee employee = new Employee();
+            employee.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
+            employee.setPasswordHash(hashPassword(emailName));
+            employee.setRole(roles[random.nextInt(roles.length)]);
+            employee.setActive(active);
+            try {
+                userDao.save(employee);
                 quantity--;
             } catch (Exception ignore) {
             }
