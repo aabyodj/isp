@@ -8,50 +8,83 @@ import by.aab.isp.entity.User;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
 
     private static final String USERS_TABLE_NAME = "users";
     private static final String CUSTOMERS_TABLE_NAME = "customers";
+    private static final String[] CUSTOMER_FIELDS = {
+            "user_id", "balance", "permitted_overdraft", "payoff_date"};
     private static final String EMPLOYEES_TABLE_NAME = "employees";
-    private static final String SQL_INSERT_CUSTOMER = "INSERT INTO " + CUSTOMERS_TABLE_NAME
-            + " (user_id, balance, permitted_overdraft, payoff_date) VALUES (?, ?, ?, ?)";
-    private static final int CUSTOMER_COLUMN_COUNT = 4;
-    private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO " + EMPLOYEES_TABLE_NAME
-            + " (user_id, role_id) VALUES (?, ?)";
-    private static final int EMPLOYEE_COLUMN_COUNT = 2;
-    private static final String SQL_SELECT_JOIN_CUSTOMERS = "SELECT * FROM " + USERS_TABLE_NAME
-            + " JOIN " + CUSTOMERS_TABLE_NAME + " ON id = user_id";
-    private static final String SQL_SELECT_JOIN_CUSTOMERS_ORDER_BY_EMAIL = SQL_SELECT_JOIN_CUSTOMERS
-            + " ORDER BY email ASC";
-    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_ID = SQL_SELECT_JOIN_CUSTOMERS
-            + " WHERE id=";
-    private static final String SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL_AND_ACTIVE = SQL_SELECT_JOIN_CUSTOMERS
-            + " WHERE email=? AND active=?";
-    private static final String SQL_SELECT_JOIN_EMPLOYEES = "SELECT * FROM " + USERS_TABLE_NAME
-            + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
-    private static final String SQL_SELECT_JOIN_EMPLOYEES_ORDER_BY_EMAIL = SQL_SELECT_JOIN_EMPLOYEES
-            + " ORDER BY email ASC";
-    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_ID = SQL_SELECT_JOIN_EMPLOYEES
-            + " WHERE id=";
-    private static final String SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL_AND_ACTIVE = SQL_SELECT_JOIN_EMPLOYEES
-            + " WHERE email=? AND active=?";
-    private static final String SQL_SELECT_CUSTOMERS_WHERE_ID = "SELECT * FROM " + CUSTOMERS_TABLE_NAME + " WHERE user_id=";
-    private static final String SQL_SELECT_EMPLOYEES_WHERE_ID = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE user_id=";
-    private static final String SQL_COUNT_CUSTOMERS = "SELECT count(*) FROM " + CUSTOMERS_TABLE_NAME;
-    private static final String SQL_COUNT_EMPLOYEES = "SELECT count(*) FROM " + EMPLOYEES_TABLE_NAME;
-    private static final String SQL_COUNT_JOIN_EMPLOYEES = "SELECT count(*) FROM " + USERS_TABLE_NAME
-            + " JOIN " + EMPLOYEES_TABLE_NAME + " ON id = user_id";
-    private static final String SQL_UPDATE_USER_WITHOUT_HASH = "UPDATE " + USERS_TABLE_NAME
-            + " SET email=?, active=? WHERE id=";
-    private static final String SQL_UPDATE_CUSTOMER = "UPDATE " + CUSTOMERS_TABLE_NAME
-            + " SET user_id=?, balance=?, permitted_overdraft=?, payoff_date=? WHERE user_id=";
-    private static final String SQL_UPDATE_EMPLOYEE = "UPDATE " + EMPLOYEES_TABLE_NAME
-            + " SET user_id=?, role_id=? WHERE user_id=";
+    private static final String[] EMPLOYEE_FIELDS = {"user_id", "role_id"};
+
+    private final String customersQuotedTableName = quote(CUSTOMERS_TABLE_NAME);
+    private final String employeesQuotedTableName = quote(EMPLOYEES_TABLE_NAME);
+
+    private final String sqlInsertCustomer = "INSERT INTO " + customersQuotedTableName
+            + Arrays.stream(CUSTOMER_FIELDS)
+                    .map(this::quote)
+                    .reduce(new StringJoiner(",", "(", ")"),
+                            StringJoiner::add,
+                            StringJoiner::merge)
+            + " VALUES "
+            + Arrays.stream(CUSTOMER_FIELDS)
+                    .map(field -> "?")
+                    .reduce(new StringJoiner(",", "(", ")"),
+                            StringJoiner::add,
+                            StringJoiner::merge);
+
+    private final String sqlInsertEmployee = "INSERT INTO " + employeesQuotedTableName
+            + Arrays.stream(EMPLOYEE_FIELDS)
+                    .map(this::quote)
+                    .reduce(new StringJoiner(",", "(", ")"),
+                            StringJoiner::add,
+                            StringJoiner::merge)
+            + " VALUES "
+            + Arrays.stream(EMPLOYEE_FIELDS)
+                    .map(field -> "?")
+                    .reduce(new StringJoiner(",", "(", ")"),
+                            StringJoiner::add,
+                            StringJoiner::merge);
+
+    private final String sqlSelectJoinCustomers = "SELECT * FROM " + quotedTableName
+            + " JOIN " + customersQuotedTableName
+            + " ON " + quote("id") + "=" + quote("user_id");
+    private final String sqlSelectJoinCustomersOrderByEmail = sqlSelectJoinCustomers
+            + " ORDER BY " + quote("email") + " ASC";
+    private final String sqlSelectJoinCustomerWhereId = sqlSelectJoinCustomers
+            + " WHERE " + quote("id") + "=";
+    private final String sqlSelectJoinCustomerWhereEmailAndActive = sqlSelectJoinCustomers
+            + " WHERE " + quote("email") + "=? AND " + quote("active") + "=?";
+    private final String sqlSelectJoinEmployees = "SELECT * FROM " + quotedTableName
+            + " JOIN " + employeesQuotedTableName
+            + " ON " + quote("id") + "=" + quote("user_id");
+    private final String sqlSelectJoinEmployeesOrderByEmail = sqlSelectJoinEmployees
+            + " ORDER BY " + quote("email") + " ASC";
+    private final String sqlSelectJoinEmployeeWhereId = sqlSelectJoinEmployees
+            + " WHERE " + quote("id") + "=";
+    private final String sqlSelectJoinEmployeeWhereEmailAndActive = sqlSelectJoinEmployees
+            + " WHERE " + quote("email") + "=? AND " + quote("active") + "=?";
+    private final String sqlSelectCustomersWhereId = "SELECT * FROM " + customersQuotedTableName
+            + " WHERE " + quote("user_id") + "=";
+    private final String sqlSelectEmployeesWhereId = "SELECT * FROM " + employeesQuotedTableName
+            + " WHERE " + quote("user_id") + "=";
+    private final String sqlCountCustomers = "SELECT count(*) FROM " + customersQuotedTableName;
+    private final String sqlCountEmployees = "SELECT count(*) FROM " + employeesQuotedTableName;
+    private final String sqlCountJoinEmployees = "SELECT count(*) FROM " + quotedTableName
+            + " JOIN " + employeesQuotedTableName
+            + " ON " + quote("id") + "=" + quote("user_id");
+    private final String sqlUpdateUserWithoutHash = "UPDATE " + quotedTableName
+            + " SET " + quote("email") + "=?, " + quote("active") + "=?"
+            + " WHERE " + quote("id") + "=";
+    private final String sqlUpdateCustomer = "UPDATE " + customersQuotedTableName
+            + " SET " + quote("user_id") + "=?, " + quote("balance") + "=?, "
+            + quote("permitted_overdraft") + "=?, " + quote("payoff_date") + "=?"
+            + " WHERE " + quote("user_id") + "=";
+    private final String sqlUpdateEmployee = "UPDATE " + employeesQuotedTableName
+            + " SET " + quote("user_id") + "=?, " + quote("role_id") + "=?"
+            + " WHERE " + quote("user_id") + "=";
 
     public UserDaoJdbc(DataSource dataSource) {
         super(dataSource, USERS_TABLE_NAME, List.of("email", "password_hash", "active"));
@@ -117,9 +150,9 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             String email = row.getString("email");
             byte[] password_hash = row.getBytes("password_hash");
             boolean active = row.getBoolean("active");
-            User user = findOne(SQL_SELECT_CUSTOMERS_WHERE_ID + id, this::mapRowToCustomer).orElse(null);
+            User user = findOne(sqlSelectCustomersWhereId + id, this::mapRowToCustomer).orElse(null);
             if (null == user) {
-                user = findOne(SQL_SELECT_EMPLOYEES_WHERE_ID + id, this::mapRowToEmployee).orElse(null);
+                user = findOne(sqlSelectEmployeesWhereId + id, this::mapRowToEmployee).orElse(null);
             }
             if (null == user) {
                 throw new DaoException("Inconsistent database: could not find neither Customer nor Employee for userId=" + id);
@@ -148,7 +181,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private Customer mapRowToCustomer(ResultSet row) {
         try {
             Customer customer = new Customer();
-            if (row.getMetaData().getColumnCount() > CUSTOMER_COLUMN_COUNT) {
+            if (row.getMetaData().getColumnCount() > CUSTOMER_FIELDS.length) {
                 mapRowToUser(row, customer);
             }
             customer.setBalance(row.getBigDecimal("balance"));
@@ -165,7 +198,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private Employee mapRowToEmployee(ResultSet row) {
         try {
             Employee employee = new Employee();
-            if (row.getMetaData().getColumnCount() > EMPLOYEE_COLUMN_COUNT) {
+            if (row.getMetaData().getColumnCount() > EMPLOYEE_FIELDS.length) {
                 mapRowToUser(row, employee);
             }
             employee.setRole(Employee.Role.values()[row.getInt("role_id")]);
@@ -214,10 +247,10 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         user = super.save(user);
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
-            executeUpdate(SQL_INSERT_CUSTOMER, row -> mapCustomerToRow(customer, row));
+            executeUpdate(sqlInsertCustomer, row -> mapCustomerToRow(customer, row));
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
-            executeUpdate(SQL_INSERT_EMPLOYEE, row -> mapEmployeeToRow(employee, row));
+            executeUpdate(sqlInsertEmployee, row -> mapEmployeeToRow(employee, row));
         } else {
             //FIXME: remove row from "users" table
             throw new RuntimeException("Unimplemented for " + user.getClass());
@@ -229,7 +262,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     @Override
     public Iterable<Customer> findAllCustomers(long skip, int limit) {
         return (Iterable<Customer>) findMany(
-                SQL_SELECT_JOIN_CUSTOMERS_ORDER_BY_EMAIL + " LIMIT " + limit + " OFFSET " + skip,
+                sqlSelectJoinCustomersOrderByEmail + " LIMIT " + limit + " OFFSET " + skip,
                 this::mapRowsToCustomers);
     }
 
@@ -237,26 +270,26 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     @Override
     public Iterable<Employee> findAllEmployees(long skip, int limit) {
         return (Iterable<Employee>) findMany(
-                SQL_SELECT_JOIN_EMPLOYEES_ORDER_BY_EMAIL + " LIMIT " + limit + " OFFSET " + skip,
+                sqlSelectJoinEmployeesOrderByEmail + " LIMIT " + limit + " OFFSET " + skip,
                 this::mapRowsToEmployees);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Optional<Customer> findCustomerById(long id) {
-        return (Optional<Customer>) findOne(SQL_SELECT_JOIN_CUSTOMER_WHERE_ID + id, this::mapRowToCustomer);
+        return (Optional<Customer>) findOne(sqlSelectJoinCustomerWhereId + id, this::mapRowToCustomer);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Optional<Employee> findEmployeeById(long id) {
-        return (Optional<Employee>) findOne(SQL_SELECT_JOIN_EMPLOYEE_WHERE_ID + id, this::mapRowToEmployee);
+        return (Optional<Employee>) findOne(sqlSelectJoinEmployeeWhereId + id, this::mapRowToEmployee);
     }
 
     @SuppressWarnings("unchecked")
     Optional<Customer> findCustomerByEmailAndActive(String email, boolean active) {
         return (Optional<Customer>) findOne(
-                SQL_SELECT_JOIN_CUSTOMER_WHERE_EMAIL_AND_ACTIVE,
+                sqlSelectJoinCustomerWhereEmailAndActive,
                 statement -> {
                     try {
                         int c = 0;
@@ -272,7 +305,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     @SuppressWarnings("unchecked")
     Optional<Employee> findEmployeeByEmailAndActive(String email, boolean active) {
         return (Optional<Employee>) findOne(
-                SQL_SELECT_JOIN_EMPLOYEE_WHERE_EMAIL_AND_ACTIVE,
+                sqlSelectJoinEmployeeWhereEmailAndActive,
                 statement -> {
                     try {
                         int c = 0;
@@ -296,27 +329,27 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
 
     @Override
     public long countCustomers() {
-        return count(SQL_COUNT_CUSTOMERS);
+        return count(sqlCountCustomers);
     }
 
     @Override
     public long countEmployees() {
-        return count(SQL_COUNT_EMPLOYEES);
+        return count(sqlCountEmployees);
     }
 
     @Override
     public long countByRoleAndActive(Employee.Role role, boolean active) {
-        return count(SQL_COUNT_JOIN_EMPLOYEES
-                + " WHERE role_id = " + role.ordinal()
-                + " AND active = " + active);
+        return count(sqlCountJoinEmployees
+                + " WHERE " + quote("role_id") + "=" + role.ordinal()
+                + " AND " + quote("active") + "=" + active);
     }
 
     @Override
     public long countByNotIdAndRoleAndActive(long id, Employee.Role role, boolean active) {
-        return count(SQL_COUNT_JOIN_EMPLOYEES
-                + " WHERE id != " + id
-                + " AND role_id = " + role.ordinal()
-                + " AND active = " + active);
+        return count(sqlCountJoinEmployees
+                + " WHERE " + quote("id") + "!=" + id
+                + " AND " + quote("role_id") + "=" + role.ordinal()
+                + " AND " + quote("active") + "=" + active);
     }
 
     @Override
@@ -325,7 +358,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             super.update(user);
         } else {
             int result = executeUpdate(
-                    SQL_UPDATE_USER_WITHOUT_HASH + user.getId(),
+                    sqlUpdateUserWithoutHash + user.getId(),
                     row -> mapUserToRowWithoutHash(user, row));
             if (result < 1) {
                 throw new DaoException("Could not update user");
@@ -333,13 +366,13 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         }
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
-            int result = executeUpdate(SQL_UPDATE_CUSTOMER + user.getId(), row -> mapCustomerToRow(customer, row));
+            int result = executeUpdate(sqlUpdateCustomer + user.getId(), row -> mapCustomerToRow(customer, row));
             if (result < 1) {
                 throw new DaoException("Could not update customer");
             }
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
-            int result = executeUpdate(SQL_UPDATE_EMPLOYEE + user.getId(), row -> mapEmployeeToRow(employee, row));
+            int result = executeUpdate(sqlUpdateEmployee + user.getId(), row -> mapEmployeeToRow(employee, row));
             if (result < 1) {
                 throw new DaoException("Could not update employee");
             }

@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
@@ -22,6 +23,10 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     
     final DataSource dataSource;
     final String tableName;
+    final String quotedTableName;
+    final char quoteChar;
+    final String doubledQuoteChar;
+    final Pattern quoteCharPattern;
 
     final String sqlInsert;
     final String sqlCount;
@@ -33,8 +38,13 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
         this.dataSource = dataSource;
         this.tableName = tableName;
-        sqlInsert = "INSERT INTO " + tableName
+        this.quoteChar = dataSource.getDialect().getQuoteChar();
+        this.doubledQuoteChar = Character.toString(quoteChar) + quoteChar;
+        this.quoteCharPattern = Pattern.compile(Pattern.quote(Character.toString(quoteChar)));
+        this.quotedTableName = quote(tableName);
+        sqlInsert = "INSERT INTO " + quotedTableName
                 + fields.stream()
+                        .map(this::quote)
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge)
@@ -44,15 +54,15 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge);
-        sqlCount = "SELECT count(*) FROM " + tableName;
-        sqlSelect = "SELECT * FROM " + tableName;
-        sqlSelectWhereId = sqlSelect + " WHERE id=";
-        sqlUpdate = "UPDATE " + tableName + " SET " + fields.stream()
-                .map(field -> field + " = ?")
+        sqlCount = "SELECT count(*) FROM " + quotedTableName;
+        sqlSelect = "SELECT * FROM " + quotedTableName;
+        sqlSelectWhereId = sqlSelect + " WHERE " + quote("id") + "=";
+        sqlUpdate = "UPDATE " + quotedTableName + " SET " + fields.stream()
+                .map(field -> quote(field) + " = ?")
                 .reduce(new StringJoiner(", "),
                         StringJoiner::add,
                         StringJoiner::merge);
-        sqlUpdateWhereId = sqlUpdate + " WHERE id=";
+        sqlUpdateWhereId = sqlUpdate + " WHERE " + quote("id") + "=";
     }
 
     @Override
@@ -166,6 +176,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
+
+    String quote(String identifier) {
+        identifier = quoteCharPattern.matcher(identifier).replaceAll(doubledQuoteChar);
+        return quoteChar + identifier + quoteChar;
     }
 
     static Integer nullableInt(ResultSet resultSet, String name) throws SQLException {

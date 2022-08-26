@@ -63,7 +63,7 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     }
 
     private final String sqlSelectWhereActive = sqlSelect
-            + " WHERE active=";
+            + " WHERE " + quote("active") + "=";
 
     @SuppressWarnings("unchecked")
     @Override
