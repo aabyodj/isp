@@ -13,15 +13,21 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Entity;
 
 abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
     
     final DataSource dataSource;
     final String tableName;
+    final String quotedTableName;
+    final char quoteChar;
+    final String doubledQuoteChar;
+    final Pattern quoteCharPattern;
 
     final String sqlInsert;
     final String sqlCount;
@@ -33,8 +39,13 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
         this.dataSource = dataSource;
         this.tableName = tableName;
-        sqlInsert = "INSERT INTO " + tableName
+        this.quoteChar = dataSource.getDialect().getQuoteChar();
+        this.doubledQuoteChar = Character.toString(quoteChar) + quoteChar;
+        this.quoteCharPattern = Pattern.compile(Pattern.quote(Character.toString(quoteChar)));
+        this.quotedTableName = quote(tableName);
+        sqlInsert = "INSERT INTO " + quotedTableName
                 + fields.stream()
+                        .map(this::quote)
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge)
@@ -44,15 +55,15 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge);
-        sqlCount = "SELECT count(*) FROM " + tableName;
-        sqlSelect = "SELECT * FROM " + tableName;
-        sqlSelectWhereId = sqlSelect + " WHERE id=";
-        sqlUpdate = "UPDATE " + tableName + " SET " + fields.stream()
-                .map(field -> field + " = ?")
+        sqlCount = "SELECT count(*) FROM " + quotedTableName;
+        sqlSelect = "SELECT * FROM " + quotedTableName;
+        sqlSelectWhereId = sqlSelect + " WHERE " + quote("id") + "=";
+        sqlUpdate = "UPDATE " + quotedTableName + " SET " + fields.stream()
+                .map(field -> quote(field) + " = ?")
                 .reduce(new StringJoiner(", "),
                         StringJoiner::add,
                         StringJoiner::merge);
-        sqlUpdateWhereId = sqlUpdate + " WHERE id=";
+        sqlUpdateWhereId = sqlUpdate + " WHERE " + quote("id") + "=";
     }
 
     @Override
@@ -93,6 +104,12 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     @Override
     public Iterable<T> findAll() {
         return (Iterable<T>) findMany(sqlSelect, this::mapRowsToObjects);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterable<T> findAll(OrderOffsetLimit orderOffsetLimit) {
+        return (Iterable<T>) findMany(sqlSelect + formatOrderOffsetLimit(orderOffsetLimit), this::mapRowsToObjects);
     }
 
     @SuppressWarnings("unchecked")
@@ -168,6 +185,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         }
     }
 
+    String quote(String identifier) {
+        identifier = quoteCharPattern.matcher(identifier).replaceAll(doubledQuoteChar);
+        return quoteChar + identifier + quoteChar;
+    }
+
     static Integer nullableInt(ResultSet resultSet, String name) throws SQLException {
         Integer result = resultSet.getInt(name);
         if (resultSet.wasNull()) {
@@ -184,6 +206,44 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return result;
     }
 
+    String formatOrder(OrderOffsetLimit.Order order) {
+        String dbField = mapFieldName(order.getFieldName());
+        if (null == dbField) {
+            throw new DaoException("There is no field '" + order.getFieldName() + "'");
+        }
+        dbField = quote(dbField);
+        return dbField
+                + (order.isAscending() ? " ASC" : " DESC")
+                + mapNullsOrder(order);
+    }
+
+    String formatOrderList(List<OrderOffsetLimit.Order> orderList) {
+        if (null == orderList || orderList.isEmpty()) {
+            return "";
+        }
+        return " ORDER BY " + orderList.stream()
+                .map(this::formatOrder)
+                .reduce(new StringJoiner(","),
+                        StringJoiner::add,
+                        StringJoiner::merge);
+    }
+
+    String formatOrderOffsetLimit(OrderOffsetLimit orderOffsetLimit) {
+        if (null == orderOffsetLimit) {
+            return "";
+        }
+        Long offset = orderOffsetLimit.getOffset();
+        Integer limit = orderOffsetLimit.getLimit();
+        String result = formatOrderList(orderOffsetLimit.getOrderList());
+        if (limit != null) {
+            result += " LIMIT " + limit;
+        }
+        if (offset != null) {
+            result += " OFFSET " + offset;
+        }
+        return result;
+    }
+
     Collection<T> mapRowsToObjects(ResultSet rows) {
         try {
             Collection<T> result = new LinkedList<>();
@@ -195,7 +255,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
             throw new DaoException(e);
         }
     }
-    
+
+    abstract String mapFieldName(String fieldName);
+
+    abstract String mapNullsOrder(OrderOffsetLimit.Order order);
+
     abstract void mapObjectToRow(T object, PreparedStatement row);
     
     abstract T mapRowToObject(ResultSet row);

@@ -2,8 +2,6 @@ package by.aab.isp.service;
 
 public class ServiceException extends RuntimeException {
 
-    private static final long serialVersionUID = -3414064240056085836L;
-
     public ServiceException() {
         super();
     }

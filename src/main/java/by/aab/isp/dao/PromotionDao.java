@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 
 public interface PromotionDao extends CrudRepository<Promotion> {
 
-    Iterable<Promotion> findAllOrderBySinceThenByUntil(long skip, int limit);
-
-    Iterable<Promotion> findByActivePeriodContainsOrderBySinceReversedThenByUntil(
-            LocalDateTime instant, long skip, int limit);
+    Iterable<Promotion> findByActivePeriodContains(
+            LocalDateTime instant, OrderOffsetLimit orderOffsetLimit);
 }

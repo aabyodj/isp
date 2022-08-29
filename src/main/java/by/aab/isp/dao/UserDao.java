@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface UserDao extends CrudRepository<User> {
 
-    Iterable<Customer> findAllCustomers(long skip, int limit);
+    Iterable<Customer> findAllCustomers(OrderOffsetLimit orderOffsetLimit);
 
-    Iterable<Employee> findAllEmployees(long skip, int limit);
+    Iterable<Employee> findAllEmployees(OrderOffsetLimit orderOffsetLimit);
 
     Optional<Customer> findCustomerById(long id);
 

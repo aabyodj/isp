@@ -1,5 +1,6 @@
 package by.aab.isp.service.impl;
 
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.Pagination;
@@ -38,9 +39,10 @@ public class TariffServiceImpl implements TariffService {
             pagination.setOffset(Long.max(0, offset));
         }
         if (count > 0) {
-            return tariffDao.findAll( //TODO: add "order" field to Tariff
-                    pagination.getOffset(),
-                    pagination.getPageSize());
+            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
+            orderOffsetLimit.setOffset(pagination.getOffset());
+            orderOffsetLimit.setLimit(pagination.getPageSize());
+            return tariffDao.findAll(orderOffsetLimit); //TODO: add "order" field to Tariff
         } else {
             return List.of();
         }
