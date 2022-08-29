@@ -2,16 +2,40 @@ package by.aab.isp.dao.jdbc;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
 
 public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements TariffDao {
 
+    private static final Map<String, String> FIELD_NAMES_MAP = Map.of(
+            "name", "name",
+            "description", "description",
+            "bandwidth", "bandwidth",
+            "includedTraffic", "included_traffic",
+            "price", "price",
+            "active", "active"
+    );
+
     public TariffDaoJdbc(DataSource dataSource) {
         super(dataSource, "tariff", List.of(
                 "name", "description", "bandwidth", "included_traffic", "price", "active"));
+    }
+
+    @Override
+    String mapFieldName(String fieldName) {
+        return FIELD_NAMES_MAP.get(fieldName);
+    }
+
+    @Override
+    String mapNullsOrder(OrderOffsetLimit.Order order) {
+        if ("bandwidth".equals(order.getFieldName()) || "includedTraffic".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
+        }
+        return "";
     }
 
     @Override
@@ -64,14 +88,6 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
 
     private final String sqlSelectWhereActive = sqlSelect
             + " WHERE " + quote("active") + "=";
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterable<Tariff> findAll(long skip, int limit) { //TODO: move this to AbstractDaoJdbc
-        return (Iterable<Tariff>) findMany(
-                sqlSelect + " LIMIT " + limit + " OFFSET " + skip,
-                this::mapRowsToObjects);
-    }
 
     @SuppressWarnings("unchecked")
     @Override

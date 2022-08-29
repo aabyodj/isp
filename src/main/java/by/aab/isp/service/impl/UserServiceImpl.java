@@ -1,5 +1,6 @@
 package by.aab.isp.service.impl;
 
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
@@ -22,6 +23,9 @@ public class UserServiceImpl implements UserService {
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
+    private static final List<OrderOffsetLimit.Order> ORDER_BY_EMAIL = List.of(
+            new OrderOffsetLimit.Order("email", true)
+    );
 
     private final UserDao userDao;
     private final TariffService tariffService;
@@ -44,9 +48,11 @@ public class UserServiceImpl implements UserService {
             pagination.setOffset(Long.max(0, offset));
         }
         if (count > 0) {
-            return userDao.findAllCustomers(
-                    pagination.getOffset(),
-                    pagination.getPageSize());
+            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
+            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
+            orderOffsetLimit.setOffset(pagination.getOffset());
+            orderOffsetLimit.setLimit(pagination.getPageSize());
+            return userDao.findAllCustomers(orderOffsetLimit);
         } else {
             return List.of();
         }
@@ -63,10 +69,11 @@ public class UserServiceImpl implements UserService {
             pagination.setOffset(Long.max(0, offset));
         }
         if (count > 0) {
-            return userDao.findAllEmployees(
-                    pagination.getOffset(),
-                    pagination.getPageSize()
-            );
+            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
+            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
+            orderOffsetLimit.setOffset(pagination.getOffset());
+            orderOffsetLimit.setLimit(pagination.getPageSize());
+            return userDao.findAllEmployees(orderOffsetLimit);
         } else {
             return List.of();
         }

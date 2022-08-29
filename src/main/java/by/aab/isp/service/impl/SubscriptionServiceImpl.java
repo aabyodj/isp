@@ -1,5 +1,6 @@
 package by.aab.isp.service.impl;
 
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.SubscriptionDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
@@ -9,17 +10,9 @@ import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static by.aab.isp.entity.Subscription.SORT_BY_ACTIVE_SINCE;
-import static by.aab.isp.entity.Subscription.SORT_BY_ACTIVE_UNTIL;
+import java.util.List;
 
 public class SubscriptionServiceImpl implements SubscriptionService {
-
-    private static final Comparator<Subscription> SORT_BY_SINCE_THEN_BY_UNTIL =
-            SORT_BY_ACTIVE_SINCE.thenComparing(SORT_BY_ACTIVE_UNTIL);
 
     private final SubscriptionDao subscriptionDao;
     private final TariffService tariffService;
@@ -29,12 +22,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.tariffService = tariffService;
     }
 
+    private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
+            new OrderOffsetLimit.Order("activeSince", true),
+            new OrderOffsetLimit.Order("activeUntil", true)
+    );
+
     @Override
     public Iterable<Subscription> getByCustomer(Customer customer) {
-        return StreamSupport
-                .stream(subscriptionDao.findByCustomerId(customer.getId()).spliterator(), true)
-                .sorted(SORT_BY_SINCE_THEN_BY_UNTIL)
-                .collect(Collectors.toList());
+        OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
+        orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
+        return subscriptionDao.findByCustomerId(customer.getId(), orderOffsetLimit);
     }
 
     @Override

@@ -15,6 +15,14 @@ import java.util.stream.Collectors;
 
 public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> implements SubscriptionDao {
 
+    private static final Map<String, String> FIELD_NAMES_MAP = Map.of(
+            "price", "price",
+            "trafficConsumed", "traffic_consumed",
+            "trafficPerPeriod", "traffic_per_period",
+            "activeSince", "active_since",
+            "activeUntil", "active_until"
+    );
+
     private final UserDao userDao;
     private final TariffDao tariffDao;
 
@@ -108,6 +116,22 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     }
 
     @Override
+    String mapFieldName(String fieldName) {
+        return FIELD_NAMES_MAP.get(fieldName);
+    }
+
+    @Override
+    String mapNullsOrder(OrderOffsetLimit.Order order) {
+        if ("activeSince".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "FIRST" : "LAST");
+        }
+        if ("activeUntil".equals(order.getFieldName()) || "trafficPerPeriod".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
+        }
+        return "";
+    }
+
+    @Override
     Subscription objectWithId(Subscription subscription, Long id) {
         subscription.setId(id);
         return subscription;
@@ -131,8 +155,10 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Subscription> findByCustomerId(long customerId) {
-        return (Iterable<Subscription>) findMany(sqlSelectWhereCustomerId + customerId, this::mapRowsToObjects);
+    public Iterable<Subscription> findByCustomerId(long customerId, OrderOffsetLimit orderOffsetLimit) {
+        return (Iterable<Subscription>) findMany(
+                sqlSelectWhereCustomerId + customerId + formatOrderOffsetLimit(orderOffsetLimit),
+                this::mapRowsToObjects);
     }
 
     private Consumer<PreparedStatement> fillWithCustomerIdAndTwoInstants(long customerId, LocalDateTime i1, LocalDateTime i2) {

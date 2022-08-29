@@ -1,6 +1,7 @@
 package by.aab.isp.dao.jdbc;
 
 import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.PromotionDao;
 import by.aab.isp.entity.Promotion;
 
@@ -10,13 +11,37 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implements PromotionDao {
 
+    private static final Map<String, String> FIELD_NAMES_MAP = Map.of(
+            "name", "name",
+            "description", "description",
+            "activeSince", "active_since",
+            "activeUntil", "active_until"
+    );
+
     public PromotionDaoJdbc(DataSource dataSource) {
         super(dataSource, "promotions", List.of(
                 "name", "description", "active_since", "active_until"));
+    }
+
+    @Override
+    String mapFieldName(String fieldName) {
+        return FIELD_NAMES_MAP.get(fieldName);
+    }
+
+    @Override
+    String mapNullsOrder(OrderOffsetLimit.Order order) {
+        if ("activeSince".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "FIRST" : "LAST");
+        }
+        if ("activeUntil".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
+        }
+        return "";
     }
 
     @Override
@@ -63,31 +88,16 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
         return promotion;
     }
 
-    private final String sqlSelectOrderBySinceThenByUntil = sqlSelect
-            + " ORDER BY " + quote("active_since") + " ASC NULLS FIRST, "
-            + quote("active_until") + " ASC NULLS LAST";
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterable<Promotion> findAllOrderBySinceThenByUntil(long skip, int limit) {
-        return (Iterable<Promotion>) findMany(
-                sqlSelectOrderBySinceThenByUntil + " LIMIT " + limit + " OFFSET " + skip,
-                this::mapRowsToObjects);
-    }
-
-    private final String sqlSelectWherePeriodContainsOrderBySinceReversedThenByUntil = sqlSelect
+    private final String sqlSelectWherePeriodContains = sqlSelect
             + " WHERE (" + quote("active_since") + " IS NOT DISTINCT FROM null OR " + quote("active_since") + " <= ?)"
-            + " AND (" + quote("active_until") + " IS NOT DISTINCT FROM null OR " + quote("active_until") + " >= ?)"   //TODO check if this works with MySQL
-            + " ORDER BY " + quote("active_since") + " DESC NULLS FIRST, "
-            + quote("active_until") + " ASC NULLS LAST";
+            + " AND (" + quote("active_until") + " IS NOT DISTINCT FROM null OR " + quote("active_until") + " >= ?)";   //TODO check if this works with MySQL
 
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Promotion> findByActivePeriodContainsOrderBySinceReversedThenByUntil(
-            LocalDateTime instant, long skip, int limit) {
+    public Iterable<Promotion> findByActivePeriodContains(LocalDateTime instant, OrderOffsetLimit orderOffsetLimit) {
         return (Iterable<Promotion>) findMany(
-                sqlSelectWherePeriodContainsOrderBySinceReversedThenByUntil + " LIMIT " + limit + " OFFSET " + skip,
+                sqlSelectWherePeriodContains + formatOrderOffsetLimit(orderOffsetLimit),
                 fillWithTwoInstants(instant, instant),
                 this::mapRowsToObjects);
     }

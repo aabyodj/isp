@@ -13,6 +13,8 @@ public interface CrudRepository<T extends Entity> {
     long count();
     
     Iterable<T> findAll();
+
+    Iterable<T> findAll(OrderOffsetLimit orderOffsetLimit);
     
     Optional<T> findById(long id);
 

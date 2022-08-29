@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Entity;
 
 abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
@@ -103,6 +104,12 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     @Override
     public Iterable<T> findAll() {
         return (Iterable<T>) findMany(sqlSelect, this::mapRowsToObjects);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterable<T> findAll(OrderOffsetLimit orderOffsetLimit) {
+        return (Iterable<T>) findMany(sqlSelect + formatOrderOffsetLimit(orderOffsetLimit), this::mapRowsToObjects);
     }
 
     @SuppressWarnings("unchecked")
@@ -199,6 +206,44 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return result;
     }
 
+    String formatOrder(OrderOffsetLimit.Order order) {
+        String dbField = mapFieldName(order.getFieldName());
+        if (null == dbField) {
+            throw new DaoException("There is no field '" + order.getFieldName() + "'");
+        }
+        dbField = quote(dbField);
+        return dbField
+                + (order.isAscending() ? " ASC" : " DESC")
+                + mapNullsOrder(order);
+    }
+
+    String formatOrderList(List<OrderOffsetLimit.Order> orderList) {
+        if (null == orderList || orderList.isEmpty()) {
+            return "";
+        }
+        return " ORDER BY " + orderList.stream()
+                .map(this::formatOrder)
+                .reduce(new StringJoiner(","),
+                        StringJoiner::add,
+                        StringJoiner::merge);
+    }
+
+    String formatOrderOffsetLimit(OrderOffsetLimit orderOffsetLimit) {
+        if (null == orderOffsetLimit) {
+            return "";
+        }
+        Long offset = orderOffsetLimit.getOffset();
+        Integer limit = orderOffsetLimit.getLimit();
+        String result = formatOrderList(orderOffsetLimit.getOrderList());
+        if (limit != null) {
+            result += " LIMIT " + limit;
+        }
+        if (offset != null) {
+            result += " OFFSET " + offset;
+        }
+        return result;
+    }
+
     Collection<T> mapRowsToObjects(ResultSet rows) {
         try {
             Collection<T> result = new LinkedList<>();
@@ -210,7 +255,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
             throw new DaoException(e);
         }
     }
-    
+
+    abstract String mapFieldName(String fieldName);
+
+    abstract String mapNullsOrder(OrderOffsetLimit.Order order);
+
     abstract void mapObjectToRow(T object, PreparedStatement row);
     
     abstract T mapRowToObject(ResultSet row);

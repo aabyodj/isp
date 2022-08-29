@@ -1,6 +1,7 @@
 package by.aab.isp.dao.jdbc;
 
 import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
@@ -18,6 +19,14 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             "user_id", "balance", "permitted_overdraft", "payoff_date"};
     private static final String EMPLOYEES_TABLE_NAME = "employees";
     private static final String[] EMPLOYEE_FIELDS = {"user_id", "role_id"};
+    private static final Map<String, String> FIELD_NAMES_MAP = Map.of(
+            "email", "email",
+            "active", "active",
+            "balance", "balance",
+            "permittedOverdraft", "permitted_overdraft",
+            "payoffDate", "payoff_date",
+            "role", "role_id"
+    );
 
     private final String customersQuotedTableName = quote(CUSTOMERS_TABLE_NAME);
     private final String employeesQuotedTableName = quote(EMPLOYEES_TABLE_NAME);
@@ -51,8 +60,6 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private final String sqlSelectJoinCustomers = "SELECT * FROM " + quotedTableName
             + " JOIN " + customersQuotedTableName
             + " ON " + quote("id") + "=" + quote("user_id");
-    private final String sqlSelectJoinCustomersOrderByEmail = sqlSelectJoinCustomers
-            + " ORDER BY " + quote("email") + " ASC";
     private final String sqlSelectJoinCustomerWhereId = sqlSelectJoinCustomers
             + " WHERE " + quote("id") + "=";
     private final String sqlSelectJoinCustomerWhereEmailAndActive = sqlSelectJoinCustomers
@@ -60,8 +67,6 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private final String sqlSelectJoinEmployees = "SELECT * FROM " + quotedTableName
             + " JOIN " + employeesQuotedTableName
             + " ON " + quote("id") + "=" + quote("user_id");
-    private final String sqlSelectJoinEmployeesOrderByEmail = sqlSelectJoinEmployees
-            + " ORDER BY " + quote("email") + " ASC";
     private final String sqlSelectJoinEmployeeWhereId = sqlSelectJoinEmployees
             + " WHERE " + quote("id") + "=";
     private final String sqlSelectJoinEmployeeWhereEmailAndActive = sqlSelectJoinEmployees
@@ -260,17 +265,17 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Customer> findAllCustomers(long skip, int limit) {
+    public Iterable<Customer> findAllCustomers(OrderOffsetLimit orderOffsetLimit) {
         return (Iterable<Customer>) findMany(
-                sqlSelectJoinCustomersOrderByEmail + " LIMIT " + limit + " OFFSET " + skip,
+                sqlSelectJoinCustomers + formatOrderOffsetLimit(orderOffsetLimit),
                 this::mapRowsToCustomers);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<Employee> findAllEmployees(long skip, int limit) {
+    public Iterable<Employee> findAllEmployees(OrderOffsetLimit orderOffsetLimit) {
         return (Iterable<Employee>) findMany(
-                sqlSelectJoinEmployeesOrderByEmail + " LIMIT " + limit + " OFFSET " + skip,
+                sqlSelectJoinEmployees + formatOrderOffsetLimit(orderOffsetLimit),
                 this::mapRowsToEmployees);
     }
 
@@ -379,5 +384,18 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         } else {
             throw new DaoException("Unimplemented for " + user.getClass());
         }
+    }
+
+    @Override
+    String mapFieldName(String fieldName) {
+        return FIELD_NAMES_MAP.get(fieldName);
+    }
+
+    @Override
+    String mapNullsOrder(OrderOffsetLimit.Order order) {
+        if ("payoffDate".equals(order.getFieldName())) {
+            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
+        }
+        return "";
     }
 }
