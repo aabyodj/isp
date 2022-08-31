@@ -12,7 +12,18 @@ public class Employee extends User {
     private Role role;
 
     public enum Role {
-        ADMIN, MANAGER
+        ADMIN("msg.employee.role.admin"),
+        MANAGER("msg.employee.role.manager");
+
+        private final String messageKey;
+
+        Role(String messageKey) {
+            this.messageKey = messageKey;
+        }
+
+        public String getMessageKey() {
+            return messageKey;
+        }
     }
 
 }
