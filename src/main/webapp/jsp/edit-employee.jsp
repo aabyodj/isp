@@ -2,12 +2,12 @@
 <html>
     <head>
 <%@ include file="/jsp/inc/html-head.inc" %>
-        <title><c:out value="${employee.email}" /><fmt:message key="${employee.id !=0 ? 'msg.employee.title.edit' : 'msg.employee.title.new'}" /></title>
+        <title><c:out value="${employee.email}" /><fmt:message key="${employee.id != null ? 'msg.employee.title.edit' : 'msg.employee.title.new'}" /></title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="${employee.id !=0 ? 'msg.employee.h1.edit' : 'msg.employee.h1.new'}" /></h1>
+            <h1><fmt:message key="${employee.id != null ? 'msg.employee.h1.edit' : 'msg.employee.h1.new'}" /></h1>
             <form action="?action=save_employee" method="POST">
                 <input name="redirect" type="hidden" value="${redirect}">
                 <input type="hidden" name="id" value="${employee.id}">
