@@ -2,13 +2,13 @@
 <html>
     <head>
 <%@ include file="/jsp/inc/html-head.inc" %>
-        <title>Server failure | Internet Service Provider</title>
+        <title><fmt:message key="msg.error.title" /></title>
     </head>
     <body>
 <%@ include file="/jsp/inc/page-header.inc" %>
         <main>
-            <h1>Server failure</h1>
-            <p>Something went wrong with the server. Stay calm: the issue is already being investigated.
+            <h1><fmt:message key="msg.error.h1" /></h1>
+            <p><fmt:message key="msg.error.content" />
         </main>
     </body>
 </html>

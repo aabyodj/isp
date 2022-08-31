@@ -2,13 +2,13 @@
 <html>
     <head>
 <%@ include file="/jsp/inc/html-head.inc" %>
-        <title>Forbidden | Internet Service Provider</title>
+        <title><fmt:message key="msg.error403.title" /></title>
     </head>
     <body>
 <%@ include file="/jsp/inc/page-header.inc" %>
         <main>
-            <h1>Forbidden</h1>
-            <p>You are not allowed to view this content.
+            <h1><fmt:message key="msg.error403.h1" /></h1>
+            <p><fmt:message key="msg.error403.content" />
         </main>
     </body>
 </html>
