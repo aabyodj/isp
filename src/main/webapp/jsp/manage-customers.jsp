@@ -2,12 +2,12 @@
 <html>
     <head>
 <%@ include file="/jsp/inc/html-head.inc" %>
-        <title>Manage customers | Internet Service Provider</title>
+        <title><fmt:message key="msg.customer.manage" /> | <fmt:message key="msg.home.title" /></title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1>Manage customers</h1>
+            <h1><fmt:message key="msg.customer.manage" /></h1>
             <p><a href="?action=new_customer">Add new customer</a>
             <form action="?action=generate_customers" method="POST">
                 <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}"

@@ -23,11 +23,11 @@
                     </li>
                     <li>
                         <label for="bandwidth"><fmt:message key="msg.tariff.bandwidthLabel" /></label>
-                        <input name="bandwidth" id="bandwidth" type="number" required min=0 step=1 value=${tariff.bandwidth}>
+                        <input name="bandwidth" id="bandwidth" type="number" required min=0 step=1 value="${tariff.bandwidth}">
                     </li>
                     <li>
                         <label for="included-traffic"><fmt:message key="msg.tariff.trafficLabel" /></label>
-                        <input name="included-traffic" id="included-traffic" type="number" required min=0 step=1 value=${tariff.includedTraffic / (1024 * 1024)}
+                        <input name="included-traffic" id="included-traffic" type="number" required min=0 step=1 value="${tariff.includedTraffic / (1024 * 1024)}">
                     </li>
                     <li>
                         <label for="price"><fmt:message key="msg.tariff.priceLabel" /></label>
