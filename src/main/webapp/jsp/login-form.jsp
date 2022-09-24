@@ -2,25 +2,25 @@
 <html>
     <head>
 <%@ include file="/jsp/inc/html-head.inc" %>
-        <title>Log in | Internet Service Provider</title>
+        <title><fmt:message key="msg.user.login" /> | <fmt:message key="msg.home.title" /></title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1>Log in</h1>
+            <h1><fmt:message key="msg.user.login" /></h1>
             <form action="?action=check_login" method="POST">
                 <input name="redirect" type="hidden" value="${redirect != null ? redirect : '?'.concat(pageContext.request.queryString)}">
                 <ul>
                     <li>
-                        <label for="user-email">Your email</label>
-                        <input type="email" name="email" required placeholder="user@example.com">
+                        <label for="user-email"><fmt:message key="msg.user.email" /></label>
+                        <input name="email" id="user-email" type="email" required placeholder="user@example.com">
                     </li>
                     <li>
-                        <label for="password">Your password</label>
-                        <input type="password" name="password" required>
+                        <label for="password"><fmt:message key="msg.user.password" /></label>
+                        <input name="password" id="password" type="password" required>
                     </li>
                 </ul>
-                <input type="submit" value="Proceed">
+                <button type="submit"><fmt:message key="msg.user.login" /></button>
             </form>
         </main>
     </body>
