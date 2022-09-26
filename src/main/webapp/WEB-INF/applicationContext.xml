@@ -4,4 +4,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="configManager" class="by.aab.isp.config.ConfigManager" />
+    <bean id="dataSource" class="by.aab.isp.dao.jdbc.SqlConnectionPool" destroy-method="close">
+    	<constructor-arg ref="configManager" />
+    </bean>
 </beans>
