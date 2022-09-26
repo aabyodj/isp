@@ -21,4 +21,20 @@
     	<constructor-arg ref="userDao" />
     	<constructor-arg ref="tariffDao" />
     </bean>
+    <bean id="tariffService" class="by.aab.isp.service.impl.TariffServiceImpl">
+    	<constructor-arg ref="tariffDao" />
+    </bean>
+    <bean id="promotionService" class="by.aab.isp.service.impl.PromotionServiceImpl">
+    	<constructor-arg ref="promotionDao" />
+    	<constructor-arg ref="configManager" />
+    </bean>
+    <bean id="subscriptionService" class="by.aab.isp.service.impl.SubscriptionServiceImpl">
+    	<constructor-arg ref="subscriptionDao" />
+    	<constructor-arg ref="tariffService" />
+    </bean>
+    <bean id="userService" class="by.aab.isp.service.impl.UserServiceImpl" init-method="createDefaultAdmin">
+    	<constructor-arg ref="userDao" />
+    	<constructor-arg ref="tariffService" />
+    	<constructor-arg ref="subscriptionService" />
+    </bean>
 </beans>

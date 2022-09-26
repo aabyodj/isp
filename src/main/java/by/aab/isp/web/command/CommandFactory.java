@@ -25,7 +25,6 @@ public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
     private Command index;
-    private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
 
     private CommandFactory() {
     }
@@ -50,71 +49,69 @@ public class CommandFactory {
     }
 
     public void init(ApplicationContext context) {
-        serviceFactory.init(context);
         index = new HomeCommand(
-                serviceFactory.getService(PromotionService.class), 
-                serviceFactory.getService(TariffService.class));
+                context.getBean(PromotionService.class), 
+                context.getBean(TariffService.class));
         commands.put("login", new LoginCommand());
         commands.put("check_login", new CheckLoginCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("logout", new LogoutCommand());
         commands.put("my_account", new MyAccountCommand(
-                serviceFactory.getService(SubscriptionService.class),
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(SubscriptionService.class),
+        		context.getBean(TariffService.class)));
         commands.put("replenish_balance", new ReplenishBalanceCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("subscribe", new SubscribeCommand(
-                serviceFactory.getService(SubscriptionService.class)));
+        		context.getBean(SubscriptionService.class)));
         commands.put("cancel_subscription", new CancelSubscriptionCommand(
-                serviceFactory.getService(SubscriptionService.class)));
+        		context.getBean(SubscriptionService.class)));
         commands.put("update_my_credentials", new UpdateMyCredentialsCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("manage_promotions", new ManagePromotionsCommand(
-                serviceFactory.getService(PromotionService.class)));
+        		context.getBean(PromotionService.class)));
         commands.put("edit_promotion", new EditPromotionCommand(
-                serviceFactory.getService(PromotionService.class)));
+        		context.getBean(PromotionService.class)));
         commands.put("new_promotion", getCommand("edit_promotion"));
         commands.put("generate_promotions", new GeneratePromotionsCommand(
-                serviceFactory.getService(PromotionService.class)));
+        		context.getBean(PromotionService.class)));
         commands.put("save_promotion", new SavePromotionCommand(
-                serviceFactory.getService(PromotionService.class)));
+        		context.getBean(PromotionService.class)));
         commands.put("stop_promotion", new StopPromotionCommand(
-                serviceFactory.getService(PromotionService.class)));
+        		context.getBean(PromotionService.class)));
         commands.put("manage_tariffs", new ManageTariffsCommand(
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(TariffService.class)));
         commands.put("edit_tariff", new EditTariffCommand(
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(TariffService.class)));
         commands.put("new_tariff", getCommand("edit_tariff"));
         commands.put("generate_tariffs", new GenerateTariffsCommand(
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(TariffService.class)));
         commands.put("view_tariff", getCommand("edit_tariff"));
         commands.put("save_tariff", new SaveTariffCommand(
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(TariffService.class)));
         commands.put("manage_customers", new ManageCustomersCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("edit_customer", new EditCustomerCommand(
-                serviceFactory.getService(UserService.class),
-                serviceFactory.getService(SubscriptionService.class),
-                serviceFactory.getService(TariffService.class)));
+        		context.getBean(UserService.class),
+        		context.getBean(SubscriptionService.class),
+        		context.getBean(TariffService.class)));
         commands.put("new_customer", getCommand("edit_customer"));
         commands.put("generate_customers", new GenerateCustomersCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("save_customer", new SaveCustomerCommand(
-                serviceFactory.getService(UserService.class),
-                serviceFactory.getService(SubscriptionService.class)));
+        		context.getBean(UserService.class),
+        		context.getBean(SubscriptionService.class)));
         commands.put("manage_employees", new ManageEmployeesCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("edit_employee", new EditEmployeeCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("new_employee", getCommand("edit_employee"));
         commands.put("generate_employees", new GenerateEmployeesCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
         commands.put("save_employee", new SaveEmployeeCommand(
-                serviceFactory.getService(UserService.class)));
+        		context.getBean(UserService.class)));
     }
     
     public void destroy() {
-        serviceFactory.destroy();
     }
 
 }
