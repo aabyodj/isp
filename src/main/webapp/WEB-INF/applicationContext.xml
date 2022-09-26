@@ -7,4 +7,18 @@
     <bean id="dataSource" class="by.aab.isp.dao.jdbc.SqlConnectionPool" destroy-method="close">
     	<constructor-arg ref="configManager" />
     </bean>
+    <bean id="tariffDao" class="by.aab.isp.dao.jdbc.TariffDaoJdbc">
+    	<constructor-arg ref="dataSource" />
+    </bean>
+    <bean id="userDao" class="by.aab.isp.dao.jdbc.UserDaoJdbc">
+    	<constructor-arg ref="dataSource" />
+    </bean>
+    <bean id="promotionDao" class="by.aab.isp.dao.jdbc.PromotionDaoJdbc">
+    	<constructor-arg ref="dataSource" />
+    </bean>
+    <bean id="subscriptionDao" class="by.aab.isp.dao.jdbc.SubscriptionDaoJdbc">
+    	<constructor-arg ref="dataSource" />
+    	<constructor-arg ref="userDao" />
+    	<constructor-arg ref="tariffDao" />
+    </bean>
 </beans>

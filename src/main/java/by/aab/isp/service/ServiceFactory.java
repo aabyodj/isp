@@ -15,7 +15,6 @@ import org.springframework.context.ApplicationContext;
 public class ServiceFactory {
     
     private final Map<Class<?>, Object> services = new HashMap<>();
-    private final DaoFactory daoFactory = DaoFactory.getInstance();
     
     private ServiceFactory() {
     }
@@ -38,22 +37,20 @@ public class ServiceFactory {
     }
 
     public void init(ApplicationContext context) {
-        daoFactory.init(context);
-        services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
+        services.put(TariffService.class, new TariffServiceImpl(context.getBean(TariffDao.class)));
         services.put(PromotionService.class, new PromotionServiceImpl(
-                daoFactory.getDao(PromotionDao.class), context.getBean(ConfigManager.class)));
+                context.getBean(PromotionDao.class), context.getBean(ConfigManager.class)));
         services.put(SubscriptionService.class, new SubscriptionServiceImpl(
-                daoFactory.getDao(SubscriptionDao.class),
+                context.getBean(SubscriptionDao.class),
                 getService(TariffService.class)));
         services.put(UserService.class, new UserServiceImpl(
-                daoFactory.getDao(UserDao.class),
+                context.getBean(UserDao.class),
                 getService(TariffService.class),
                 getService(SubscriptionService.class)));
         getService(UserService.class).createDefaultAdmin();
     }
 
     public void destroy() {
-        daoFactory.destroy();
     }
     
 }
