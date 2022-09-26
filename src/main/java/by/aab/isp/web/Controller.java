@@ -1,15 +1,18 @@
 package by.aab.isp.web;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.web.command.Command;
 import by.aab.isp.web.command.CommandFactory;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
-
-import java.io.IOException;
 
 @Log4j2
 public final class Controller extends HttpServlet {
@@ -50,18 +53,6 @@ public final class Controller extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);    //TODO: put a message on the login form
         } catch (Throwable e) {
             log.error("Error processing request '" + req.getRequestURL() + "'", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void init() throws ServletException {
-        try {
-            log.trace("Initializing the controller...");
-            CommandFactory.getInstance().init();
-            log.info("Initialization complete");
-        } catch (Throwable e) {
-            log.fatal("Failed to initialize", e);
             throw e;
         }
     }

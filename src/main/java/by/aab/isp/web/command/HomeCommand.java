@@ -6,7 +6,7 @@ import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.Util;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 public class HomeCommand extends Command {
 

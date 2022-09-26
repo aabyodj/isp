@@ -1,7 +1,7 @@
 package by.aab.isp.web.command;
 
 import by.aab.isp.entity.User;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 public abstract class Command {
     public abstract String execute(HttpServletRequest req);

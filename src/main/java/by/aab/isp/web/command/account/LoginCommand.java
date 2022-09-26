@@ -2,7 +2,7 @@ package by.aab.isp.web.command.account;
 
 import by.aab.isp.entity.User;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 public class LoginCommand extends Command {
     @Override

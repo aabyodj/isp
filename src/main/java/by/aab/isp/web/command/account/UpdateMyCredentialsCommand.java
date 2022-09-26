@@ -3,7 +3,7 @@ package by.aab.isp.web.command.account;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.Objects;
 

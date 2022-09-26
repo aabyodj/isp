@@ -6,7 +6,7 @@ import by.aab.isp.entity.User;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
 
