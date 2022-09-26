@@ -19,13 +19,38 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.context.ApplicationContext;
+
 public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
-    private final Command index;
+    private Command index;
     private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
 
     private CommandFactory() {
+    }
+    
+    public Command getCommand(String commandName) {
+        if (null == commandName || commandName.isBlank()) {
+            return index;
+        }
+        Command result = commands.get(commandName);
+        if (null == result) {
+            throw new NoSuchElementException("Command '" + commandName + "' not found");
+        }
+        return result;
+    }
+
+    private static class BillPughSingleton {
+        static final CommandFactory INSTANCE = new CommandFactory();
+    }
+    
+    public static CommandFactory getInstance() {
+        return BillPughSingleton.INSTANCE;
+    }
+
+    public void init(ApplicationContext context) {
+        serviceFactory.init(context);
         index = new HomeCommand(
                 serviceFactory.getService(PromotionService.class), 
                 serviceFactory.getService(TariffService.class));
@@ -86,29 +111,6 @@ public class CommandFactory {
                 serviceFactory.getService(UserService.class)));
         commands.put("save_employee", new SaveEmployeeCommand(
                 serviceFactory.getService(UserService.class)));
-    }
-    
-    public Command getCommand(String commandName) {
-        if (null == commandName || commandName.isBlank()) {
-            return index;
-        }
-        Command result = commands.get(commandName);
-        if (null == result) {
-            throw new NoSuchElementException("Command '" + commandName + "' not found");
-        }
-        return result;
-    }
-
-    private static class BillPughSingleton {
-        static final CommandFactory INSTANCE = new CommandFactory();
-    }
-    
-    public static CommandFactory getInstance() {
-        return BillPughSingleton.INSTANCE;
-    }
-
-    public void init() {
-        serviceFactory.init();
     }
     
     public void destroy() {

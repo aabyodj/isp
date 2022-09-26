@@ -1,6 +1,6 @@
 package by.aab.isp.service;
 
-import by.aab.isp.config.Config;
+import by.aab.isp.config.ConfigManager;
 import by.aab.isp.dao.*;
 import by.aab.isp.service.impl.PromotionServiceImpl;
 import by.aab.isp.service.impl.SubscriptionServiceImpl;
@@ -10,22 +10,14 @@ import by.aab.isp.service.impl.UserServiceImpl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+
 public class ServiceFactory {
     
     private final Map<Class<?>, Object> services = new HashMap<>();
     private final DaoFactory daoFactory = DaoFactory.getInstance();
     
     private ServiceFactory() {
-        services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
-        services.put(PromotionService.class, new PromotionServiceImpl(
-                daoFactory.getDao(PromotionDao.class), Config.getInstance()));
-        services.put(SubscriptionService.class, new SubscriptionServiceImpl(
-                daoFactory.getDao(SubscriptionDao.class),
-                getService(TariffService.class)));
-        services.put(UserService.class, new UserServiceImpl(
-                daoFactory.getDao(UserDao.class),
-                getService(TariffService.class),
-                getService(SubscriptionService.class)));
     }
     
     private static class BillPughSingleton {
@@ -45,8 +37,18 @@ public class ServiceFactory {
         return result;
     }
 
-    public void init() {
-        daoFactory.init();
+    public void init(ApplicationContext context) {
+        daoFactory.init(context);
+        services.put(TariffService.class, new TariffServiceImpl(daoFactory.getDao(TariffDao.class)));
+        services.put(PromotionService.class, new PromotionServiceImpl(
+                daoFactory.getDao(PromotionDao.class), context.getBean(ConfigManager.class)));
+        services.put(SubscriptionService.class, new SubscriptionServiceImpl(
+                daoFactory.getDao(SubscriptionDao.class),
+                getService(TariffService.class)));
+        services.put(UserService.class, new UserServiceImpl(
+                daoFactory.getDao(UserDao.class),
+                getService(TariffService.class),
+                getService(SubscriptionService.class)));
         getService(UserService.class).createDefaultAdmin();
     }
 

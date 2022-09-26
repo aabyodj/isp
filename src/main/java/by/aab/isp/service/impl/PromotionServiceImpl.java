@@ -1,6 +1,6 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.config.Config;
+import by.aab.isp.config.ConfigManager;
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.PromotionDao;
@@ -17,9 +17,9 @@ public class PromotionServiceImpl implements PromotionService {
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
     private final PromotionDao promotionDao;
-    private final Config config;
+    private final ConfigManager config;
 
-    public PromotionServiceImpl(PromotionDao promotionDao, Config config) {
+    public PromotionServiceImpl(PromotionDao promotionDao, ConfigManager config) {
         this.promotionDao = promotionDao;
         this.config = config;
     }
