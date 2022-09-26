@@ -10,7 +10,7 @@
             <h1>Manage tariff plans</h1>
             <p><a href="?action=new_tariff">Add new tariff</a>
             <form action="?action=generate_tariffs" method="POST">
-                <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}"
+                <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}">
                 <label for="quantity">Automatically generate</label>
                 <input name="quantity" type="number" required min=1 value=10>
                 <label for="active">activated</label>
