@@ -11,6 +11,9 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import org.springframework.stereotype.Repository;
+
+@Repository("userDao")
 public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
 
     private static final String USERS_TABLE_NAME = "users";

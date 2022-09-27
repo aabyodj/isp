@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.springframework.stereotype.Repository;
+
+@Repository("promotionDao")
 public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implements PromotionDao {
 
     private static final Map<String, String> FIELD_NAMES_MAP = Map.of(

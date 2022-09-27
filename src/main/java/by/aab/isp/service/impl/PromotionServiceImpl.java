@@ -12,6 +12,9 @@ import by.aab.isp.service.ServiceException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service("promotionService")
 public class PromotionServiceImpl implements PromotionService {
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;

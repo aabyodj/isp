@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Service;
+
+@Service("userService")
 public class UserServiceImpl implements UserService {
 
     private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
@@ -215,6 +220,7 @@ public class UserServiceImpl implements UserService {
         userDao.update(customer);
     }
 
+    @PostConstruct
     @Override
     public void createDefaultAdmin() {
         if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {

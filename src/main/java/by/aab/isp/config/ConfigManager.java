@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ConfigManager {
     
     private static final String CONFIG_FILE_NAME = "/application.properties";

@@ -28,10 +28,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import javax.annotation.PreDestroy;
+
+import org.springframework.stereotype.Component;
+
 import by.aab.isp.config.ConfigManager;
 import by.aab.isp.dao.DaoException;
 
 //TODO: add force close connection by timeout feature
+@Component("dataSource")
 public class SqlConnectionPool implements DataSource {
 	
     private static final int DEFAULT_POOL_SIZE = 2;
@@ -73,6 +78,7 @@ public class SqlConnectionPool implements DataSource {
         }        
     }
     
+    @PreDestroy
     @Override
     public void close() {
         pool.clear();

@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.stereotype.Service;
+
+@Service("tariffService")
 public class TariffServiceImpl implements TariffService {
     
     private final TariffDao tariffDao;
