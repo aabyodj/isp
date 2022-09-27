@@ -6,12 +6,15 @@ import by.aab.isp.entity.User;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
+@Component("manage_promotions")
 public class ManagePromotionsCommand extends Command {
 
     private final PromotionService promotionService;

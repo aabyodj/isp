@@ -1,6 +1,6 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.config.Config;
+import by.aab.isp.config.ConfigManager;
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.PromotionDao;
@@ -12,14 +12,17 @@ import by.aab.isp.service.ServiceException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service("promotionService")
 public class PromotionServiceImpl implements PromotionService {
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
     private final PromotionDao promotionDao;
-    private final Config config;
+    private final ConfigManager config;
 
-    public PromotionServiceImpl(PromotionDao promotionDao, Config config) {
+    public PromotionServiceImpl(PromotionDao promotionDao, ConfigManager config) {
         this.promotionDao = promotionDao;
         this.config = config;
     }

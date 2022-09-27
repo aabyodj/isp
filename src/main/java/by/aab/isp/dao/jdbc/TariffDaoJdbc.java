@@ -4,11 +4,14 @@ import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
+
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
 
+@Repository("tariffDao")
 public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements TariffDao {
 
     private static final Map<String, String> FIELD_NAMES_MAP = Map.of(

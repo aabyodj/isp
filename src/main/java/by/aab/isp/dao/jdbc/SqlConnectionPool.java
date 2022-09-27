@@ -1,8 +1,22 @@
 package by.aab.isp.dao.jdbc;
 
-import by.aab.isp.dao.DaoException;
-
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.ShardingKey;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -14,8 +28,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import javax.annotation.PreDestroy;
+
+import org.springframework.stereotype.Component;
+
+import by.aab.isp.config.ConfigManager;
+import by.aab.isp.dao.DaoException;
+
 //TODO: add force close connection by timeout feature
+@Component("dataSource")
 public class SqlConnectionPool implements DataSource {
+	
+    private static final int DEFAULT_POOL_SIZE = 2;
+    private static final int MINIMAL_POOL_SIZE = 2;
     
     private final String url;
     private final String user;
@@ -27,10 +52,13 @@ public class SqlConnectionPool implements DataSource {
 
     private static final Pattern SCHEMA_PATTERN = Pattern.compile("^jdbc:([a-z]+):");
 
-    public SqlConnectionPool(String url, String user, String password, int poolSize) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+    public SqlConnectionPool(ConfigManager config) {
+        int poolSize = Integer.max(
+                config.getInt("db.poolsize", DEFAULT_POOL_SIZE),
+                MINIMAL_POOL_SIZE);
+        this.url = config.getString("db.url");
+        this.user = config.getString("db.user");
+        this.password = config.getString("db.password");
         String schema = SCHEMA_PATTERN.matcher(url)
                 .results()
                 .map(result -> result.group(1))
@@ -50,6 +78,7 @@ public class SqlConnectionPool implements DataSource {
         }        
     }
     
+    @PreDestroy
     @Override
     public void close() {
         pool.clear();

@@ -10,7 +10,7 @@
             <h1><fmt:message key="msg.customer.manage" /></h1>
             <p><a href="?action=new_customer">Add new customer</a>
             <form action="?action=generate_customers" method="POST">
-                <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}"
+                <input name="redirect" type="hidden" value="${'?'.concat(pageContext.request.queryString)}">
                 <label for="quantity">Automatically generate</label>
                 <input name="quantity" type="number" required min=1 value=10>
                 <label for="active">activated</label>

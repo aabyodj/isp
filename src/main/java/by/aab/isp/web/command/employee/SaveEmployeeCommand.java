@@ -4,12 +4,15 @@ import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("save_employee")
 public class SaveEmployeeCommand extends Command {
     private final UserService userService;
 

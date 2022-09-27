@@ -5,17 +5,22 @@ import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
-import by.aab.isp.web.Util;
-import jakarta.servlet.http.HttpServletRequest;
+import by.aab.isp.web.FormatUtil;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("homeCommand")
 public class HomeCommand extends Command {
 
     private final PromotionService promotionService;
     private final TariffService tariffService;
+    private final FormatUtil util;
 
-    public HomeCommand(PromotionService promotionService, TariffService tariffService) {
+    public HomeCommand(PromotionService promotionService, TariffService tariffService, FormatUtil util) {
         this.promotionService = promotionService;
         this.tariffService = tariffService;
+		this.util = util;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class HomeCommand extends Command {
         Iterable<Tariff> tariffs = tariffService.getForHomepage();
         if (tariffs.spliterator().estimateSize() > 0) {
             req.setAttribute("tariffs", tariffs);
-            req.setAttribute("util", Util.getInstance());
+            req.setAttribute("util", util);
         }
         return "jsp/index.jsp";
     }

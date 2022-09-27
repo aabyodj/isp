@@ -5,12 +5,15 @@ import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("save_tariff")
 public class SaveTariffCommand extends Command {
 
     private final TariffService tariffService;

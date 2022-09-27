@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-public class Config {
+import org.springframework.stereotype.Component;
+
+@Component
+public class ConfigManager {
     
     private static final String CONFIG_FILE_NAME = "/application.properties";
     private static final Map<String, String> ENV_VARIABLE_NAMES = Map.of(
@@ -18,7 +21,7 @@ public class Config {
     
     private final Properties properties = new Properties();
     
-    private Config() {
+    public ConfigManager() {
         try (InputStream in = getClass().getResourceAsStream(CONFIG_FILE_NAME)) {
             properties.load(in);
             ENV_VARIABLE_NAMES.forEach((env, prop) -> {
@@ -30,14 +33,6 @@ public class Config {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-    
-    private static class BillPughSingleton {
-        static final Config INSTANCE = new Config();
-    }
-    
-    public static Config getInstance() {
-        return BillPughSingleton.INSTANCE;
     }
 
     public int getInt(String name, int defaultValue) {

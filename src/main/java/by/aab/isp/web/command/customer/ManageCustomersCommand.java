@@ -6,10 +6,13 @@ import by.aab.isp.entity.User;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
+@Component("manage_customers")
 public class ManageCustomersCommand extends Command {
 
     private final UserService userService;

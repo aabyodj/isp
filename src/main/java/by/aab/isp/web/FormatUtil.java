@@ -1,15 +1,9 @@
 package by.aab.isp.web;
 
-public class Util {
-    private Util() {}
+import org.springframework.stereotype.Component;
 
-    private static class BillPughSingleton {
-        private static final Util INSTANCE = new Util();
-    }
-
-    public static Util getInstance() {
-        return BillPughSingleton.INSTANCE;
-    }
+@Component
+public class FormatUtil {
 
     private static final String[] BANDWIDTH_RANGES = {" Kb/s", " Mb/s", " Gb/s", " Tb/s"};
 

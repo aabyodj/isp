@@ -1,19 +1,22 @@
 package by.aab.isp.web.filter;
 
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
-import by.aab.isp.service.ServiceFactory;
 import by.aab.isp.service.UserService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
-
-import java.io.IOException;
 
 @Log4j2
 public class UserSessionFilter extends HttpFilter {
@@ -24,7 +27,8 @@ public class UserSessionFilter extends HttpFilter {
     public void init() throws ServletException {
         try {
             log.trace("Initializing...");
-            userService = ServiceFactory.getInstance().getService(UserService.class);
+            ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+            userService = context.getBean(UserService.class);
             log.info("Initialization complete");
         } catch (Throwable e) {
             log.fatal("Failed to initialize", e);

@@ -5,8 +5,11 @@ import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("edit_tariff")
 public class EditTariffCommand extends Command {
 
     private final TariffService tariffService;

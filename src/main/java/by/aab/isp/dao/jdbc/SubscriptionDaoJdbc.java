@@ -13,6 +13,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Repository;
+
+@Repository("subscriptionDao")
 public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> implements SubscriptionDao {
 
     private static final Map<String, String> FIELD_NAMES_MAP = Map.of(

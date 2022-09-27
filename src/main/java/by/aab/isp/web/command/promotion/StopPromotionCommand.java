@@ -4,10 +4,13 @@ import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("stop_promotion")
 public class StopPromotionCommand extends Command {
 
     private final PromotionService promotionService;

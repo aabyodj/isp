@@ -6,9 +6,11 @@ import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
-import by.aab.isp.web.Util;
+import by.aab.isp.web.FormatUtil;
 import by.aab.isp.web.command.Command;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,13 +18,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Component("my_account")
 public class MyAccountCommand extends Command {
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;
+    private final FormatUtil util;
 
-    public MyAccountCommand(SubscriptionService subscriptionService, TariffService tariffService) {
+    public MyAccountCommand(SubscriptionService subscriptionService, TariffService tariffService, FormatUtil util) {
         this.subscriptionService = subscriptionService;
         this.tariffService = tariffService;
+		this.util = util;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class MyAccountCommand extends Command {
             if (subscriptions.spliterator().estimateSize() > 0) {
                 req.setAttribute("subscriptions", subscriptions);
                 req.setAttribute("now", now);
-                req.setAttribute("util", Util.getInstance());
+                req.setAttribute("util", util);
             }
             Set<Tariff> activeTariffs = StreamSupport
                     .stream(subscriptions.spliterator(), true)
