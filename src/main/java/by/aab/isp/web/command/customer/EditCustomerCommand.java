@@ -7,8 +7,11 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import java.util.stream.StreamSupport;
 
+@Component("edit_customer")
 public class EditCustomerCommand extends Command {
 
     private final UserService userService;

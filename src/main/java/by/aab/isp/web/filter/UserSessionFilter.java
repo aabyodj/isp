@@ -16,7 +16,6 @@ import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
-import by.aab.isp.web.command.CommandFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -29,7 +28,6 @@ public class UserSessionFilter extends HttpFilter {
         try {
             log.trace("Initializing...");
             ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-            CommandFactory.getInstance().init(context);
             userService = context.getBean(UserService.class);
             log.info("Initialization complete");
         } catch (Throwable e) {

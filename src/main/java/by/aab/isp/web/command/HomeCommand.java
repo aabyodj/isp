@@ -8,6 +8,9 @@ import by.aab.isp.service.TariffService;
 import by.aab.isp.web.Util;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("homeCommand")
 public class HomeCommand extends Command {
 
     private final PromotionService promotionService;

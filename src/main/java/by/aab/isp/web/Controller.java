@@ -7,11 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.web.command.Command;
-import by.aab.isp.web.command.CommandFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -53,18 +50,6 @@ public final class Controller extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);    //TODO: put a message on the login form
         } catch (Throwable e) {
             log.error("Error processing request '" + req.getRequestURL() + "'", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void destroy() {
-        try {
-            log.trace("Destroying the controller...");
-            CommandFactory.getInstance().destroy();
-            log.info("Destruction complete");
-        } catch (Throwable e) {
-            log.error("Failed to destroy the controller", e);
             throw e;
         }
     }

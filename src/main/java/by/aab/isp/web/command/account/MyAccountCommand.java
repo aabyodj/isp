@@ -10,12 +10,15 @@ import by.aab.isp.web.Util;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Component("my_account")
 public class MyAccountCommand extends Command {
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;

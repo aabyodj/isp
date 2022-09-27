@@ -6,6 +6,9 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("edit_employee")
 public class EditEmployeeCommand extends Command {
     private final UserService userService;
 

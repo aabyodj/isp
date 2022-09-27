@@ -7,10 +7,13 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import java.time.*;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("save_promotion")
 public class SavePromotionCommand extends Command {
 
     private final PromotionService promotionService;

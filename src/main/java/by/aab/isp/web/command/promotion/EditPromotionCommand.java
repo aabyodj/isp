@@ -7,6 +7,9 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("edit_promotion")
 public class EditPromotionCommand extends Command {
 
     private final PromotionService promotionService;

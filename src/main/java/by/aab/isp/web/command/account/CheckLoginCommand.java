@@ -6,8 +6,11 @@ import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.stereotype.Component;
+
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("check_login")
 public class CheckLoginCommand extends Command {
     private final UserService userService;
 

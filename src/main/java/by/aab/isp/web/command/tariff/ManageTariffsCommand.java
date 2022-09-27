@@ -8,8 +8,11 @@ import by.aab.isp.service.TariffService;
 import by.aab.isp.web.Util;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
+@Component("manage_tariffs")
 public class ManageTariffsCommand extends by.aab.isp.web.command.Command {
 
     private final TariffService tariffService;

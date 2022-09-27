@@ -7,6 +7,9 @@ import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
+@Component("edit_tariff")
 public class EditTariffCommand extends Command {
 
     private final TariffService tariffService;

@@ -6,8 +6,11 @@ import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("generate_tariffs")
 public class GenerateTariffsCommand extends Command {
 
     private final TariffService tariffService;

@@ -6,8 +6,11 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("generate_promotions")
 public class GeneratePromotionsCommand extends Command {
     private final PromotionService promotionService;
 

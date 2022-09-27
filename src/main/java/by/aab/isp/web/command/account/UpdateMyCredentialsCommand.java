@@ -5,10 +5,13 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
+@Component("update_my_credentials")
 public class UpdateMyCredentialsCommand extends Command {
     private final UserService userService;
 
