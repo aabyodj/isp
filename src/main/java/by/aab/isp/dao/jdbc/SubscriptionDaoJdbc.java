@@ -29,7 +29,7 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     private final UserDao userDao;
     private final TariffDao tariffDao;
 
-    public SubscriptionDaoJdbc(DataSource dataSource, UserDao userDao, TariffDao tariffDao) {
+    public SubscriptionDaoJdbc(DataSourceJdbc dataSource, UserDao userDao, TariffDao tariffDao) {
         super(dataSource, "subscriptions", List.of(
                 "customer_id", "tariff_id", "price",
                 "traffic_consumed", "traffic_per_period", "active_since", "active_until"

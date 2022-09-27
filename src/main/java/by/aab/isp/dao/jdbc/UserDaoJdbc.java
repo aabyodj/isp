@@ -94,7 +94,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             + " SET " + quote("user_id") + "=?, " + quote("role_id") + "=?"
             + " WHERE " + quote("user_id") + "=";
 
-    public UserDaoJdbc(DataSource dataSource) {
+    public UserDaoJdbc(DataSourceJdbc dataSource) {
         super(dataSource, USERS_TABLE_NAME, List.of("email", "password_hash", "active"));
     }
 

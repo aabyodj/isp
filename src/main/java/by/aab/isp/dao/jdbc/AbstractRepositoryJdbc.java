@@ -22,7 +22,7 @@ import by.aab.isp.entity.Entity;
 
 abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
     
-    final DataSource dataSource;
+    final DataSourceJdbc dataSource;
     final String tableName;
     final String quotedTableName;
     final char quoteChar;
@@ -36,7 +36,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     final String sqlUpdate;
     final String sqlUpdateWhereId;
     
-    AbstractRepositoryJdbc(DataSource dataSource, String tableName, List<String> fields) {
+    AbstractRepositoryJdbc(DataSourceJdbc dataSource, String tableName, List<String> fields) {
         this.dataSource = dataSource;
         this.tableName = tableName;
         this.quoteChar = dataSource.getDialect().getQuoteChar();

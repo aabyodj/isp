@@ -26,7 +26,7 @@ public class PromotionDaoJdbc extends AbstractRepositoryJdbc<Promotion> implemen
             "activeUntil", "active_until"
     );
 
-    public PromotionDaoJdbc(DataSource dataSource) {
+    public PromotionDaoJdbc(DataSourceJdbc dataSource) {
         super(dataSource, "promotions", List.of(
                 "name", "description", "active_since", "active_until"));
     }

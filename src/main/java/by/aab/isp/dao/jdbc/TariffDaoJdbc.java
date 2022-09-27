@@ -23,7 +23,7 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
             "active", "active"
     );
 
-    public TariffDaoJdbc(DataSource dataSource) {
+    public TariffDaoJdbc(DataSourceJdbc dataSource) {
         super(dataSource, "tariff", List.of(
                 "name", "description", "bandwidth", "included_traffic", "price", "active"));
     }
