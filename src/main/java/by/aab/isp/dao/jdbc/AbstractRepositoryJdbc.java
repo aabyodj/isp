@@ -1,19 +1,20 @@
 package by.aab.isp.dao.jdbc;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 
 import by.aab.isp.dao.CrudRepository;
 import by.aab.isp.dao.DaoException;
@@ -21,11 +22,12 @@ import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Entity;
 
 abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepository<T> {
+
+    static final char QUOTE_CHAR = '"';		//TODO: get rid of this
     
-    final DataSourceJdbc dataSource;
+    final NamedParameterJdbcTemplate jdbcTemplate;
     final String tableName;
     final String quotedTableName;
-    final char quoteChar;
     final String doubledQuoteChar;
     final Pattern quoteCharPattern;
 
@@ -36,12 +38,11 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     final String sqlUpdate;
     final String sqlUpdateWhereId;
     
-    AbstractRepositoryJdbc(DataSourceJdbc dataSource, String tableName, List<String> fields) {
-        this.dataSource = dataSource;
+    AbstractRepositoryJdbc(NamedParameterJdbcTemplate jdbcTemplate, String tableName, List<String> fields) {
+        this.jdbcTemplate = jdbcTemplate;
         this.tableName = tableName;
-        this.quoteChar = dataSource.getDialect().getQuoteChar();
-        this.doubledQuoteChar = Character.toString(quoteChar) + quoteChar;
-        this.quoteCharPattern = Pattern.compile(Pattern.quote(Character.toString(quoteChar)));
+        this.doubledQuoteChar = Character.toString(QUOTE_CHAR) + QUOTE_CHAR;
+        this.quoteCharPattern = Pattern.compile(Pattern.quote(Character.toString(QUOTE_CHAR)));
         this.quotedTableName = quote(tableName);
         sqlInsert = "INSERT INTO " + quotedTableName
                 + fields.stream()
@@ -49,9 +50,9 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge)
-                + "VALUES"
+                + " VALUES"
                 + fields.stream()
-                        .map(field -> "?")
+                        .map(field -> ":" + field)
                         .reduce(new StringJoiner(",", "(", ")"),
                                 StringJoiner::add,
                                 StringJoiner::merge);
@@ -59,7 +60,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         sqlSelect = "SELECT * FROM " + quotedTableName;
         sqlSelectWhereId = sqlSelect + " WHERE " + quote("id") + "=";
         sqlUpdate = "UPDATE " + quotedTableName + " SET " + fields.stream()
-                .map(field -> quote(field) + " = ?")
+                .map(field -> quote(field) + " = :" + field)
                 .reduce(new StringJoiner(", "),
                         StringJoiner::add,
                         StringJoiner::merge);
@@ -67,32 +68,19 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
     }
 
     @Override
-    public void init() {
-    }
-
-    @Override
     public T save(T entity) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-            mapObjectToRow(entity, statement);
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getGeneratedKeys();
-            resultSet.next();
-            return objectWithId(entity, resultSet.getLong(1));
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        Map<String, ?> paramMap = entityToMap(entity);
+        jdbcTemplate.update(sqlInsert, new MapSqlParameterSource(paramMap), keyHolder);
+        Long id = ((Number) keyHolder.getKeys().get("id")).longValue();
+        return objectWithId(entity, id);
     }
 
     long count(String sql) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+        return jdbcTemplate.query(sql, resultSet -> {
             resultSet.next();
             return resultSet.getLong(1);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+        });
     }
 
     @Override
@@ -100,16 +88,14 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return count(sqlCount);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<T> findAll() {
-        return (Iterable<T>) findMany(sqlSelect, this::mapRowsToObjects);
+        return jdbcTemplate.query(sqlSelect, this::mapRowsToObjects);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<T> findAll(OrderOffsetLimit orderOffsetLimit) {
-        return (Iterable<T>) findMany(sqlSelect + formatOrderOffsetLimit(orderOffsetLimit), this::mapRowsToObjects);
+        return jdbcTemplate.query(sqlSelect + formatOrderOffsetLimit(orderOffsetLimit), this::mapRowsToObjects);
     }
 
     @SuppressWarnings("unchecked")
@@ -118,76 +104,26 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
         return (Optional<T>) findOne(sqlSelectWhereId + id, this::mapRowToObject);
     }
 
-    @Override
-    public void update(T entity) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sqlUpdateWhereId + entity.getId());
-            mapObjectToRow(entity, statement);
-            if (statement.executeUpdate() < 1) {
-                throw new DaoException("Could not update " + entity.getClass().getName());
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    Iterable<? extends T> findMany(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, Iterable<? extends T>> mapper) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            filler.accept(statement);
-            ResultSet resultSet = statement.executeQuery();
-            return mapper.apply(resultSet);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    Iterable<? extends T> findMany(String sql, Function<ResultSet, Iterable<? extends T>> mapper) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            return mapper.apply(resultSet);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
+	@Override
+	public void update(T entity) {
+		if (jdbcTemplate.update(sqlUpdateWhereId + entity.getId(), entityToMap(entity)) < 1) {
+			throw new DaoException("Could not update " + entity.getClass().getName());
+		}
+	}
     
-    Optional<? extends T> findOne(String sql, Function<ResultSet, T> mapper) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            return resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
-                                    : Optional.empty();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
+	Optional<? extends T> findOne(String sql, Function<ResultSet, T> mapper) {
+	    return jdbcTemplate.query(sql, resultSet -> resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
+	                                                                 : Optional.empty());
+	}
 
-    Optional<? extends T> findOne(String sql, Consumer<PreparedStatement> filler, Function<ResultSet, T> mapper) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            filler.accept(statement);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next() ? Optional.of(mapper.apply(resultSet))
-                                    : Optional.empty();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-    
-    int executeUpdate(String sql, Consumer<PreparedStatement> filler) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            filler.accept(statement);
-            return statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
+	Optional<? extends T> findOne(String sql, Map<String, ?> paramMap, Function<ResultSet, T> mapper) {
+	    return jdbcTemplate.query(sql, paramMap, resultSet -> resultSet.next() ? Optional.of(mapper.apply(resultSet)) 
+	                                                                           : Optional.empty());
+	}
 
     String quote(String identifier) {
         identifier = quoteCharPattern.matcher(identifier).replaceAll(doubledQuoteChar);
-        return quoteChar + identifier + quoteChar;
+        return QUOTE_CHAR + identifier + QUOTE_CHAR;
     }
 
     static Integer nullableInt(ResultSet resultSet, String name) throws SQLException {
@@ -260,7 +196,7 @@ abstract class AbstractRepositoryJdbc<T extends Entity> implements CrudRepositor
 
     abstract String mapNullsOrder(OrderOffsetLimit.Order order);
 
-    abstract void mapObjectToRow(T object, PreparedStatement row);
+    abstract Map<String, ?> entityToMap(T entity);
     
     abstract T mapRowToObject(ResultSet row);
     

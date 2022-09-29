@@ -1,8 +1,11 @@
 package by.aab.isp;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.SubscriptionService;
@@ -17,6 +20,11 @@ import by.aab.isp.web.command.tariff.EditTariffCommand;
 @ComponentScan
 public class ContextConfiguration {
 	
+	@Bean
+	public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
+		return new NamedParameterJdbcTemplate(dataSource);
+	}
+
 	@Bean({"edit_customer", "new_customer"})
 	public EditCustomerCommand editCustomerCommand(UserService userService, SubscriptionService subscriptionService, TariffService tariffService) {
 		return new EditCustomerCommand(userService, subscriptionService, tariffService);

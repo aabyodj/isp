@@ -1,9 +1,11 @@
 package by.aab.isp.dao.jdbc;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import by.aab.isp.dao.DaoException;
@@ -23,8 +25,8 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
             "active", "active"
     );
 
-    public TariffDaoJdbc(DataSourceJdbc dataSource) {
-        super(dataSource, "tariff", List.of(
+    public TariffDaoJdbc(NamedParameterJdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate, "tariff", List.of(
                 "name", "description", "bandwidth", "included_traffic", "price", "active"));
     }
 
@@ -42,28 +44,15 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     }
 
     @Override
-    void mapObjectToRow(Tariff tariff, PreparedStatement row) {
-        try {
-            int c = 0;
-            row.setString(++c, tariff.getName());
-            row.setString(++c, tariff.getDescription());
-            Integer bandwidth = tariff.getBandwidth();
-            if (bandwidth != null) {
-                row.setInt(++c, bandwidth);
-            } else {
-                row.setNull(++c, Types.INTEGER);
-            }
-            Long traffic = tariff.getIncludedTraffic();
-            if (traffic != null) {
-                row.setLong(++c, traffic);
-            } else {
-                row.setNull(++c, Types.BIGINT);
-            }
-            row.setBigDecimal(++c, tariff.getPrice());
-            row.setBoolean(++c, tariff.isActive());
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }        
+    Map<String, ?> entityToMap(Tariff tariff) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("name", tariff.getName());
+        result.put("description", tariff.getDescription());
+        result.put("bandwidth", tariff.getBandwidth());
+        result.put("included_traffic", tariff.getIncludedTraffic());
+        result.put("price", tariff.getPrice());
+        result.put("active", tariff.isActive());
+        return result;
     }
 
     @Override
@@ -92,9 +81,8 @@ public class TariffDaoJdbc extends AbstractRepositoryJdbc<Tariff> implements Tar
     private final String sqlSelectWhereActive = sqlSelect
             + " WHERE " + quote("active") + "=";
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Tariff> findByActive(boolean active) {
-        return (Iterable<Tariff>) findMany(sqlSelectWhereActive + active, this::mapRowsToObjects);
+        return jdbcTemplate.query(sqlSelectWhereActive + active, this::mapRowsToObjects);
     }
 }
