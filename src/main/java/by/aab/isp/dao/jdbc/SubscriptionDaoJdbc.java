@@ -51,6 +51,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     @Override
     Map<String, ?> entityToMap(Subscription subscription) {
         Map<String, Object> result = new HashMap<>();
+        result.put("customer_id", subscription.getCustomer().getId());
+        result.put("tariff_id", subscription.getTariff().getId());
         result.put("price", subscription.getPrice());
         result.put("traffic_consumed", subscription.getTrafficConsumed());
         result.put("traffic_per_period", subscription.getTrafficPerPeriod());
