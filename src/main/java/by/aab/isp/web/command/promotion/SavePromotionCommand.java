@@ -13,7 +13,7 @@ import java.time.*;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("save_promotion")
+@Component
 public class SavePromotionCommand extends Command {
 
     private final PromotionService promotionService;

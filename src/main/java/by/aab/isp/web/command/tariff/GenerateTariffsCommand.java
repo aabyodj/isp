@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("generate_tariffs")
+@Component
 public class GenerateTariffsCommand extends Command {
 
     private final TariffService tariffService;

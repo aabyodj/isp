@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("cancel_subscription")
+@Component
 public class CancelSubscriptionCommand extends Command {
     private final SubscriptionService subscriptionService;
 

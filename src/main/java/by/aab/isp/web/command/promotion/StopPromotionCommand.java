@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("stop_promotion")
+@Component
 public class StopPromotionCommand extends Command {
 
     private final PromotionService promotionService;

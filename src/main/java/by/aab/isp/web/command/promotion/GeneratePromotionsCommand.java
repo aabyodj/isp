@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("generate_promotions")
+@Component
 public class GeneratePromotionsCommand extends Command {
     private final PromotionService promotionService;
 

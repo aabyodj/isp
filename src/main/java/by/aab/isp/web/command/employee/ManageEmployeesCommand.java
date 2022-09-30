@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
-@Component("manage_employees")
+@Component
 public class ManageEmployeesCommand extends Command {
     private final UserService userService;
 

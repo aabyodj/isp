@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("check_login")
+@Component
 public class CheckLoginCommand extends Command {
     private final UserService userService;
 

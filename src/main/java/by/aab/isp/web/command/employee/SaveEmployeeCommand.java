@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("save_employee")
+@Component
 public class SaveEmployeeCommand extends Command {
     private final UserService userService;
 

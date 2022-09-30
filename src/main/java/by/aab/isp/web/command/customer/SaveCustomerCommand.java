@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("save_customer")
+@Component
 public class SaveCustomerCommand extends Command {
 
     private final UserService userService;
