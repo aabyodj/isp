@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("save_tariff")
+@Component
 public class SaveTariffCommand extends Command {
 
     private final TariffService tariffService;

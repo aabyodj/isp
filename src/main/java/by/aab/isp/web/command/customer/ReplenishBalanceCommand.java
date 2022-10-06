@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("replenish_balance")
+@Component
 public class ReplenishBalanceCommand extends Command {
     private final UserService userService;
 

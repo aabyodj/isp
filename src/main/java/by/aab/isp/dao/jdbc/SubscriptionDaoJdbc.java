@@ -1,19 +1,29 @@
 package by.aab.isp.dao.jdbc;
 
-import by.aab.isp.dao.*;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import by.aab.isp.dao.DaoException;
+import by.aab.isp.dao.OrderOffsetLimit;
+import by.aab.isp.dao.SubscriptionDao;
+import by.aab.isp.dao.TariffDao;
+import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Repository;
 
 @Repository("subscriptionDao")
 public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> implements SubscriptionDao {
@@ -29,8 +39,8 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     private final UserDao userDao;
     private final TariffDao tariffDao;
 
-    public SubscriptionDaoJdbc(DataSource dataSource, UserDao userDao, TariffDao tariffDao) {
-        super(dataSource, "subscriptions", List.of(
+    public SubscriptionDaoJdbc(NamedParameterJdbcTemplate jdbcTemplate, UserDao userDao, TariffDao tariffDao) {
+        super(jdbcTemplate, "subscriptions", List.of(
                 "customer_id", "tariff_id", "price",
                 "traffic_consumed", "traffic_per_period", "active_since", "active_until"
         ));
@@ -39,28 +49,16 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     }
 
     @Override
-    void mapObjectToRow(Subscription subscription, PreparedStatement row) {
-        try {
-            int c = 0;
-            row.setLong(++c, subscription.getCustomer().getId());
-            row.setLong(++c, subscription.getTariff().getId());
-            row.setBigDecimal(++c, subscription.getPrice());
-            row.setLong(++c, subscription.getTrafficConsumed());
-            Long totalTraffic = subscription.getTrafficPerPeriod();
-            if (totalTraffic != null) {
-                row.setLong(++c, totalTraffic);
-            } else {
-                row.setNull(++c, Types.BIGINT);
-            }
-            LocalDateTime activeSince = subscription.getActiveSince();
-            row.setTimestamp(++c, activeSince != null ? Timestamp.valueOf(activeSince)
-                                                      : null);
-            LocalDateTime activeUntil = subscription.getActiveUntil();
-            row.setTimestamp(++c, activeUntil != null ? Timestamp.valueOf(activeUntil)
-                                                      : null);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    Map<String, ?> entityToMap(Subscription subscription) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("customer_id", subscription.getCustomer().getId());
+        result.put("tariff_id", subscription.getTariff().getId());
+        result.put("price", subscription.getPrice());
+        result.put("traffic_consumed", subscription.getTrafficConsumed());
+        result.put("traffic_per_period", subscription.getTrafficPerPeriod());
+        result.put("active_since", subscription.getActiveSince());
+        result.put("active_until", subscription.getActiveUntil());
+        return result;
     }
 
     @Override
@@ -141,40 +139,28 @@ public class SubscriptionDaoJdbc extends AbstractRepositoryJdbc<Subscription> im
     }
 
     private final String sqlSelectWhereCustomerAndPeriodContains = sqlSelect
-            + " WHERE " + quote("customer_id") + " = ?"
-            + " AND (" + quote("active_since") + " IS NOT DISTINCT FROM null OR " + quote("active_since") + " <= ?)"
-            + " AND (" + quote("active_until") + " IS NOT DISTINCT FROM null OR " + quote("active_until") + " >= ?)";   //TODO ensure this works with MySQL
+            + " WHERE " + quote("customer_id") + " = :customer_id"
+            + " AND (" + quote("active_since") + " IS NOT DISTINCT FROM null OR " + quote("active_since") + " <= :active_since)"
+            + " AND (" + quote("active_until") + " IS NOT DISTINCT FROM null OR " + quote("active_until") + " >= :active_until)";   //TODO ensure this works with MySQL
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Subscription> findByCustomerIdAndActivePeriodContains(long customerId, LocalDateTime instant) {
-        return (Iterable<Subscription>) findMany(
+        return jdbcTemplate.query(
                 sqlSelectWhereCustomerAndPeriodContains,
-                fillWithCustomerIdAndTwoInstants(customerId, instant, instant),
+                Map.of(
+                        "customer_id", customerId,
+                        "active_since", instant,
+                        "active_until", instant),
                 this::mapRowsToObjects);
     }
 
     private final String sqlSelectWhereCustomerId = sqlSelect + " WHERE customer_id=";
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Subscription> findByCustomerId(long customerId, OrderOffsetLimit orderOffsetLimit) {
-        return (Iterable<Subscription>) findMany(
+        return jdbcTemplate.query(
                 sqlSelectWhereCustomerId + customerId + formatOrderOffsetLimit(orderOffsetLimit),
                 this::mapRowsToObjects);
-    }
-
-    private Consumer<PreparedStatement> fillWithCustomerIdAndTwoInstants(long customerId, LocalDateTime i1, LocalDateTime i2) {
-        return statement -> {
-            try {
-                int c = 0;
-                statement.setLong(++c, customerId);
-                statement.setTimestamp(++c, Timestamp.valueOf(i1));
-                statement.setTimestamp(++c, Timestamp.valueOf(i2));
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        };
     }
 
     @Data

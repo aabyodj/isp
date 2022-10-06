@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-@Component("login")
+@Component
 public class LoginCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("update_my_credentials")
+@Component
 public class UpdateMyCredentialsCommand extends Command {
     private final UserService userService;
 

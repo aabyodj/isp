@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
-@Component("manage_promotions")
+@Component
 public class ManagePromotionsCommand extends Command {
 
     private final PromotionService promotionService;

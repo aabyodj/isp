@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Component("my_account")
+@Component
 public class MyAccountCommand extends Command {
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;

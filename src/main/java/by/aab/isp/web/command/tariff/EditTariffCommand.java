@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-@Component("edit_tariff")
+@Component
 public class EditTariffCommand extends Command {
 
     private final TariffService tariffService;

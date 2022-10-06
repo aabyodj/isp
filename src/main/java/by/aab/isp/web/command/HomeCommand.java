@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-@Component("homeCommand")
+@Component
 public class HomeCommand extends Command {
 
     private final PromotionService promotionService;

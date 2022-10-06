@@ -1,17 +1,27 @@
 package by.aab.isp.dao.jdbc;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
 import by.aab.isp.dao.DaoException;
 import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.User;
-
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import org.springframework.stereotype.Repository;
 
 @Repository("userDao")
 public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements UserDao {
@@ -42,7 +52,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                             StringJoiner::merge)
             + " VALUES "
             + Arrays.stream(CUSTOMER_FIELDS)
-                    .map(field -> "?")
+                    .map(field -> ":" + field)
                     .reduce(new StringJoiner(",", "(", ")"),
                             StringJoiner::add,
                             StringJoiner::merge);
@@ -55,7 +65,7 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
                             StringJoiner::merge)
             + " VALUES "
             + Arrays.stream(EMPLOYEE_FIELDS)
-                    .map(field -> "?")
+                    .map(field -> ":" + field)
                     .reduce(new StringJoiner(",", "(", ")"),
                             StringJoiner::add,
                             StringJoiner::merge);
@@ -66,14 +76,14 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     private final String sqlSelectJoinCustomerWhereId = sqlSelectJoinCustomers
             + " WHERE " + quote("id") + "=";
     private final String sqlSelectJoinCustomerWhereEmailAndActive = sqlSelectJoinCustomers
-            + " WHERE " + quote("email") + "=? AND " + quote("active") + "=?";
+            + " WHERE " + quote("email") + " = :email AND " + quote("active") + " = :active";
     private final String sqlSelectJoinEmployees = "SELECT * FROM " + quotedTableName
             + " JOIN " + employeesQuotedTableName
             + " ON " + quote("id") + "=" + quote("user_id");
     private final String sqlSelectJoinEmployeeWhereId = sqlSelectJoinEmployees
             + " WHERE " + quote("id") + "=";
     private final String sqlSelectJoinEmployeeWhereEmailAndActive = sqlSelectJoinEmployees
-            + " WHERE " + quote("email") + "=? AND " + quote("active") + "=?";
+            + " WHERE " + quote("email") + " = :email AND " + quote("active") +  "= :active";
     private final String sqlSelectCustomersWhereId = "SELECT * FROM " + customersQuotedTableName
             + " WHERE " + quote("user_id") + "=";
     private final String sqlSelectEmployeesWhereId = "SELECT * FROM " + employeesQuotedTableName
@@ -84,30 +94,26 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
             + " JOIN " + employeesQuotedTableName
             + " ON " + quote("id") + "=" + quote("user_id");
     private final String sqlUpdateUserWithoutHash = "UPDATE " + quotedTableName
-            + " SET " + quote("email") + "=?, " + quote("active") + "=?"
+            + " SET " + quote("email") + " = :email, " + quote("active") + " = :active"
             + " WHERE " + quote("id") + "=";
     private final String sqlUpdateCustomer = "UPDATE " + customersQuotedTableName
-            + " SET " + quote("user_id") + "=?, " + quote("balance") + "=?, "
-            + quote("permitted_overdraft") + "=?, " + quote("payoff_date") + "=?"
+            + " SET " + quote("balance") + " = :balance, "
+            + quote("permitted_overdraft") + " = :permitted_overdraft, " + quote("payoff_date") + " = :payoff_date"
             + " WHERE " + quote("user_id") + "=";
     private final String sqlUpdateEmployee = "UPDATE " + employeesQuotedTableName
-            + " SET " + quote("user_id") + "=?, " + quote("role_id") + "=?"
+            + " SET " + quote("role_id") + " = :role_id"
             + " WHERE " + quote("user_id") + "=";
 
-    public UserDaoJdbc(DataSource dataSource) {
-        super(dataSource, USERS_TABLE_NAME, List.of("email", "password_hash", "active"));
+    public UserDaoJdbc(NamedParameterJdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate, USERS_TABLE_NAME, List.of("email", "password_hash", "active"));
     }
 
     @Override
-    void mapObjectToRow(User user, PreparedStatement row) {
-        try {
-            int c = 0;
-            row.setString(++c, user.getEmail());
-            row.setBytes(++c, user.getPasswordHash());
-            row.setBoolean(++c, user.isActive());
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    Map<String, ?> entityToMap(User user) {
+        return Map.of(
+                "email", user.getEmail(),
+                "password_hash", user.getPasswordHash(),
+                "active", user.isActive());
     }
 
     void mapUserToRowWithoutHash(User user, PreparedStatement row) {
@@ -120,28 +126,19 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         }
     }
 
-    private void mapCustomerToRow(Customer customer, PreparedStatement row) {
-        try {
-            int c = 0;
-            row.setLong(++c, customer.getId());
-            row.setBigDecimal(++c, customer.getBalance());
-            row.setBigDecimal(++c, customer.getPermittedOverdraft());
-            LocalDateTime payoffDate = customer.getPayoffDate();
-            row.setTimestamp(++c, payoffDate != null ? Timestamp.valueOf(payoffDate)
-                                                     : null);
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    private Map<String, ?> customerToMap(Customer customer) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("user_id", customer.getId());
+        result.put("balance", customer.getBalance());
+        result.put("permitted_overdraft", customer.getPermittedOverdraft());
+        result.put("payoff_date", customer.getPayoffDate());
+        return result;
     }
 
-    private void mapEmployeeToRow(Employee employee, PreparedStatement row) {
-        try {
-            int c = 0;
-            row.setLong(++c, employee.getId());
-            row.setInt(++c, employee.getRole().ordinal());
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    private Map<String, ?> employeeToMap(Employee employee) {
+        return Map.of(
+                "user_id", employee.getId(),
+                "role_id", employee.getRole().ordinal());
     }
 
     /**
@@ -255,10 +252,10 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         user = super.save(user);
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
-            executeUpdate(sqlInsertCustomer, row -> mapCustomerToRow(customer, row));
+            jdbcTemplate.update(sqlInsertCustomer, customerToMap(customer));
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
-            executeUpdate(sqlInsertEmployee, row -> mapEmployeeToRow(employee, row));
+            jdbcTemplate.update(sqlInsertEmployee, employeeToMap(employee));
         } else {
             //FIXME: remove row from "users" table
             throw new RuntimeException("Unimplemented for " + user.getClass());
@@ -266,18 +263,16 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         return user;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Customer> findAllCustomers(OrderOffsetLimit orderOffsetLimit) {
-        return (Iterable<Customer>) findMany(
+        return jdbcTemplate.query(
                 sqlSelectJoinCustomers + formatOrderOffsetLimit(orderOffsetLimit),
                 this::mapRowsToCustomers);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Employee> findAllEmployees(OrderOffsetLimit orderOffsetLimit) {
-        return (Iterable<Employee>) findMany(
+        return jdbcTemplate.query(
                 sqlSelectJoinEmployees + formatOrderOffsetLimit(orderOffsetLimit),
                 this::mapRowsToEmployees);
     }
@@ -298,15 +293,9 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     Optional<Customer> findCustomerByEmailAndActive(String email, boolean active) {
         return (Optional<Customer>) findOne(
                 sqlSelectJoinCustomerWhereEmailAndActive,
-                statement -> {
-                    try {
-                        int c = 0;
-                        statement.setString(++c, email);
-                        statement.setBoolean(++c, active);
-                    } catch (SQLException e) {
-                        throw new DaoException(e);
-                    }
-                },
+                Map.of(
+                        "email", email,
+                        "active", active),
                 this::mapRowToCustomer);
     }
 
@@ -314,17 +303,10 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
     Optional<Employee> findEmployeeByEmailAndActive(String email, boolean active) {
         return (Optional<Employee>) findOne(
                 sqlSelectJoinEmployeeWhereEmailAndActive,
-                statement -> {
-                    try {
-                        int c = 0;
-                        statement.setString(++c, email);
-                        statement.setBoolean(++c, active);
-                    } catch (SQLException e) {
-                        throw new DaoException(e);
-                    }
-                },
-                this::mapRowToEmployee
-        );
+                Map.of(
+                        "email", email,
+                        "active", active),
+                this::mapRowToEmployee);
     }
 
     @Override
@@ -365,22 +347,24 @@ public final class UserDaoJdbc extends AbstractRepositoryJdbc<User> implements U
         if (user.getPasswordHash() != null) {
             super.update(user);
         } else {
-            int result = executeUpdate(
+            int result = jdbcTemplate.update(
                     sqlUpdateUserWithoutHash + user.getId(),
-                    row -> mapUserToRowWithoutHash(user, row));
+                    Map.of(
+                            "email", user.getEmail(),
+                            "active", user.isActive()));
             if (result < 1) {
                 throw new DaoException("Could not update user");
             }
         }
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
-            int result = executeUpdate(sqlUpdateCustomer + user.getId(), row -> mapCustomerToRow(customer, row));
+            int result = jdbcTemplate.update(sqlUpdateCustomer + user.getId(), customerToMap(customer));
             if (result < 1) {
                 throw new DaoException("Could not update customer");
             }
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
-            int result = executeUpdate(sqlUpdateEmployee + user.getId(), row -> mapEmployeeToRow(employee, row));
+            int result = jdbcTemplate.update(sqlUpdateEmployee + user.getId(), employeeToMap(employee));
             if (result < 1) {
                 throw new DaoException("Could not update employee");
             }

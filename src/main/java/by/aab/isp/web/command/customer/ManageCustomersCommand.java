@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
-@Component("manage_customers")
+@Component
 public class ManageCustomersCommand extends Command {
 
     private final UserService userService;

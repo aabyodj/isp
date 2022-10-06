@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface CrudRepository<T extends Entity> {
 
-    void init();
-
     T save(T entity);
 
     long count();

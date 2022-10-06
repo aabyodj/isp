@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
-@Component("generate_customers")
+@Component
 public class GenerateCustomersCommand extends Command {
 
     private final UserService userService;

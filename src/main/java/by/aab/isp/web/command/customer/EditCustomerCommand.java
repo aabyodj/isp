@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.StreamSupport;
 
-@Component("edit_customer")
+@Component
 public class EditCustomerCommand extends Command {
 
     private final UserService userService;

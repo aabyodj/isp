@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-@Component("edit_promotion")
+@Component
 public class EditPromotionCommand extends Command {
 
     private final PromotionService promotionService;

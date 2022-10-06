@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-@Component("edit_employee")
+@Component
 public class EditEmployeeCommand extends Command {
     private final UserService userService;
 
