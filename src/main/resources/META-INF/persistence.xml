@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+        version="2.0">
+    <persistence-unit name="hibernate">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://tyke.db.elephantsql.com/yfawazrq"/>
+            <property name="javax.persistence.jdbc.user" value="yfawazrq"/>
+            <property name="javax.persistence.jdbc.password" value="2VzQ4tu6iHH1i8VG7Pn8DCcBMePE0yLr"/>
+        </properties>
+    </persistence-unit>
+</persistence>
