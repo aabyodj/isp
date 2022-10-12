@@ -1,18 +1,16 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.config.ConfigManager;
-import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.entity.Promotion;
-import by.aab.isp.repository.PromotionRepository;
-import by.aab.isp.service.Pagination;
-import by.aab.isp.service.PromotionService;
-import by.aab.isp.service.ServiceException;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import by.aab.isp.config.ConfigManager;
+import by.aab.isp.entity.Promotion;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.PromotionRepository;
+import by.aab.isp.service.Pagination;
+import by.aab.isp.service.PromotionService;
 
 @Service("promotionService")
 public class PromotionServiceImpl implements PromotionService {
@@ -80,15 +78,11 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion save(Promotion promotion) {
         promotion.setName(promotion.getName().strip());
         promotion.setDescription(promotion.getDescription().strip());
-        try {
-            if (promotion.getId() == null) {
-                return promotionRepository.save(promotion);
-            } else {
-                promotionRepository.update(promotion);
-                return promotion;
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+        if (promotion.getId() == null) {
+            return promotionRepository.save(promotion);
+        } else {
+            promotionRepository.update(promotion);
+            return promotion;
         }
     }
 

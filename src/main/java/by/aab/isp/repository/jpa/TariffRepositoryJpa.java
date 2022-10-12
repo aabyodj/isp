@@ -6,9 +6,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
-import by.aab.isp.dao.OrderOffsetLimit.Order;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.TariffRepository;
+import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Transactional
 @Repository

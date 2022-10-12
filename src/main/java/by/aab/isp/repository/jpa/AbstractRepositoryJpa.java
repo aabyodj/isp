@@ -10,8 +10,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.repository.CrudRepository;
+import by.aab.isp.repository.OrderOffsetLimit;
 
 @Transactional
 public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {

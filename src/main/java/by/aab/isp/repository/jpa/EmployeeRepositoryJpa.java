@@ -5,10 +5,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
-import by.aab.isp.dao.OrderOffsetLimit.Order;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Employee.Role;
 import by.aab.isp.repository.EmployeeRepository;
+import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Repository
 @Transactional

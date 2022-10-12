@@ -1,4 +1,4 @@
-package by.aab.isp.dao.jdbc;
+package by.aab.isp.repository.datasource;
 
 import java.util.regex.Pattern;
 

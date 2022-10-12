@@ -7,10 +7,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.OrderOffsetLimit.Order;
 import by.aab.isp.entity.Promotion;
+import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.PromotionRepository;
+import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Transactional
 @Repository

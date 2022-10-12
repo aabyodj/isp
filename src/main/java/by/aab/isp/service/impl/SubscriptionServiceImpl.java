@@ -7,10 +7,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.SubscriptionRepository;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.ServiceException;

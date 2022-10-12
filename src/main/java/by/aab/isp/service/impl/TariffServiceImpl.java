@@ -1,7 +1,7 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;

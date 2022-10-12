@@ -1,12 +1,12 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
+import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.UserRepository;
 import by.aab.isp.service.*;
 import lombok.RequiredArgsConstructor;

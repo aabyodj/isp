@@ -3,8 +3,6 @@ package by.aab.isp.repository;
 import java.util.List;
 import java.util.Optional;
 
-import by.aab.isp.dao.OrderOffsetLimit;
-
 public interface CrudRepository<T> {
 
     T save(T entity);
