@@ -6,6 +6,7 @@ import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
+import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.UserRepository;
 import by.aab.isp.service.*;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +37,14 @@ public class UserServiceImpl implements UserService {
     );
 
     private final UserDao userDao;
+    private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final TariffService tariffService;
     private final SubscriptionService subscriptionService;
 
     @Override
     public Iterable<Customer> getAllCustomers(Pagination pagination) {
-        long count = userDao.countCustomers();
+        long count = customerRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return userDao.findAllCustomers(orderOffsetLimit);
+            return customerRepository.findAll(orderOffsetLimit);
         } else {
             return List.of();
         }
@@ -97,7 +99,7 @@ public class UserServiceImpl implements UserService {
             customer.setBalance(BigDecimal.ZERO);
             customer.setPermittedOverdraft(BigDecimal.ZERO);
         } else {
-            customer = userDao.findCustomerById(id).orElseThrow();
+            customer = customerRepository.findById(id).orElseThrow();
             customer.setPasswordHash(null);
         }
         return customer;
@@ -208,7 +210,7 @@ public class UserServiceImpl implements UserService {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("Cannot replenish balance by nonpositive amount");
         }
-        customer = userDao.findCustomerById(customer.getId()).orElseThrow();
+        customer = customerRepository.findById(customer.getId()).orElseThrow();
         BigDecimal balance = customer.getBalance();
         balance = balance.add(amount);
         customer.setBalance(balance);
