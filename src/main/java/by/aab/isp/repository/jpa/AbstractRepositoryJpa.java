@@ -12,7 +12,6 @@ import javax.transaction.Transactional;
 
 import by.aab.isp.dao.OrderOffsetLimit;
 import by.aab.isp.repository.CrudRepository;
-import by.aab.isp.repository.RepositoryException;
 
 @Transactional
 public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
@@ -78,12 +77,7 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
     }
     
     protected final String formatOrder(OrderOffsetLimit.Order order) {
-        String dbField = mapFieldName(order.getFieldName());
-        if (null == dbField) {
-            throw new RepositoryException("There is no field '" + order.getFieldName() + "'");
-        }
-        dbField = quote(dbField);
-        return dbField
+        return order.getFieldName()
                 + (order.isAscending() ? " ASC" : " DESC")
                 + mapNullsOrder(order);
     }
@@ -111,8 +105,6 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
         }
         return query;
     }
-
-    protected abstract String mapFieldName(String fieldName);     //TODO: do this via reflection
 
     protected abstract String mapNullsOrder(OrderOffsetLimit.Order order);
 }

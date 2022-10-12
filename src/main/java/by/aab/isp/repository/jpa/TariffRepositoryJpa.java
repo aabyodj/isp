@@ -1,8 +1,6 @@
 package by.aab.isp.repository.jpa;
 
 import java.util.List;
-import java.util.Map;
-
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -16,15 +14,6 @@ import by.aab.isp.repository.TariffRepository;
 @Repository
 public class TariffRepositoryJpa extends AbstractRepositoryJpa<Tariff> implements TariffRepository {
 
-    private static final Map<String, String> FIELD_NAMES_MAP = Map.of(  //TODO: get this from annotations
-            "name", "name",
-            "description", "description",
-            "bandwidth", "bandwidth",
-            "includedTraffic", "included_traffic",
-            "price", "price",
-            "active", "active"
-    );
-    
     protected final String qlSelectWhereActive = qlSelectAll + " WHERE active=";
     
     public TariffRepositoryJpa() {
@@ -35,11 +24,6 @@ public class TariffRepositoryJpa extends AbstractRepositoryJpa<Tariff> implement
     public List<Tariff> findByActive(boolean active) {
         TypedQuery<Tariff> query = entityManager.createQuery(qlSelectWhereActive + active, Tariff.class);
         return query.getResultList();
-    }
-
-    @Override
-    protected String mapFieldName(String fieldName) {
-        return FIELD_NAMES_MAP.get(fieldName);
     }
 
     @Override
