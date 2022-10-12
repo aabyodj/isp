@@ -11,7 +11,7 @@ public interface SubscriptionService {
 
     void subscribe(Customer customer, long tariffId);
 
-    void setOneTariffForCustomer(Customer customer, long tariffId);
+    void setOneTariffForCustomer(Customer customer, Long tariffId);
 
     void cancelSubscription(Customer customer, long subscriptionId);
 }

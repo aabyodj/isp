@@ -50,7 +50,8 @@ public class SaveCustomerCommand extends Command {
             customer.setPayoffDate(LocalDate.parse(payoffDate).plusDays(1).atStartOfDay().minusNanos(1000));
         }
         userService.save(customer, password);   //TODO: terminate their session
-        long tariffId = Long.parseLong(req.getParameter("tariff"));
+        String tariffParam = req.getParameter("tariff");
+        Long tariffId = !tariffParam.equals("none") ? Long.parseLong(tariffParam) : null;
         subscriptionService.setOneTariffForCustomer(customer, tariffId);
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
