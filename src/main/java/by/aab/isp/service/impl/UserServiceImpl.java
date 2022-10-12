@@ -1,12 +1,12 @@
 package by.aab.isp.service.impl;
 
 import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.UserDao;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
+import by.aab.isp.repository.EmployeeRepository;
 import by.aab.isp.repository.UserRepository;
 import by.aab.isp.service.*;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,8 @@ public class UserServiceImpl implements UserService {
             new OrderOffsetLimit.Order("email", true)
     );
 
-    private final UserDao userDao;
     private final CustomerRepository customerRepository;
+    private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final TariffService tariffService;
     private final SubscriptionService subscriptionService;
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Iterable<Employee> getAllEmployees(Pagination pagination) {
-        long count = userDao.countEmployees();
+        long count = employeeRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return userDao.findAllEmployees(orderOffsetLimit);
+            return employeeRepository.findAll(orderOffsetLimit);
         } else {
             return List.of();
         }
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
             employee = new Employee();
             employee.setRole(Employee.Role.MANAGER);
         } else {
-            employee = userDao.findEmployeeById(id).orElseThrow();
+            employee = employeeRepository.findById(id).orElseThrow();
             employee.setPasswordHash(null);
         }
         return employee;
@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean noMoreAdmins(Employee employee) {
-        return userDao.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
+        return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
     private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
@@ -223,7 +223,7 @@ public class UserServiceImpl implements UserService {
     @PostConstruct
     @Override
     public void createDefaultAdmin() {
-        if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
+        if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
             Employee admin = getEmployeeById(null);
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
             admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
