@@ -6,15 +6,16 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
-@javax.persistence.Entity
+@Entity
 @Table(name = "promotions")
-public class Promotion implements Entity {
+public class Promotion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

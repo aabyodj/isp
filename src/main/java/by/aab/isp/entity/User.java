@@ -1,6 +1,7 @@
 package by.aab.isp.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,10 +12,10 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Data
-@javax.persistence.Entity
+@Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User implements Entity {
+public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

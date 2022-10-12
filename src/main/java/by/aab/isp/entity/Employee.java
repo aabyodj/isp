@@ -1,6 +1,7 @@
 package by.aab.isp.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -11,7 +12,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper = true)
-@javax.persistence.Entity
+@Entity
 @Table(name = "employees")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Employee extends User {

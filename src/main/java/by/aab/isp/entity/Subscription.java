@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,9 +16,9 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Data
-@javax.persistence.Entity
+@Entity
 @Table(name = "subscriptions")
-public class Subscription implements Entity {
+public class Subscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

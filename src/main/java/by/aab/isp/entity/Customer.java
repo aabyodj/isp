@@ -8,13 +8,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper = true)
-@javax.persistence.Entity
+@Entity
 @Table(name = "customers")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Customer extends User {
