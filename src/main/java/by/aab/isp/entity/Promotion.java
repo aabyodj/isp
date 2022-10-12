@@ -5,13 +5,32 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 @Data
+@javax.persistence.Entity
+@Table(name = "promotions")
 public class Promotion implements Entity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "name", nullable = false, length = 25)
     private String name;
+
+    @Column(name = "description", nullable = false, length = 100)
     private String description;
+
+    @Column(name = "active_since")
     private LocalDateTime activeSince;
+
+    @Column(name = "active_until")
     private LocalDateTime activeUntil;
 
     public boolean isActiveOn(LocalDateTime instant) {
