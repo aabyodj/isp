@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "customers" (
 
 CREATE TABLE IF NOT EXISTS "employees" (
     "user_id" bigint PRIMARY KEY,
-    "role_id" bigint NOT NULL,
+    "role_id" int NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "users"("id")
 );
 

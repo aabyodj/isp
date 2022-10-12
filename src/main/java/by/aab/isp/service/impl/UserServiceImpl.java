@@ -6,7 +6,9 @@ import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
+import by.aab.isp.repository.UserRepository;
 import by.aab.isp.service.*;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -21,6 +23,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 @Service("userService")
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
@@ -33,14 +36,9 @@ public class UserServiceImpl implements UserService {
     );
 
     private final UserDao userDao;
+    private final UserRepository userRepository;
     private final TariffService tariffService;
     private final SubscriptionService subscriptionService;
-
-    public UserServiceImpl(UserDao userDao, TariffService tariffService, SubscriptionService subscriptionService) {
-        this.userDao = userDao;
-        this.tariffService = tariffService;
-        this.subscriptionService = subscriptionService;
-    }
 
     @Override
     public Iterable<Customer> getAllCustomers(Pagination pagination) {
@@ -86,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(long id) {
-        User user = userDao.findById(id).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow();
         user.setPasswordHash(null);
         return user;
     }
@@ -132,7 +130,7 @@ public class UserServiceImpl implements UserService {
             if (null == password) {
                 throw new ServiceException("Password required");
             }
-            user = userDao.save(user);
+            user = userRepository.save(user);
         } else {
             if (user instanceof Employee) {
                 Employee employee = (Employee) user;
@@ -140,7 +138,7 @@ public class UserServiceImpl implements UserService {
                     throw new ServiceException("Unable to delete last admin");
                 }
             }
-            userDao.update(user);
+            userRepository.update(user);
         }
         user.setPasswordHash(null);
         return user;
@@ -180,7 +178,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(String email, String password) {
         byte[] hash = hashWithDelay(password);
-        User user = userDao.findByEmailAndActive(email, true).orElse(null);
+        User user = userRepository.findByEmailAndActive(email, true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
             if (!Arrays.equals(hash, savedHash)) {
@@ -197,7 +195,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateCredentials(User user, String newEmail, String newPassword, String currentPassword) {
         byte[] hash = hashWithDelay(currentPassword);
-        user = userDao.findById(user.getId()).orElseThrow();
+        user = userRepository.findById(user.getId()).orElseThrow();
         if (!Arrays.equals(user.getPasswordHash(), hash)) {
             throw new ServiceException("Wrong current password");   //TODO: maybe invalidate the user session?
         }
@@ -217,7 +215,7 @@ public class UserServiceImpl implements UserService {
         if (balance.compareTo(BigDecimal.ZERO) >= 0) {
             customer.setPayoffDate(null);
         }
-        userDao.update(customer);
+        userRepository.update(customer);
     }
 
     @PostConstruct
@@ -229,7 +227,7 @@ public class UserServiceImpl implements UserService {
             admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
-            userDao.save(admin);
+            userRepository.save(admin);
         }
     }
 
@@ -257,7 +255,7 @@ public class UserServiceImpl implements UserService {
             customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
             customer.setActive(active);
             try {
-                customer = (Customer) userDao.save(customer);
+                customer = (Customer) userRepository.save(customer);
                 int tariffIndex = random.nextInt(tariffs.length + 1);
                 if (tariffIndex < tariffs.length) {
                     subscriptionService.subscribe(customer, tariffs[tariffIndex].getId());
@@ -281,7 +279,7 @@ public class UserServiceImpl implements UserService {
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             try {
-                userDao.save(employee);
+                userRepository.save(employee);
                 quantity--;
             } catch (Exception ignore) {
             }
