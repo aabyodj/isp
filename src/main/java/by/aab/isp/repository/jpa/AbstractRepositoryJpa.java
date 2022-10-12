@@ -54,7 +54,9 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
 
     @Override
     public List<T> findAll(OrderOffsetLimit orderOffsetLimit) {
-        TypedQuery<T> query = entityManager.createQuery(qlSelectAll + formatOrderOffsetLimit(orderOffsetLimit), clazz);
+        String ql = qlSelectAll + formatOrderList(orderOffsetLimit.getOrderList());
+        TypedQuery<T> query = entityManager.createQuery(ql, clazz);
+        applyOffsetLimit(query, orderOffsetLimit.getOffset(), orderOffsetLimit.getLimit());
         return query.getResultList();
     }
 
@@ -97,21 +99,17 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
                         StringJoiner::merge);
     }
 
-
-    protected final String formatOrderOffsetLimit(OrderOffsetLimit orderOffsetLimit) {
-        if (null == orderOffsetLimit) {
-            return "";
-        }
-        Long offset = orderOffsetLimit.getOffset();
-        Integer limit = orderOffsetLimit.getLimit();
-        String result = formatOrderList(orderOffsetLimit.getOrderList());
-        if (limit != null) {
-            result += " LIMIT " + limit;
-        }
+    protected final TypedQuery<T> applyOffsetLimit(TypedQuery<T> query, Long offset, Integer limit) {
         if (offset != null) {
-            result += " OFFSET " + offset;
+            if (offset > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Offset value exceeds max integer");
+            }
+            query.setFirstResult(offset.intValue());
         }
-        return result;
+        if (limit != null) {
+            query.setMaxResults(limit);
+        }
+        return query;
     }
 
     protected abstract String mapFieldName(String fieldName);     //TODO: do this via reflection
