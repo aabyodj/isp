@@ -8,6 +8,10 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1><fmt:message key="msg.user.login" /></h1>
+            <p>
+                <fmt:message key="msg.user.login.hintEmail" /> <b>${defaultAdminEmail}</b>,
+                <fmt:message key="msg.user.login.hintPassword" /> <b>${defaultAdminPassword}</b>
+            </p>
             <form action="?action=check_login" method="POST">
                 <input name="redirect" type="hidden" value="${redirect != null ? redirect : '?'.concat(pageContext.request.queryString)}">
                 <ul>

@@ -1,15 +1,7 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.entity.User;
-import by.aab.isp.repository.CustomerRepository;
-import by.aab.isp.repository.EmployeeRepository;
-import by.aab.isp.repository.OrderOffsetLimit;
-import by.aab.isp.repository.UserRepository;
-import by.aab.isp.service.*;
-import lombok.RequiredArgsConstructor;
+import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
+import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -23,12 +15,25 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.entity.Customer;
+import by.aab.isp.entity.Employee;
+import by.aab.isp.entity.Tariff;
+import by.aab.isp.entity.User;
+import by.aab.isp.repository.CustomerRepository;
+import by.aab.isp.repository.EmployeeRepository;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.UserRepository;
+import by.aab.isp.service.Pagination;
+import by.aab.isp.service.ServiceException;
+import by.aab.isp.service.SubscriptionService;
+import by.aab.isp.service.TariffService;
+import by.aab.isp.service.UnauthorizedException;
+import by.aab.isp.service.UserService;
+import lombok.RequiredArgsConstructor;
+
 @Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
-    private static final String DEFAULT_ADMIN_PASSWORD = "admin";
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
