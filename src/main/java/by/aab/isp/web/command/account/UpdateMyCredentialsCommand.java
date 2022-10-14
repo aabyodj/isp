@@ -1,6 +1,7 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.UpdateCredentialsDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +22,10 @@ public class UpdateMyCredentialsCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        User user = (User) req.getAttribute("activeUser");
-        String newEmail = req.getParameter("email");
+        UserDto user = (UserDto) req.getAttribute("activeUser");
+        UpdateCredentialsDto dto = new UpdateCredentialsDto();
+        dto.setUserId(user.getId());
+        dto.setEmail(req.getParameter("email"));
         String newPassword = req.getParameter("new-password1");
         if (!Objects.equals(newPassword, req.getParameter("new-password2"))) {
             throw new RuntimeException("Passwords do not match. Handler unimplemented");  //TODO: implement this
@@ -30,15 +33,16 @@ public class UpdateMyCredentialsCommand extends Command {
         if (null != newPassword && newPassword.isBlank()) {
             newPassword = null;
         }
-        String currentPassword = req.getParameter("current-password");
-        userService.updateCredentials(user, newEmail, newPassword, currentPassword);
+        dto.setNewPassword(newPassword);
+        dto.setCurrentPassword(req.getParameter("current-password"));
+        userService.updateCredentials(dto);
         String redirect = req.getParameter("redirect");
         req.getSession().invalidate();
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
+    public boolean isAllowedForUser(UserDto user) {
         return user != null;
     }
 }

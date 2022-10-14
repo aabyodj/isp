@@ -1,7 +1,8 @@
 package by.aab.isp.web.command.employee;
 
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -32,22 +33,23 @@ public class SaveEmployeeCommand extends Command {
         if (null != password && password.isBlank()) {
             password = null;
         }
-        Employee employee = new Employee();
+        EmployeeDto employee = new EmployeeDto();
         employee.setId(id);
         employee.setEmail(req.getParameter("email"));
+        employee.setPassword(password);
         employee.setActive(req.getParameter("active") != null);
         employee.setRole(Employee.Role.valueOf(req.getParameter("role")));
-        userService.save(employee, password);   //TODO: terminate their session
+        userService.save(employee);   //TODO: terminate their session
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        if (!(user instanceof Employee)) {
+    public boolean isAllowedForUser(UserDto user) {
+        if (!(user instanceof EmployeeDto)) {
             return false;
         }
-        Employee employee = (Employee) user;
+        EmployeeDto employee = (EmployeeDto) user;
         return employee.getRole() == Employee.Role.ADMIN;
     }
 }

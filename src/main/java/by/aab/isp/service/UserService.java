@@ -1,9 +1,11 @@
 package by.aab.isp.service;
 
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UpdateCredentialsDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
-
 import java.math.BigDecimal;
 
 public interface UserService {
@@ -12,19 +14,19 @@ public interface UserService {
 
     Iterable<Employee> getAllEmployees(Pagination pagination);
 
-    User getById(long id);
+    UserDto getById(long id);
 
-    Customer getCustomerById(Long id);
+    CustomerDto getCustomerById(Long id);
 
-    Employee getEmployeeById(Long id);
+    EmployeeDto getEmployeeById(Long id);
 
-    User save(User user, String password);
+    UserDto save(UserDto user);
 
-    User login(String email, String password);
+    UserDto login(String email, String password);
 
-    void updateCredentials(User user, String newEmail, String newPassword, String currentPassword);
+    void updateCredentials(UpdateCredentialsDto dto);
 
-    void replenishBalance(Customer customer, BigDecimal amount);
+    void replenishBalance(long customerId, BigDecimal amount);
 
     void createDefaultAdmin();
 

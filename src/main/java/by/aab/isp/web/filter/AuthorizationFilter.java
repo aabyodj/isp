@@ -1,6 +1,6 @@
 package by.aab.isp.web.filter;
 
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.web.command.Command;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,7 +22,7 @@ public class AuthorizationFilter extends HttpFilter {
             chain.doFilter(req, res);
             return;
         }
-        User user = (User) req.getAttribute("activeUser");
+        UserDto user = (UserDto) req.getAttribute("activeUser");
         if (null == user) {
             log.trace("Rejected anonymous user for command '" + command.getClass() + "'");
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED);

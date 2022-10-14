@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.customer;
 
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
@@ -37,7 +37,7 @@ public class ManageCustomersCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        return user instanceof Employee;
+    public boolean isAllowedForUser(UserDto user) {
+        return user instanceof EmployeeDto;
     }
 }

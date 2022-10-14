@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.SubscriptionRepository;
 import by.aab.isp.repository.TariffRepository;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
+    private final CustomerRepository customerRepository;;
     private final SubscriptionRepository subscriptionRepository;
     private final TariffRepository tariffRepository;
 
@@ -30,26 +32,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     );
 
     @Override
-    public Iterable<Subscription> getByCustomer(Customer customer) {
+    public Iterable<Subscription> getByCustomerId(long customerId) {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
         orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
-        return subscriptionRepository.findByCustomerId(customer.getId(), orderOffsetLimit);
+        return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit);
     }
 
     @Override
-    public Iterable<Subscription> getActiveSubscriptions(Customer customer) {
-        return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customer.getId(), LocalDateTime.now());
+    public Iterable<Subscription> getActiveSubscriptions(long customerId) {
+        return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, LocalDateTime.now());
     }
 
     @Override
-    public void subscribe(Customer customer, long tariffId) {
-        setOneTariffForCustomer(customer, tariffId);    //TODO: add multiply active subscriptions feature
+    public void subscribe(long customerId, long tariffId) {
+        setOneTariffForCustomer(customerId, tariffId);    //TODO: add multiply active subscriptions feature
     }
 
     @Override
     @Transactional
-    public void setOneTariffForCustomer(Customer customer, Long tariffId) {
-        Iterable<Subscription> subscriptions = getActiveSubscriptions(customer);
+    public void setOneTariffForCustomer(long customerId, Long tariffId) {
+        Iterable<Subscription> subscriptions = getActiveSubscriptions(customerId);
         boolean alreadySet = false;
         LocalDateTime now = LocalDateTime.now();
         for (Subscription subscription : subscriptions) {
@@ -61,6 +63,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
         }
         if (!alreadySet && tariffId != null) {
+            Customer customer = customerRepository.findById(customerId).orElseThrow();
             Tariff tariff = tariffRepository.findById(tariffId).orElseThrow();
             Subscription subscription = new Subscription();
             subscription.setCustomer(customer);
@@ -75,9 +78,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public void cancelSubscription(Customer customer, long subscriptionId) {
+    public void cancelSubscription(long customerId, long subscriptionId) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow();
-        if ((long) customer.getId() != subscription.getCustomer().getId()) {
+        if (customerId != subscription.getCustomer().getId()) {
             throw new ServiceException("The subscription does not belong to the customer");
         }
         subscription.setActiveUntil(LocalDateTime.now());

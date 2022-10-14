@@ -1,7 +1,8 @@
 package by.aab.isp.web.command.employee;
 
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -29,11 +30,11 @@ public class GenerateEmployeesCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        if (!(user instanceof Employee)) {
+    public boolean isAllowedForUser(UserDto user) {
+        if (!(user instanceof EmployeeDto)) {
             return false;
         }
-        Employee employee = (Employee) user;
+        EmployeeDto employee = (EmployeeDto) user;
         return employee.getRole() == Employee.Role.ADMIN;
     }
 }

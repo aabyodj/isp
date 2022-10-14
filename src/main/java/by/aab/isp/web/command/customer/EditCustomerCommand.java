@@ -1,5 +1,8 @@
 package by.aab.isp.web.command.customer;
 
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.*;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
@@ -27,12 +30,12 @@ public class EditCustomerCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         String id = req.getParameter("id");
-        Customer customer = userService.getCustomerById(id != null ? Long.parseLong(id)
-                                                                   : null);
+        CustomerDto customer = userService.getCustomerById(id != null ? Long.parseLong(id)
+                                                                      : null);
         req.setAttribute("customer", customer);
         if (customer.getId() != null) {
             Tariff tariff = StreamSupport
-                    .stream(subscriptionService.getActiveSubscriptions(customer).spliterator(), true)
+                    .stream(subscriptionService.getActiveSubscriptions(customer.getId()).spliterator(), true)
                     .map(Subscription::getTariff)
                     .findAny()
                     .orElse(null);
@@ -44,7 +47,7 @@ public class EditCustomerCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        return user instanceof Employee;
+    public boolean isAllowedForUser(UserDto user) {
+        return user instanceof EmployeeDto;
     }
 }

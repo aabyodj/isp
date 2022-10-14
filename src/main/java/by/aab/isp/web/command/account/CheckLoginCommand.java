@@ -1,6 +1,6 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -26,14 +26,14 @@ public class CheckLoginCommand extends Command {
         if ("?action=check_login".equals(redirect)) {   //FIXME: this is a dirty workaround. Must reliably determine referer instead
             redirect = "";
         }
-        User user = userService.login(email, password);
+        UserDto user = userService.login(email, password);
         HttpSession session = req.getSession();
         session.setAttribute("userId", user.getId());
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
+    public boolean isAllowedForUser(UserDto user) {
         return null == user;
     }
 }
