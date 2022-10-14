@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.config.ConfigManager;
 import by.aab.isp.entity.Promotion;
 import by.aab.isp.repository.OrderOffsetLimit;
@@ -30,6 +31,7 @@ public class PromotionServiceImpl implements PromotionService {
             new OrderOffsetLimit.Order("activeUntil", true)
     );
 
+    @AutoLogged
     @Override
     public Iterable<Promotion> getAll(Pagination pagination) {
         long count = promotionRepository.count();
@@ -56,6 +58,7 @@ public class PromotionServiceImpl implements PromotionService {
             new OrderOffsetLimit.Order("activeUntil", true)
     );
 
+    @AutoLogged
     @Override
     public Iterable<Promotion> getForHomepage() {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
@@ -64,6 +67,7 @@ public class PromotionServiceImpl implements PromotionService {
         return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit);
     }
 
+    @AutoLogged
     @Override
     public Promotion getById(Long id) {
         if (id != null) {
@@ -74,6 +78,7 @@ public class PromotionServiceImpl implements PromotionService {
         return promotion;
     }
 
+    @AutoLogged
     @Override
     public Promotion save(Promotion promotion) {
         promotion.setName(promotion.getName().strip());
@@ -86,6 +91,7 @@ public class PromotionServiceImpl implements PromotionService {
         }
     }
 
+    @AutoLogged
     @Override
     public void stop(long id) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow();
@@ -96,6 +102,7 @@ public class PromotionServiceImpl implements PromotionService {
         }
     }
 
+    @AutoLogged
     @Override
     public void generatePromotions(int quantity, boolean active) {
         LocalDateTime now = LocalDateTime.now();
