@@ -12,9 +12,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.UserService;
 import lombok.extern.log4j.Log4j2;
 
@@ -53,12 +53,12 @@ public class UserSessionFilter extends HttpFilter {
             log.trace("Anonymous user. Session id=" + session.getId());
             return;
         }
-        User user = userService.getById(userId);
+        UserDto user = userService.getById(userId);
         req.setAttribute("activeUser", user);
         log.trace(user + ". Session id=" + session.getId());
-        if (user instanceof Customer) {
+        if (user instanceof CustomerDto) {
             req.setAttribute("activeCustomer", user);
-        } else if (user instanceof Employee) {
+        } else if (user instanceof EmployeeDto) {
             req.setAttribute("activeEmployee", user);
         }
     }

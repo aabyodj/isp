@@ -1,12 +1,7 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.UserDao;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.entity.User;
-import by.aab.isp.service.*;
+import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
+import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -17,14 +12,33 @@ import java.util.Random;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-@Service("userService")
-public class UserServiceImpl implements UserService {
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UpdateCredentialsDto;
+import by.aab.isp.dto.UserDto;
+import by.aab.isp.entity.Customer;
+import by.aab.isp.entity.Employee;
+import by.aab.isp.entity.Tariff;
+import by.aab.isp.entity.User;
+import by.aab.isp.repository.CustomerRepository;
+import by.aab.isp.repository.EmployeeRepository;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.UserRepository;
+import by.aab.isp.service.Pagination;
+import by.aab.isp.service.ServiceException;
+import by.aab.isp.service.SubscriptionService;
+import by.aab.isp.service.TariffService;
+import by.aab.isp.service.UnauthorizedException;
+import by.aab.isp.service.UserService;
+import lombok.RequiredArgsConstructor;
 
-    private static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";
-    private static final String DEFAULT_ADMIN_PASSWORD = "admin";
+@Service("userService")
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
@@ -32,19 +46,15 @@ public class UserServiceImpl implements UserService {
             new OrderOffsetLimit.Order("email", true)
     );
 
-    private final UserDao userDao;
+    private final CustomerRepository customerRepository;
+    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final TariffService tariffService;
     private final SubscriptionService subscriptionService;
 
-    public UserServiceImpl(UserDao userDao, TariffService tariffService, SubscriptionService subscriptionService) {
-        this.userDao = userDao;
-        this.tariffService = tariffService;
-        this.subscriptionService = subscriptionService;
-    }
-
     @Override
     public Iterable<Customer> getAllCustomers(Pagination pagination) {
-        long count = userDao.countCustomers();
+        long count = customerRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -57,7 +67,7 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return userDao.findAllCustomers(orderOffsetLimit);
+            return customerRepository.findAll(orderOffsetLimit);
         } else {
             return List.of();
         }
@@ -65,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Iterable<Employee> getAllEmployees(Pagination pagination) {
-        long count = userDao.countEmployees();
+        long count = employeeRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -78,80 +88,142 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return userDao.findAllEmployees(orderOffsetLimit);
+            return employeeRepository.findAll(orderOffsetLimit);
         } else {
             return List.of();
         }
     }
 
     @Override
-    public User getById(long id) {
-        User user = userDao.findById(id).orElseThrow();
-        user.setPasswordHash(null);
-        return user;
+    public UserDto getById(long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return toUserDto(user);
+    }
+
+    private UserDto toUserDto(User user) {
+        UserDto dto;
+        if (user instanceof Customer) {
+            Customer customer = (Customer) user;
+            CustomerDto customerDto = new CustomerDto();
+            customerDto.setBalance(customer.getBalance());
+            customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
+            customerDto.setPayoffDate(customer.getPayoffDate());
+            dto = customerDto;
+        } else if (user instanceof Employee) {
+            Employee employee = (Employee) user;
+            EmployeeDto employeeDto = new EmployeeDto();
+            employeeDto.setRole(employee.getRole());
+            dto = employeeDto;
+        } else {
+            throw new ServiceException("Converter is undefined for entity " + user.getClass());
+        }
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setActive(user.isActive());
+        return dto;
     }
 
     @Override
-    public Customer getCustomerById(Long id) {
-        Customer customer;
+    public CustomerDto getCustomerById(Long id) {
+        CustomerDto customer;
         if (null == id) {
-            customer = new Customer();
+            customer = new CustomerDto();
             customer.setBalance(BigDecimal.ZERO);
             customer.setPermittedOverdraft(BigDecimal.ZERO);
         } else {
-            customer = userDao.findCustomerById(id).orElseThrow();
-            customer.setPasswordHash(null);
+            customer = (CustomerDto) toUserDto(customerRepository.findById(id).orElseThrow());
         }
         return customer;
     }
 
     @Override
-    public Employee getEmployeeById(Long id) {
-        Employee employee;
+    public EmployeeDto getEmployeeById(Long id) {
+        EmployeeDto employee;
         if (null == id) {
-            employee = new Employee();
+            employee = new EmployeeDto();
             employee.setRole(Employee.Role.MANAGER);
         } else {
-            employee = userDao.findEmployeeById(id).orElseThrow();
-            employee.setPasswordHash(null);
+            employee = (EmployeeDto) toUserDto(employeeRepository.findById(id).orElseThrow());
         }
         return employee;
     }
 
     @Override
-    public User save(User user, String password) {
-        //TODO: validate email
-        user.setEmail(user.getEmail().strip());
-        if (null != password) {
-            if (!isStrongPassword(password)) {
-                throw new ServiceException("Password is too weak");
-            }
-            user.setPasswordHash(hashPassword(password));
-        }
-        if (user.getId() == null) {
-            if (null == password) {
+    @Transactional
+    public UserDto save(UserDto dto) {
+        User user;
+        if (dto.getId() != null) {
+            user = userRepository.findById(dto.getId()).orElseThrow();
+            setFields(dto, user);
+            userRepository.update(user);
+        } else {
+            if (null == dto.getPassword()) {
                 throw new ServiceException("Password required");
             }
-            user = userDao.save(user);
-        } else {
-            if (user instanceof Employee) {
-                Employee employee = (Employee) user;
-                if (!isActiveAdmin(employee) && noMoreAdmins(employee)) {
-                    throw new ServiceException("Unable to delete last admin");
-                }
-            }
-            userDao.update(user);
+            user = toNewUser(dto);
+            user = userRepository.save(user);
+            dto.setId(user.getId());
         }
-        user.setPasswordHash(null);
+        return dto;
+    }
+
+    private void setFields(UserDto dto, User user) {
+        if (dto instanceof CustomerDto) {
+            CustomerDto customerDto = (CustomerDto) dto;
+            Customer customer = (Customer) user;
+            customer.setBalance(customerDto.getBalance());
+            customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
+            customer.setPayoffDate(customerDto.getPayoffDate());
+        } else if (dto instanceof EmployeeDto) {
+            EmployeeDto employeeDto = (EmployeeDto) dto;
+            Employee employee = (Employee) user;
+            if (!isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
+                throw new ServiceException("Unable to delete last admin");
+            }
+            employee.setRole(employeeDto.getRole());
+        }
+        String email = dto.getEmail().strip();
+        if (!email.equals(user.getEmail())) {
+            validateEmailConstraints(email);
+            user.setEmail(email);
+        }
+        String password = dto.getPassword();
+        if (password != null) {
+            validatePasswordConstraints(password);
+            user.setPasswordHash(hashPassword(password));
+        }
+        user.setActive(dto.isActive());
+    }
+
+    private User toNewUser(UserDto dto) {
+        User user;
+        if (dto instanceof CustomerDto) {
+            user = new Customer();
+        } else if (dto instanceof EmployeeDto) {
+            user = new Employee();
+        } else {
+            throw new ServiceException("Converter is undefined for DTO " + dto.getClass());
+        }
+        setFields(dto, user);
         return user;
     }
 
-    private static boolean isActiveAdmin(Employee employee) {
+    private static boolean isActiveAdmin(EmployeeDto employee) {
         return employee.getRole() == Employee.Role.ADMIN && employee.isActive();
     }
 
-    private boolean noMoreAdmins(Employee employee) {
-        return userDao.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
+    private boolean noMoreAdmins(EmployeeDto employee) {
+        return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
+    }
+
+    private void validateEmailConstraints(String email) {
+        // TODO Auto-generated method stub
+    }
+
+    private void validatePasswordConstraints(String password) {
+        if (!isStrongPassword(password)) {
+            throw new ServiceException("Password is too weak");
+        }
     }
 
     private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
@@ -178,9 +250,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String email, String password) {
+    public UserDto login(String email, String password) {
         byte[] hash = hashWithDelay(password);
-        User user = userDao.findByEmailAndActive(email, true).orElse(null);
+        User user = userRepository.findByEmailAndActive(email, true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
             if (!Arrays.equals(hash, savedHash)) {
@@ -190,46 +262,55 @@ public class UserServiceImpl implements UserService {
         if (null == user) {
             throw new UnauthorizedException(email);
         }
-        user.setPasswordHash(null);
-        return user;
+        return toUserDto(user);
     }
 
     @Override
-    public void updateCredentials(User user, String newEmail, String newPassword, String currentPassword) {
-        byte[] hash = hashWithDelay(currentPassword);
-        user = userDao.findById(user.getId()).orElseThrow();
+    @Transactional
+    public void updateCredentials(UpdateCredentialsDto dto) {
+        byte[] hash = hashWithDelay(dto.getCurrentPassword());
+        User user = userRepository.findById(dto.getUserId()).orElseThrow();
         if (!Arrays.equals(user.getPasswordHash(), hash)) {
             throw new ServiceException("Wrong current password");   //TODO: maybe invalidate the user session?
         }
-        user.setEmail(newEmail);
-        save(user, newPassword);
+        String email = dto.getEmail().strip();
+        if (!email.equals(user.getEmail())) {
+            validateEmailConstraints(email);
+            user.setEmail(email);
+        }
+        String password = dto.getNewPassword();
+        if (password != null) {
+            validatePasswordConstraints(password);
+            user.setPasswordHash(hashPassword(password));
+        }
+        userRepository.update(user);
     }
 
     @Override
-    public void replenishBalance(Customer customer, BigDecimal amount) {
+    public void replenishBalance(long customerId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("Cannot replenish balance by nonpositive amount");
         }
-        customer = userDao.findCustomerById(customer.getId()).orElseThrow();
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
         BigDecimal balance = customer.getBalance();
         balance = balance.add(amount);
         customer.setBalance(balance);
         if (balance.compareTo(BigDecimal.ZERO) >= 0) {
             customer.setPayoffDate(null);
         }
-        userDao.update(customer);
+        userRepository.update(customer);
     }
 
     @PostConstruct
     @Override
     public void createDefaultAdmin() {
-        if (userDao.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
-            Employee admin = getEmployeeById(null);
+        if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
+            Employee admin = new Employee();
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
             admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
-            userDao.save(admin);
+            userRepository.save(admin);
         }
     }
 
@@ -257,10 +338,10 @@ public class UserServiceImpl implements UserService {
             customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
             customer.setActive(active);
             try {
-                customer = (Customer) userDao.save(customer);
+                customer = (Customer) userRepository.save(customer);
                 int tariffIndex = random.nextInt(tariffs.length + 1);
                 if (tariffIndex < tariffs.length) {
-                    subscriptionService.subscribe(customer, tariffs[tariffIndex].getId());
+                    subscriptionService.subscribe(customer.getId(), tariffs[tariffIndex].getId());
                 }
                 quantity--;
             } catch (Exception ignore) {
@@ -281,7 +362,7 @@ public class UserServiceImpl implements UserService {
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             try {
-                userDao.save(employee);
+                userRepository.save(employee);
                 quantity--;
             } catch (Exception ignore) {
             }

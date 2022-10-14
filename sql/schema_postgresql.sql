@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "customers" (
 
 CREATE TABLE IF NOT EXISTS "employees" (
     "user_id" bigint PRIMARY KEY,
-    "role_id" bigint NOT NULL,
+    "role_id" int NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "users"("id")
 );
 
@@ -48,5 +48,6 @@ CREATE TABLE IF NOT EXISTS "subscriptions" (
     "traffic_per_period" bigint,
     "active_since" TIMESTAMP,
     "active_until" TIMESTAMP,
-    FOREIGN KEY ("customer_id") REFERENCES "customers"("user_id")
+    FOREIGN KEY ("customer_id") REFERENCES "customers"("user_id"),
+    FOREIGN KEY ("tariff_id") REFERENCES "tariff"("id")
 );

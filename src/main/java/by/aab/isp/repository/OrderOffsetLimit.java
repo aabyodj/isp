@@ -1,4 +1,4 @@
-package by.aab.isp.dao;
+package by.aab.isp.repository;
 
 import lombok.Data;
 

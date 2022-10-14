@@ -1,29 +1,27 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.config.ConfigManager;
-import by.aab.isp.dao.DaoException;
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.PromotionDao;
-import by.aab.isp.entity.Promotion;
-import by.aab.isp.service.Pagination;
-import by.aab.isp.service.PromotionService;
-import by.aab.isp.service.ServiceException;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import by.aab.isp.config.ConfigManager;
+import by.aab.isp.entity.Promotion;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.PromotionRepository;
+import by.aab.isp.service.Pagination;
+import by.aab.isp.service.PromotionService;
 
 @Service("promotionService")
 public class PromotionServiceImpl implements PromotionService {
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
-    private final PromotionDao promotionDao;
+    private final PromotionRepository promotionRepository;
     private final ConfigManager config;
 
-    public PromotionServiceImpl(PromotionDao promotionDao, ConfigManager config) {
-        this.promotionDao = promotionDao;
+    public PromotionServiceImpl(PromotionRepository promotionRepository, ConfigManager config) {
+        this.promotionRepository = promotionRepository;
         this.config = config;
     }
 
@@ -34,7 +32,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public Iterable<Promotion> getAll(Pagination pagination) {
-        long count = promotionDao.count();
+        long count = promotionRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -47,7 +45,7 @@ public class PromotionServiceImpl implements PromotionService {
             orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return promotionDao.findAll(orderOffsetLimit);
+            return promotionRepository.findAll(orderOffsetLimit);
         } else {
             return List.of();
         }
@@ -63,13 +61,13 @@ public class PromotionServiceImpl implements PromotionService {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
         orderOffsetLimit.setOrderList(ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL);
         orderOffsetLimit.setLimit(config.getInt("homepage.promotionsCount", DEFAULT_PROMOTIONS_ON_HOMEPAGE));
-        return promotionDao.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit);
+        return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit);
     }
 
     @Override
     public Promotion getById(Long id) {
         if (id != null) {
-            return promotionDao.findById(id).orElseThrow();
+            return promotionRepository.findById(id).orElseThrow();
         }
         Promotion promotion = new Promotion();
         promotion.setActiveSince(LocalDateTime.now());
@@ -80,25 +78,21 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion save(Promotion promotion) {
         promotion.setName(promotion.getName().strip());
         promotion.setDescription(promotion.getDescription().strip());
-        try {
-            if (promotion.getId() == null) {
-                return promotionDao.save(promotion);
-            } else {
-                promotionDao.update(promotion);
-                return promotion;
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+        if (promotion.getId() == null) {
+            return promotionRepository.save(promotion);
+        } else {
+            promotionRepository.update(promotion);
+            return promotion;
         }
     }
 
     @Override
     public void stop(long id) {
-        Promotion promotion = promotionDao.findById(id).orElseThrow();
+        Promotion promotion = promotionRepository.findById(id).orElseThrow();
         LocalDateTime now = LocalDateTime.now();
         if (promotion.getActiveUntil() == null || promotion.getActiveUntil().isAfter(now)) {
             promotion.setActiveUntil(now);
-            promotionDao.update(promotion);
+            promotionRepository.update(promotion);
         }
     }
 
@@ -113,7 +107,7 @@ public class PromotionServiceImpl implements PromotionService {
             if (!active) {
                 promotion.setActiveUntil(now);
             }
-            promotionDao.save(promotion);
+            promotionRepository.save(promotion);
         }
     }
 

@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.customer;
 
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
@@ -39,9 +39,10 @@ public class SaveCustomerCommand extends Command {
         if (null != password && password.isBlank()) {
             password = null;
         }
-        Customer customer = new Customer();
+        CustomerDto customer = new CustomerDto();
         customer.setId(id);
         customer.setEmail(req.getParameter("email"));
+        customer.setPassword(password);
         customer.setActive(req.getParameter("active") != null);
         customer.setBalance(new BigDecimal(req.getParameter("balance")));
         customer.setPermittedOverdraft(new BigDecimal(req.getParameter("permitted-overdraft")));
@@ -49,15 +50,16 @@ public class SaveCustomerCommand extends Command {
         if (payoffDate != null && !payoffDate.isBlank()) {
             customer.setPayoffDate(LocalDate.parse(payoffDate).plusDays(1).atStartOfDay().minusNanos(1000));
         }
-        userService.save(customer, password);   //TODO: terminate their session
-        long tariffId = Long.parseLong(req.getParameter("tariff"));
-        subscriptionService.setOneTariffForCustomer(customer, tariffId);
+        customer = (CustomerDto) userService.save(customer);   //TODO: terminate their session
+        String tariffParam = req.getParameter("tariff");
+        Long tariffId = !tariffParam.equals("none") ? Long.parseLong(tariffParam) : null;
+        subscriptionService.setOneTariffForCustomer(customer.getId(), tariffId);    //TODO: use extended DTO for this
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        return user instanceof Employee;
+    public boolean isAllowedForUser(UserDto user) {
+        return user instanceof EmployeeDto;
     }
 }

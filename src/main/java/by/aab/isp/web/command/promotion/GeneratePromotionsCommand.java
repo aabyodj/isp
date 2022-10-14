@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.promotion;
 
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.EmployeeDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class GeneratePromotionsCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        return user instanceof Employee;
+    public boolean isAllowedForUser(UserDto user) {
+        return user instanceof EmployeeDto;
     }
 }

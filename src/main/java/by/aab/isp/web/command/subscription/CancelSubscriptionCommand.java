@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.subscription;
 
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -20,18 +20,18 @@ public class CancelSubscriptionCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        Customer customer = (Customer) req.getAttribute("activeCustomer");
+        CustomerDto customer = (CustomerDto) req.getAttribute("activeCustomer");
         if (customer == null) {
             throw new RuntimeException("Not implemented");    //TODO: implement this
         }
         long subscriptionId = Long.parseLong(req.getParameter("subscription_id"));
-        subscriptionService.cancelSubscription(customer, subscriptionId);
+        subscriptionService.cancelSubscription(customer.getId(), subscriptionId);
         String redirect = req.getParameter("redirect");
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
-        return user instanceof Customer;
+    public boolean isAllowedForUser(UserDto user) {
+        return user instanceof CustomerDto;
     }
 }

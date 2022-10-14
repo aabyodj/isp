@@ -1,17 +1,16 @@
 package by.aab.isp.service;
 
-import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 
 public interface SubscriptionService {
 
-    Iterable<Subscription> getByCustomer(Customer customer);
+    Iterable<Subscription> getByCustomerId(long customerId);
 
-    Iterable<Subscription> getActiveSubscriptions(Customer customer);
+    Iterable<Subscription> getActiveSubscriptions(long customerId);
 
-    void subscribe(Customer customer, long tariffId);
+    void subscribe(long customerId, long tariffId);
 
-    void setOneTariffForCustomer(Customer customer, long tariffId);
+    void setOneTariffForCustomer(long customerId, Long tariffId);
 
-    void cancelSubscription(Customer customer, long subscriptionId);
+    void cancelSubscription(long customerId, long subscriptionId);
 }

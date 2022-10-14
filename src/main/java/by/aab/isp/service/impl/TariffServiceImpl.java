@@ -1,8 +1,8 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.TariffDao;
 import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.TariffService;
@@ -16,16 +16,16 @@ import org.springframework.stereotype.Service;
 @Service("tariffService")
 public class TariffServiceImpl implements TariffService {
     
-    private final TariffDao tariffDao;
+    private final TariffRepository tariffRepository;
     
-    public TariffServiceImpl(TariffDao tariffDao) {
-        this.tariffDao = tariffDao;
+    public TariffServiceImpl(TariffRepository tariffDao) {
+        this.tariffRepository = tariffDao;
     }
 
     @Override
     public Iterable<Tariff> getAll() {
         try {
-            return tariffDao.findAll();
+            return tariffRepository.findAll();
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -33,7 +33,7 @@ public class TariffServiceImpl implements TariffService {
 
     @Override
     public Iterable<Tariff> getAll(Pagination pagination) {
-        long count = tariffDao.count();
+        long count = tariffRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
         if (offset >= count) {
@@ -45,7 +45,7 @@ public class TariffServiceImpl implements TariffService {
             OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return tariffDao.findAll(orderOffsetLimit); //TODO: add "order" field to Tariff
+            return tariffRepository.findAll(orderOffsetLimit); //TODO: add "order" field to Tariff
         } else {
             return List.of();
         }
@@ -53,17 +53,17 @@ public class TariffServiceImpl implements TariffService {
 
     @Override
     public Iterable<Tariff> getActive() {
-        return tariffDao.findByActive(true);
+        return tariffRepository.findByActive(true);
     }
 
     @Override
     public Iterable<Tariff> getForHomepage() {
-        return tariffDao.findByActive(true);
+        return tariffRepository.findByActive(true);
     }
 
     @Override
     public Tariff getById(Long id) {
-        return id != null ? tariffDao.findById(id).orElseThrow()
+        return id != null ? tariffRepository.findById(id).orElseThrow()
                           : new Tariff();
     }
 
@@ -73,9 +73,9 @@ public class TariffServiceImpl implements TariffService {
         tariff.setDescription(tariff.getDescription().strip());
         try {
             if (tariff.getId() == null) {
-                return tariffDao.save(tariff);
+                return tariffRepository.save(tariff);
             } else {
-               tariffDao.update(tariff);
+               tariffRepository.update(tariff);
                 return tariff;
             }
         } catch (Exception e) {
@@ -112,7 +112,7 @@ public class TariffServiceImpl implements TariffService {
                 tariff.setPrice(new BigDecimal(MAX_PRICE * (index + 1) / TRAFFIC.length));
             }
             tariff.setActive(active);
-            tariffDao.save(tariff);
+            tariffRepository.save(tariff);
         }
     }
 

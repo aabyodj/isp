@@ -1,9 +1,9 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.entity.Customer;
+import by.aab.isp.dto.CustomerDto;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
-import by.aab.isp.entity.User;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.FormatUtil;
@@ -32,9 +32,9 @@ public class MyAccountCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        Customer customer = (Customer) req.getAttribute("activeCustomer");
+        CustomerDto customer = (CustomerDto) req.getAttribute("activeCustomer");
         if (customer != null) {
-            Iterable<Subscription> subscriptions = subscriptionService.getByCustomer(customer);
+            Iterable<Subscription> subscriptions = subscriptionService.getByCustomerId(customer.getId());
             LocalDateTime now = LocalDateTime.now();
             if (subscriptions.spliterator().estimateSize() > 0) {
                 req.setAttribute("subscriptions", subscriptions);
@@ -60,7 +60,7 @@ public class MyAccountCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
+    public boolean isAllowedForUser(UserDto user) {
         return user != null;
     }
 }

@@ -1,6 +1,6 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.entity.User;
+import by.aab.isp.dto.UserDto;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +17,7 @@ public class LogoutCommand extends Command {
     }
 
     @Override
-    public boolean isAllowedForUser(User user) {
+    public boolean isAllowedForUser(UserDto user) {
         return user != null;
     }
 }

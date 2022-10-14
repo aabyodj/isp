@@ -1,29 +1,30 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.dao.OrderOffsetLimit;
-import by.aab.isp.dao.SubscriptionDao;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Subscription;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.service.ServiceException;
-import by.aab.isp.service.SubscriptionService;
-import by.aab.isp.service.TariffService;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.entity.Customer;
+import by.aab.isp.entity.Subscription;
+import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.CustomerRepository;
+import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.SubscriptionRepository;
+import by.aab.isp.repository.TariffRepository;
+import by.aab.isp.service.ServiceException;
+import by.aab.isp.service.SubscriptionService;
+import lombok.RequiredArgsConstructor;
+
 @Service("subscriptionService")
+@RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private final SubscriptionDao subscriptionDao;
-    private final TariffService tariffService;
-
-    public SubscriptionServiceImpl(SubscriptionDao subscriptionDao, TariffService tariffService) {
-        this.subscriptionDao = subscriptionDao;
-        this.tariffService = tariffService;
-    }
+    private final CustomerRepository customerRepository;;
+    private final SubscriptionRepository subscriptionRepository;
+    private final TariffRepository tariffRepository;
 
     private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
             new OrderOffsetLimit.Order("activeSince", true),
@@ -31,37 +32,39 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     );
 
     @Override
-    public Iterable<Subscription> getByCustomer(Customer customer) {
+    public Iterable<Subscription> getByCustomerId(long customerId) {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
         orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
-        return subscriptionDao.findByCustomerId(customer.getId(), orderOffsetLimit);
+        return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit);
     }
 
     @Override
-    public Iterable<Subscription> getActiveSubscriptions(Customer customer) {
-        return subscriptionDao.findByCustomerIdAndActivePeriodContains(customer.getId(), LocalDateTime.now());
+    public Iterable<Subscription> getActiveSubscriptions(long customerId) {
+        return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, LocalDateTime.now());
     }
 
     @Override
-    public void subscribe(Customer customer, long tariffId) {
-        setOneTariffForCustomer(customer, tariffId);    //TODO: add multiply active subscriptions feature
+    public void subscribe(long customerId, long tariffId) {
+        setOneTariffForCustomer(customerId, tariffId);    //TODO: add multiply active subscriptions feature
     }
 
     @Override
-    public void setOneTariffForCustomer(Customer customer, long tariffId) {
-        Iterable<Subscription> subscriptions = getActiveSubscriptions(customer);
+    @Transactional
+    public void setOneTariffForCustomer(long customerId, Long tariffId) {
+        Iterable<Subscription> subscriptions = getActiveSubscriptions(customerId);
         boolean alreadySet = false;
         LocalDateTime now = LocalDateTime.now();
         for (Subscription subscription : subscriptions) {
-            if (subscription.getTariff().getId() == tariffId) {
+            if (subscription.getTariff().getId().equals(tariffId)) {
                 alreadySet = true;
             } else {
                 subscription.setActiveUntil(now);
-                subscriptionDao.update(subscription);
+                subscriptionRepository.update(subscription);
             }
         }
-        if (!alreadySet) {
-            Tariff tariff = tariffService.getById(tariffId);
+        if (!alreadySet && tariffId != null) {
+            Customer customer = customerRepository.findById(customerId).orElseThrow();
+            Tariff tariff = tariffRepository.findById(tariffId).orElseThrow();
             Subscription subscription = new Subscription();
             subscription.setCustomer(customer);
             subscription.setTariff(tariff);
@@ -69,17 +72,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscription.setTrafficPerPeriod(tariff.getIncludedTraffic());
             subscription.setActiveSince(now);
             subscription.setActiveUntil(null);
-            subscriptionDao.save(subscription);
+            subscriptionRepository.save(subscription);
         }
     }
 
     @Override
-    public void cancelSubscription(Customer customer, long subscriptionId) {
-        Subscription subscription = subscriptionDao.findById(subscriptionId).orElseThrow();
-        if ((long) customer.getId() != subscription.getCustomer().getId()) {
+    @Transactional
+    public void cancelSubscription(long customerId, long subscriptionId) {
+        Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow();
+        if (customerId != subscription.getCustomer().getId()) {
             throw new ServiceException("The subscription does not belong to the customer");
         }
         subscription.setActiveUntil(LocalDateTime.now());
-        subscriptionDao.update(subscription);
+        subscriptionRepository.update(subscription);
     }
 }

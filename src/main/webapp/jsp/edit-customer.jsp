@@ -40,7 +40,7 @@
                     <li>
                         <label for="tariff"><fmt:message key="msg.subscription.tariff" /></label>
                         <select name="tariff" id="tariff">
-                            <option value="0"${activeTariff == null ? ' selected' : ''}>
+                            <option value="none" ${activeTariff == null ? ' selected' : ''}>
                                 <fmt:message key="msg.subscription.noTariff" />
                             </option>
                             <c:forEach var="tariff" items="${tariffs}">
