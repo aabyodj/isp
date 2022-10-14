@@ -10,6 +10,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -23,9 +24,11 @@ public abstract class User {
     private Long id;
 
     @Column(name = "email", unique = true, nullable = false, length = 50)
+    @ToString.Exclude
     private String email;
 
     @Column(name = "password_hash", nullable = false)
+    @ToString.Exclude
     private byte[] passwordHash;
 
     @Column(name = "active", nullable = false)

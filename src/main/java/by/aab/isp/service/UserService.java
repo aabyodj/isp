@@ -1,5 +1,6 @@
 package by.aab.isp.service;
 
+import by.aab.isp.dto.CredentialsDto;
 import by.aab.isp.dto.CustomerDto;
 import by.aab.isp.dto.EmployeeDto;
 import by.aab.isp.dto.UpdateCredentialsDto;
@@ -22,7 +23,7 @@ public interface UserService {
 
     UserDto save(UserDto user);
 
-    UserDto login(String email, String password);
+    UserDto login(CredentialsDto credentials);
 
     void updateCredentials(UpdateCredentialsDto dto);
 

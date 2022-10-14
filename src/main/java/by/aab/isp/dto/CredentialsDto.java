@@ -4,16 +4,11 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-public abstract class UserDto {
-
-    private Long id;
+public class CredentialsDto {
 
     @ToString.Exclude
     private String email;
 
     @ToString.Exclude
     private String password;
-
-    private boolean active;
-
 }

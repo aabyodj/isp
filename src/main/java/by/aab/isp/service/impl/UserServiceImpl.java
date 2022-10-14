@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.dto.CredentialsDto;
 import by.aab.isp.dto.CustomerDto;
 import by.aab.isp.dto.EmployeeDto;
 import by.aab.isp.dto.UpdateCredentialsDto;
@@ -258,9 +259,9 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public UserDto login(String email, String password) {
-        byte[] hash = hashWithDelay(password);
-        User user = userRepository.findByEmailAndActive(email, true).orElse(null);
+    public UserDto login(CredentialsDto credentials) {
+        byte[] hash = hashWithDelay(credentials.getPassword());
+        User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
             if (!Arrays.equals(hash, savedHash)) {
@@ -268,7 +269,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (null == user) {
-            throw new UnauthorizedException(email);
+            throw new UnauthorizedException(credentials.getEmail());
         }
         return toUserDto(user);
     }
