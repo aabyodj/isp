@@ -4,8 +4,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -16,10 +14,6 @@ import by.aab.isp.repository.OrderOffsetLimit;
 
 @Transactional
 public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
-
-    protected static final char QUOTE_CHAR = '"';     //TODO: get rid of this
-    protected static final String DOUBLE_QUOTE_CHAR = Character.toString(QUOTE_CHAR) + QUOTE_CHAR;
-    protected static final Pattern QUOTE_CHAR_PATTERN = Pattern.compile(Pattern.quote(Character.toString(QUOTE_CHAR)));
     
     protected final Class<T> clazz;
     protected final String qlCount;
@@ -71,11 +65,6 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
         if (!entityManager.contains(entity)) {
             entityManager.merge(entity);
         }
-    }
-    
-    protected final String quote(String identifier) {
-        identifier = QUOTE_CHAR_PATTERN.matcher(identifier).replaceAll(DOUBLE_QUOTE_CHAR);
-        return QUOTE_CHAR + identifier + QUOTE_CHAR;
     }
     
     protected final String formatOrder(OrderOffsetLimit.Order order) {
