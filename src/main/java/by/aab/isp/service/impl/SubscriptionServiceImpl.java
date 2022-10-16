@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
@@ -31,6 +32,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             new OrderOffsetLimit.Order("activeUntil", true)
     );
 
+    @AutoLogged
     @Override
     public Iterable<Subscription> getByCustomerId(long customerId) {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
@@ -38,16 +40,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit);
     }
 
+    @AutoLogged
     @Override
     public Iterable<Subscription> getActiveSubscriptions(long customerId) {
         return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, LocalDateTime.now());
     }
 
+    @AutoLogged
     @Override
     public void subscribe(long customerId, long tariffId) {
         setOneTariffForCustomer(customerId, tariffId);    //TODO: add multiply active subscriptions feature
     }
 
+    @AutoLogged
     @Override
     @Transactional
     public void setOneTariffForCustomer(long customerId, Long tariffId) {
@@ -76,6 +81,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
+    @AutoLogged
     @Override
     @Transactional
     public void cancelSubscription(long customerId, long subscriptionId) {

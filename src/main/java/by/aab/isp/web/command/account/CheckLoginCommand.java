@@ -1,5 +1,6 @@
 package by.aab.isp.web.command.account;
 
+import by.aab.isp.dto.CredentialsDto;
 import by.aab.isp.dto.UserDto;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
@@ -20,13 +21,14 @@ public class CheckLoginCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+        CredentialsDto credentials = new CredentialsDto();
+        credentials.setEmail(req.getParameter("email"));
+        credentials.setPassword(req.getParameter("password"));
         String redirect = req.getParameter("redirect");
         if ("?action=check_login".equals(redirect)) {   //FIXME: this is a dirty workaround. Must reliably determine referer instead
             redirect = "";
         }
-        UserDto user = userService.login(email, password);
+        UserDto user = userService.login(credentials);
         HttpSession session = req.getSession();
         session.setAttribute("userId", user.getId());
         return SCHEMA_REDIRECT + req.getContextPath() + redirect;

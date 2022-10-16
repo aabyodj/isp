@@ -16,6 +16,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.dto.CredentialsDto;
 import by.aab.isp.dto.CustomerDto;
 import by.aab.isp.dto.EmployeeDto;
 import by.aab.isp.dto.UpdateCredentialsDto;
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
     private final TariffService tariffService;
     private final SubscriptionService subscriptionService;
 
+    @AutoLogged
     @Override
     public Iterable<Customer> getAllCustomers(Pagination pagination) {
         long count = customerRepository.count();
@@ -73,6 +76,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @AutoLogged
     @Override
     public Iterable<Employee> getAllEmployees(Pagination pagination) {
         long count = employeeRepository.count();
@@ -94,6 +98,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @AutoLogged
     @Override
     public UserDto getById(long id) {
         User user = userRepository.findById(id).orElseThrow();
@@ -123,6 +128,7 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
+    @AutoLogged
     @Override
     public CustomerDto getCustomerById(Long id) {
         CustomerDto customer;
@@ -136,6 +142,7 @@ public class UserServiceImpl implements UserService {
         return customer;
     }
 
+    @AutoLogged
     @Override
     public EmployeeDto getEmployeeById(Long id) {
         EmployeeDto employee;
@@ -148,6 +155,7 @@ public class UserServiceImpl implements UserService {
         return employee;
     }
 
+    @AutoLogged
     @Override
     @Transactional
     public UserDto save(UserDto dto) {
@@ -249,10 +257,11 @@ public class UserServiceImpl implements UserService {
         return hashPassword(password);
     }
 
+    @AutoLogged
     @Override
-    public UserDto login(String email, String password) {
-        byte[] hash = hashWithDelay(password);
-        User user = userRepository.findByEmailAndActive(email, true).orElse(null);
+    public UserDto login(CredentialsDto credentials) {
+        byte[] hash = hashWithDelay(credentials.getPassword());
+        User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
         if (user != null) {
             byte[] savedHash = user.getPasswordHash();
             if (!Arrays.equals(hash, savedHash)) {
@@ -260,11 +269,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (null == user) {
-            throw new UnauthorizedException(email);
+            throw new UnauthorizedException(credentials.getEmail());
         }
         return toUserDto(user);
     }
 
+    @AutoLogged
     @Override
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
@@ -286,6 +296,7 @@ public class UserServiceImpl implements UserService {
         userRepository.update(user);
     }
 
+    @AutoLogged
     @Override
     public void replenishBalance(long customerId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -301,6 +312,7 @@ public class UserServiceImpl implements UserService {
         userRepository.update(customer);
     }
 
+    @AutoLogged
     @PostConstruct
     @Override
     public void createDefaultAdmin() {
@@ -320,6 +332,7 @@ public class UserServiceImpl implements UserService {
     private static final double GENERATED_CUSTOMER_MAX_BALANCE = 100;
     private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
+    @AutoLogged
     @Override
     public void generateCustomers(int quantity, boolean active) {
         Tariff[] tariffs = StreamSupport
@@ -349,6 +362,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @AutoLogged
     @Override
     public void generateEmployees(int quantity, boolean active) {
         Employee.Role[] roles = Employee.Role.values();

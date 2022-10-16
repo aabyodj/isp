@@ -1,5 +1,6 @@
 package by.aab.isp.service.impl;
 
+import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.TariffRepository;
@@ -22,6 +23,7 @@ public class TariffServiceImpl implements TariffService {
         this.tariffRepository = tariffDao;
     }
 
+    @AutoLogged
     @Override
     public Iterable<Tariff> getAll() {
         try {
@@ -31,6 +33,7 @@ public class TariffServiceImpl implements TariffService {
         }
     }
 
+    @AutoLogged
     @Override
     public Iterable<Tariff> getAll(Pagination pagination) {
         long count = tariffRepository.count();
@@ -51,22 +54,26 @@ public class TariffServiceImpl implements TariffService {
         }
     }
 
+    @AutoLogged
     @Override
     public Iterable<Tariff> getActive() {
         return tariffRepository.findByActive(true);
     }
 
+    @AutoLogged
     @Override
     public Iterable<Tariff> getForHomepage() {
         return tariffRepository.findByActive(true);
     }
 
+    @AutoLogged
     @Override
     public Tariff getById(Long id) {
         return id != null ? tariffRepository.findById(id).orElseThrow()
                           : new Tariff();
     }
 
+    @AutoLogged
     @Override
     public Tariff save(Tariff tariff) {
         tariff.setName(tariff.getName().strip());
@@ -93,6 +100,7 @@ public class TariffServiceImpl implements TariffService {
             50 * MB, 100 * MB, 200 * MB, 500 * MB, TB, 2 * TB, 5 * TB, 10 * TB, 20 * TB, 30 * TB};
     private static final double MAX_PRICE = 49.95;
 
+    @AutoLogged
     @Override
     public void generateTariffs(int quantity, boolean active) {
         for (int i = 1; i <= quantity; i++) {
