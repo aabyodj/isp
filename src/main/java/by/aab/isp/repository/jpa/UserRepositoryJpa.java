@@ -15,10 +15,6 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 @Transactional
 public class UserRepositoryJpa extends AbstractRepositoryJpa<User> implements UserRepository {
 
-    public UserRepositoryJpa() {
-        super(User.class);
-    }
-
     private final String qlSelectWhereEmailAndActive = qlSelectAll + " WHERE email = :email and active =";
     
     @Override

@@ -1,5 +1,6 @@
 package by.aab.isp.repository.jpa;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -20,15 +21,16 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
     protected static final String DOUBLE_QUOTE_CHAR = Character.toString(QUOTE_CHAR) + QUOTE_CHAR;
     protected static final Pattern QUOTE_CHAR_PATTERN = Pattern.compile(Pattern.quote(Character.toString(QUOTE_CHAR)));
     
-    protected final Class<T> clazz;     //TODO: get rid of this
+    protected final Class<T> clazz;
     protected final String qlCount;
     protected final String qlSelectAll;
 
     @PersistenceContext
     protected EntityManager entityManager;
     
-    public AbstractRepositoryJpa(Class<T> clazz) {
-        this.clazz = clazz;
+    @SuppressWarnings("unchecked")
+    public AbstractRepositoryJpa() {
+        this.clazz = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         qlSelectAll = "FROM " + clazz.getName();
         qlCount = "SELECT count(*) " + qlSelectAll;
     }
