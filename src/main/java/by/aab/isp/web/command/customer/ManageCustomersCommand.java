@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.customer;
 
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.UserService;

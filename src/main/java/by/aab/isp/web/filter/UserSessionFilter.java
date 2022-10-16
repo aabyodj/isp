@@ -12,9 +12,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.UserService;
 import lombok.extern.log4j.Log4j2;
 

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "tariffs" (
     "id" SERIAL8 PRIMARY KEY,
     "name" character varying(15) NOT NULL,
     "description" character varying(50) NOT NULL,
-    "bandwidth" int,
+    "bandwidth" int NOT NULL,
     "included_traffic" bigint,
     "price" numeric(10,2) NOT NULL,
     "active" boolean NOT NULL

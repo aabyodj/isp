@@ -17,11 +17,11 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.dto.CredentialsDto;
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UpdateCredentialsDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UpdateCredentialsDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;

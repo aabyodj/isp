@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.SubscriptionService;

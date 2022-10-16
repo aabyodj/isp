@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.customer;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.*;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;

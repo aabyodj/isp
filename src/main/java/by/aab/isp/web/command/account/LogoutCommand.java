@@ -1,6 +1,6 @@
 package by.aab.isp.web.command.account;
 
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 

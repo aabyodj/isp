@@ -26,12 +26,13 @@ public class Tariff {
 
     @Column(name = "description", nullable = false, length = 50)
     private String description;
+    
+    public static final int BANDWIDTH_UMLIMITED = Integer.MAX_VALUE;
 
     /**
      * Kb/s
-     * null = unlimited
      */
-    @Column(name = "bandwidth")
+    @Column(name = "bandwidth", nullable = false)
     private Integer bandwidth;
 
     /**
