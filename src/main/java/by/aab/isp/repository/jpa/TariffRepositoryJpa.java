@@ -15,10 +15,6 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 public class TariffRepositoryJpa extends AbstractRepositoryJpa<Tariff> implements TariffRepository {
 
     protected final String qlSelectWhereActive = qlSelectAll + " WHERE active=";
-    
-    public TariffRepositoryJpa() {
-        super(Tariff.class);
-    }
 
     @Override
     public List<Tariff> findByActive(boolean active) {

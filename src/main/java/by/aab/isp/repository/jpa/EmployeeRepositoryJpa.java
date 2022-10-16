@@ -14,10 +14,6 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 @Transactional
 public class EmployeeRepositoryJpa extends AbstractRepositoryJpa<Employee> implements EmployeeRepository {
 
-    public EmployeeRepositoryJpa() {
-        super(Employee.class);
-    }
-
     private final String qlCountWhereRoleAndActive = qlCount + " WHERE role = :role AND active =";
 
     @Override

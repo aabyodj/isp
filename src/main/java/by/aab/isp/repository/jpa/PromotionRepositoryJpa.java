@@ -16,10 +16,6 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 @Repository
 public class PromotionRepositoryJpa extends AbstractRepositoryJpa<Promotion> implements PromotionRepository {
 
-    public PromotionRepositoryJpa() {
-        super(Promotion.class);
-    }
-
     private final String qlSelectWherePeriodContains = qlSelectAll
             + " WHERE (activeSince IS null OR activeSince <= :active_since)"
             + " AND (activeUntil IS null OR activeUntil >= :active_until)";

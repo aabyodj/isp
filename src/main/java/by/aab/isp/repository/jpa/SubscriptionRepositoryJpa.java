@@ -17,10 +17,6 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 @Repository
 public class SubscriptionRepositoryJpa extends AbstractRepositoryJpa<Subscription> implements SubscriptionRepository {
 
-    public SubscriptionRepositoryJpa() {
-        super(Subscription.class);
-    }
-
     private final String qlSelectWhereCustomerAndPeriodContains = qlSelectAll
             + " WHERE customer_id = :customer_id"
             + " AND (activeSince IS null OR activeSince <= :active_since)"
