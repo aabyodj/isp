@@ -1,6 +1,6 @@
 SET client_encoding = 'UTF8';
 
-CREATE TABLE IF NOT EXISTS "tariff" (
+CREATE TABLE IF NOT EXISTS "tariffs" (
     "id" SERIAL8 PRIMARY KEY,
     "name" character varying(15) NOT NULL,
     "description" character varying(50) NOT NULL,
@@ -49,5 +49,5 @@ CREATE TABLE IF NOT EXISTS "subscriptions" (
     "active_since" TIMESTAMP,
     "active_until" TIMESTAMP,
     FOREIGN KEY ("customer_id") REFERENCES "customers"("user_id"),
-    FOREIGN KEY ("tariff_id") REFERENCES "tariff"("id")
+    FOREIGN KEY ("tariff_id") REFERENCES "tariffs"("id")
 );

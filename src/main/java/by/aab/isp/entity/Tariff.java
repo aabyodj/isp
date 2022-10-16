@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "tariff")
+@Table(name = "tariffs")
 public class Tariff {
 
     @Id
