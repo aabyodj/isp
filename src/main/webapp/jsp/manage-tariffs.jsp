@@ -33,8 +33,8 @@
                         <td>${pagination.offset + status.count}</td>
                         <td><c:out value="${tariff.name}" /></td>
                         <td><c:out value="${tariff.description}" /></td>
-                        <td>${util.formatBandwidth(tariff.bandwidth)}</td>
-                        <td>${util.formatTraffic(tariff.includedTraffic)}</td>
+                        <td>${tariff.bandwidth}</td>
+                        <td>${tariff.includedTraffic}</td>
                         <td><c:out value="${tariff.price}" /></td>
                         <td>
                             <a href="?action=edit_tariff&id=${tariff.id}">Edit</a>

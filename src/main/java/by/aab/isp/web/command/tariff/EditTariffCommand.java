@@ -1,5 +1,8 @@
 package by.aab.isp.web.command.tariff;
 
+import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
+import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
+
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Tariff;
@@ -23,8 +26,11 @@ public class EditTariffCommand extends Command {
         String id = req.getParameter("id");
         Tariff tariff = tariffService.getById(id != null ? Long.parseLong(id)
                                                          : null);
-        if (tariff.getBandwidth() == null) {
+        if (tariff.getBandwidth() >= BANDWIDTH_UNLIMITED) {
             tariff.setBandwidth(0);
+        }
+        if (tariff.getIncludedTraffic() >= TRAFFIC_UNLIMITED) {
+            tariff.setIncludedTraffic(0);
         }
         req.setAttribute("tariff", tariff);
         req.setAttribute("redirect", "?action=manage_tariffs"); //TODO: determine a referer

@@ -1,17 +1,20 @@
 package by.aab.isp.web.command.tariff;
 
+import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
+import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
+import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
+
+import java.math.BigDecimal;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
+
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-
-import static by.aab.isp.web.Controller.SCHEMA_REDIRECT;
 
 @Component
 public class SaveTariffCommand extends Command {
@@ -31,10 +34,10 @@ public class SaveTariffCommand extends Command {
         tariff.setDescription(req.getParameter("description"));
         int bandwidth = Integer.parseInt(req.getParameter("bandwidth"));
         tariff.setBandwidth(bandwidth != 0 ? bandwidth
-                                           : null);
+                                           : BANDWIDTH_UNLIMITED);
         double traffic = Double.parseDouble(req.getParameter("included-traffic")) * 1024 * 1024;
         tariff.setIncludedTraffic(traffic != 0 ? (long) traffic
-                                               : null);
+                                               : TRAFFIC_UNLIMITED);
         tariff.setPrice(new BigDecimal(req.getParameter("price")));
         tariff.setActive(req.getParameter("active") != null);
         tariffService.save(tariff);

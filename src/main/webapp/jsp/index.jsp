@@ -42,8 +42,8 @@
                         <li>
                             <h2><c:out value="${tariff.name}" /></h2>
                             <div><c:out value="${tariff.description}" /></div>
-                            <p><fmt:message key="msg.tariff.bandwidth" />: <span>${util.formatBandwidth(tariff.bandwidth)}</span>
-                            <p><fmt:message key="msg.tariff.traffic" />: <span>${util.formatTraffic(tariff.includedTraffic)}</span>
+                            <p><fmt:message key="msg.tariff.bandwidth" />: <span>${tariff.bandwidth}</span>
+                            <p><fmt:message key="msg.tariff.traffic" />: <span>${tariff.includedTraffic}</span>
                             <p><fmt:message key="msg.tariff.price" />: <span>${tariff.price}</span></p>
                             <c:choose>
                                 <c:when test="${activeEmployee != null}">

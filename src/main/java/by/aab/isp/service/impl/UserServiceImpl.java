@@ -9,8 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.StreamSupport;
-
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
@@ -29,11 +27,11 @@ import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
 import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
-import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +49,7 @@ public class UserServiceImpl implements UserService {
     private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
-    private final TariffService tariffService;
+    private final TariffRepository tariffRepository;
     private final SubscriptionService subscriptionService;
 
     @AutoLogged
@@ -332,11 +330,12 @@ public class UserServiceImpl implements UserService {
     private static final double GENERATED_CUSTOMER_MAX_BALANCE = 100;
     private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
+    @Transactional
     @AutoLogged
     @Override
     public void generateCustomers(int quantity, boolean active) {
-        Tariff[] tariffs = StreamSupport
-                .stream(tariffService.getActive().spliterator(), true)
+        Tariff[] tariffs = tariffRepository.findByActive(true)
+                .stream()
                 .toArray(Tariff[]::new);
         Random random = new Random();
         int i = 1;

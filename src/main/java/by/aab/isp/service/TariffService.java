@@ -1,16 +1,19 @@
 package by.aab.isp.service;
 
+import java.util.List;
+
+import by.aab.isp.dto.tariff.ShowTariffDto;
 import by.aab.isp.entity.Tariff;
 
 public interface TariffService {
     
-    Iterable<Tariff> getAll();
+    List<ShowTariffDto> getAll();
 
-    Iterable<Tariff> getAll(Pagination pagination);
+    List<ShowTariffDto> getAll(Pagination pagination);
 
-    Iterable<Tariff> getActive();
+    List<ShowTariffDto> getForHomepage();
 
-    Iterable<Tariff> getForHomepage();
+    List<ShowTariffDto> getInactiveForCustomer(long customerId);
     
     Tariff getById(Long id);
 

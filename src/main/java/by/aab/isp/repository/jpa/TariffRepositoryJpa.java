@@ -1,5 +1,6 @@
 package by.aab.isp.repository.jpa;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -22,11 +23,21 @@ public class TariffRepositoryJpa extends AbstractRepositoryJpa<Tariff> implement
         return query.getResultList();
     }
 
+    protected final String qlSelectWhereInactiveForCustomer = qlSelectAll
+            + " WHERE active = true AND NOT id IN "
+            + "(SELECT DISTINCT tariff.id FROM Subscription WHERE customer_id = :customer_id AND activeSince <= :since AND activeUntil >= :until)";
+
     @Override
-    protected String mapNullsOrder(Order order) {
-        if ("bandwidth".equals(order.getFieldName()) || "includedTraffic".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
-        }
+    public List<Tariff> findInactiveForCustomer(long customerId, LocalDateTime moment) {
+        TypedQuery<Tariff> query = entityManager.createQuery(qlSelectWhereInactiveForCustomer, Tariff.class);
+        query.setParameter("customer_id", customerId);
+        query.setParameter("since", moment);
+        query.setParameter("until", moment);
+        return query.getResultList();
+    }
+
+    @Override
+    protected String mapNullsOrder(Order order) {   //TODO: remove this
         return "";
     }
 

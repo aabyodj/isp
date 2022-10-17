@@ -1,5 +1,8 @@
 package by.aab.isp.web;
 
+import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
+import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -7,12 +10,9 @@ public class FormatUtil {
 
     private static final String[] BANDWIDTH_RANGES = {" Kb/s", " Mb/s", " Gb/s", " Tb/s"};
 
-    public String formatBandwidth(Integer kbps) {
-        if (null == kbps) {
+    public String formatBandwidth(int kbps) {
+        if (kbps >= BANDWIDTH_UNLIMITED || kbps < 0) {
             return "unlimited";
-        }
-        if (kbps < 0) {
-            throw new IllegalArgumentException("Bandwidth must be >= 0 or null");
         }
         double bandwidth = kbps;
         for (int i = 0; i < BANDWIDTH_RANGES.length - 1; i++) {
@@ -26,12 +26,9 @@ public class FormatUtil {
 
     private static final String[] TRAFFIC_RANGES = {" B", " KB", " MB", " GB", " TB", " PB"};
 
-    public String formatTraffic(Long bytes) {
-        if (null == bytes) {
+    public String formatTraffic(long bytes) {
+        if (bytes >= TRAFFIC_UNLIMITED || bytes < 0) {
             return "unlimited";
-        }
-        if (bytes < 0) {
-            throw new IllegalArgumentException("Traffic must be >= 0 or null");
         }
         if (bytes < 1024) {
             return bytes + TRAFFIC_RANGES[0];

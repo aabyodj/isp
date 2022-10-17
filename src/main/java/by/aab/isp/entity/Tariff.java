@@ -26,21 +26,18 @@ public class Tariff {
 
     @Column(name = "description", nullable = false, length = 50)
     private String description;
-    
-    public static final int BANDWIDTH_UMLIMITED = Integer.MAX_VALUE;
 
     /**
      * Kb/s
      */
     @Column(name = "bandwidth", nullable = false)
-    private Integer bandwidth;
+    private int bandwidth;
 
     /**
      * Bytes
-     * null = unlimited
      */
-    @Column(name = "included_traffic")
-    private Long includedTraffic;
+    @Column(name = "included_traffic", nullable = false)
+    private long includedTraffic;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
