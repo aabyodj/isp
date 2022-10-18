@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
@@ -16,9 +18,7 @@ import by.aab.isp.dto.converter.TariffConverter;
 import by.aab.isp.dto.tariff.ShowTariffDto;
 import by.aab.isp.dto.tariff.TariffDto;
 import by.aab.isp.entity.Tariff;
-import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.TariffRepository;
-import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
@@ -45,26 +45,8 @@ public class TariffServiceImpl implements TariffService {
 
     @AutoLogged
     @Override
-    public List<ShowTariffDto> getAll(Pagination pagination) {
-        long count = tariffRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return tariffRepository.findAll(orderOffsetLimit) //TODO: add "order" field to Tariff
-                    .stream()
-                    .map(tariffConverter::toShowTariffDto)
-                    .collect(Collectors.toList());
-        } else {
-            return List.of();
-        }
+    public Page<ShowTariffDto> getAll(Pageable pageable) {
+        return tariffRepository.findAll(pageable).map(tariffConverter::toShowTariffDto);
     }
 
     @AutoLogged
@@ -89,12 +71,8 @@ public class TariffServiceImpl implements TariffService {
         dto.setName(dto.getName().strip());
         dto.setDescription(dto.getDescription().strip());
         Tariff tariff = tariffConverter.toTariff(dto);
-        if (dto.getId() == null) {
-            tariffRepository.save(tariff);
-            dto.setId(tariff.getId());
-        } else {
-            tariffRepository.update(tariff);
-        }
+        tariffRepository.save(tariff);
+        dto.setId(tariff.getId());
         return dto;
     }
 

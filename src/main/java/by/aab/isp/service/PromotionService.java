@@ -2,18 +2,20 @@ package by.aab.isp.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import by.aab.isp.dto.promotion.PromotionDto;
-import by.aab.isp.entity.Promotion;
 
 public interface PromotionService {
 
-    List<PromotionDto> getAll(Pagination pagination);
+    Page<PromotionDto> getAll(Pageable pageable);
 
     List<PromotionDto> getForHomepage();
 
-    Promotion getById(Long id);
+    PromotionDto getById(Long id);
 
-    Promotion save(PromotionDto promotion);
+    PromotionDto save(PromotionDto promotion);
 
     void stop(long id);
 

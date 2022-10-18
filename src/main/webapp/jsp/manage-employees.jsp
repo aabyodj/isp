@@ -24,9 +24,9 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th></th>
-                </tr><c:forEach var="employee" items="${employees}" varStatus="status">
+                </tr><c:forEach var="employee" items="${page.toList()}" varStatus="status">
                 <tr${employee.active ? ' class="active"' : ''}>
-                    <td>${pagination.offset + status.count}</td>
+                    <td>${page.size * page.number + status.count}</td>
                     <td><c:out value="${employee.email}" /></td>
                     <td><c:out value="${employee.role.toString().toLowerCase()}" /></td>
                     <td>
@@ -36,16 +36,16 @@
                     </td>
                 </tr></c:forEach>
             </table>
-            <c:if test="${pagination.lastPageNumber > 0}">
+            <c:if test="${page.totalPages > 1}">
                 <p>
-                    <c:if test="${pagination.pageNumber > 0}">
-                        <a href="?action=manage_employees&page=0">First</a>
-                        <a href="?action=manage_employees&page=${pagination.pageNumber - 1}">Prev</a>
+                    <c:if test="${page.hasPrevious()}">
+                        <a href="?action=manage_employees">First</a>
+                        <a href="?action=manage_employees&page=${page.number}">Prev</a>
                     </c:if>
-                    ${pagination.pageNumber}
-                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
-                        <a href="?action=manage_employees&page=${pagination.pageNumber + 1}">Next</a>
-                        <a href="?action=manage_employees&page=${pagination.lastPageNumber}">Last</a>
+                    ${page.number + 1}
+                    <c:if test="${page.hasNext()}">
+                        <a href="?action=manage_employees&page=${page.number + 2}">Next</a>
+                        <a href="?action=manage_employees&page=${page.totalPages}">Last</a>
                     </c:if>
                 </p>
             </c:if>

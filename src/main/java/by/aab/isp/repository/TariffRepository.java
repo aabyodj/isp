@@ -3,12 +3,18 @@ package by.aab.isp.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import by.aab.isp.entity.Tariff;
 
-public interface TariffRepository extends CrudRepository<Tariff> {
+public interface TariffRepository extends JpaRepository<Tariff, Long> {
 
     List<Tariff> findByActive(boolean active);
 
-    List<Tariff> findInactiveForCustomer(long customerId, LocalDateTime moment);
+    @Query("FROM Tariff t WHERE t.active = true AND NOT t.id IN "
+            + "(SELECT DISTINCT s.tariff.id FROM Subscription s WHERE s.customer.id = :customerId AND s.activeSince <= :instant AND s.activeUntil >= :instant)")
+    List<Tariff> findInactiveForCustomer(@Param("customerId") long customerId, @Param("instant") LocalDateTime instant);
 
 }

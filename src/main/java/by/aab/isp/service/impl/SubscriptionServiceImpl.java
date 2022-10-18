@@ -5,9 +5,11 @@ import static by.aab.isp.Const.LDT_FOR_AGES;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
@@ -17,7 +19,6 @@ import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.CustomerRepository;
-import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.SubscriptionRepository;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.ServiceException;
@@ -33,19 +34,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final TariffRepository tariffRepository;
     private final SubscriptionConverter subscriptionConverter;
 
-    private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
-            new OrderOffsetLimit.Order("activeSince", true),
-            new OrderOffsetLimit.Order("activeUntil", true)
-    );
+    private static final Sort ORDER_BY_SINCE_THEN_BY_UNTIL = Sort.by("activeSince", "activeUntil");
 
     @AutoLogged
     @Override
     public List<SubscriptionDto> getByCustomerId(long customerId) {
-        OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-        orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
         LocalDateTime now = LocalDateTime.now();
-        return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit)
-                .stream()
+        return StreamSupport.stream(subscriptionRepository.findByCustomerId(customerId, ORDER_BY_SINCE_THEN_BY_UNTIL).spliterator(), false)
                 .map(subscription -> subscriptionConverter.toDto(subscription, now))
                 .collect(Collectors.toList());
     }
@@ -78,7 +73,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 alreadySet = true;
             } else {
                 subscription.setActiveUntil(now);
-                subscriptionRepository.update(subscription);
+                subscriptionRepository.save(subscription);
             }
         }
         if (!alreadySet && tariffId != null) {
@@ -104,6 +99,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new ServiceException("The subscription does not belong to the customer");
         }
         subscription.setActiveUntil(LocalDateTime.now());
-        subscriptionRepository.update(subscription);
+        subscriptionRepository.save(subscription);
     }
 }

@@ -26,7 +26,7 @@ public class Customer extends User {
     @Column(name = "permitted_overdraft", nullable = false)
     private BigDecimal permittedOverdraft;
 
-    @Column(name = "payoff_date")
+    @Column(name = "payoff_date", nullable = false)
     private LocalDateTime payoffDate;
 
 }

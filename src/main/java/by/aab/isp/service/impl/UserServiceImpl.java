@@ -9,13 +9,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
@@ -30,10 +29,8 @@ import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
-import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
-import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
@@ -46,10 +43,6 @@ public class UserServiceImpl implements UserService {
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
-    private static final List<OrderOffsetLimit.Order> ORDER_BY_EMAIL = List.of(
-            new OrderOffsetLimit.Order("email", true)
-    );
-
     private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
@@ -58,52 +51,14 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public List<CustomerDto> getAllCustomers(Pagination pagination) {
-        long count = customerRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return customerRepository.findAll(orderOffsetLimit)
-                    .stream()
-                    .map(this::toCustomerDto)
-                    .collect(Collectors.toList());
-        } else {
-            return List.of();
-        }
+    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable).map(this::toCustomerDto);
     }
 
     @AutoLogged
     @Override
-    public List<EmployeeDto> getAllEmployees(Pagination pagination) {
-        long count = employeeRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return employeeRepository.findAll(orderOffsetLimit)
-                    .stream()
-                    .map(this::toEmployeeDto)
-                    .collect(Collectors.toList());
-        } else {
-            return List.of();
-        }
+    public Page<EmployeeDto> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable).map(this::toEmployeeDto);
     }
 
     @AutoLogged
@@ -180,7 +135,7 @@ public class UserServiceImpl implements UserService {
         if (dto.getId() != null) {
             user = userRepository.findById(dto.getId()).orElseThrow();
             setFields(dto, user);
-            userRepository.update(user);
+            userRepository.save(user);
         } else {
             if (null == dto.getPassword()) {
                 throw new ServiceException("Password required");
@@ -203,7 +158,7 @@ public class UserServiceImpl implements UserService {
         } else if (dto instanceof EmployeeDto) {
             EmployeeDto employeeDto = (EmployeeDto) dto;
             Employee employee = (Employee) user;
-            if (!isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
+            if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
                 throw new ServiceException("Unable to delete last admin");
             }
             employee.setRole(employeeDto.getRole());
@@ -311,7 +266,7 @@ public class UserServiceImpl implements UserService {
             validatePasswordConstraints(password);
             user.setPasswordHash(hashPassword(password));
         }
-        userRepository.update(user);
+        userRepository.save(user);
     }
 
     @AutoLogged
@@ -325,9 +280,9 @@ public class UserServiceImpl implements UserService {
         balance = balance.add(amount);
         customer.setBalance(balance);
         if (balance.compareTo(BigDecimal.ZERO) >= 0) {
-            customer.setPayoffDate(null);
+            customer.setPayoffDate(LDT_FOR_AGES);
         }
-        userRepository.update(customer);
+        userRepository.save(customer);
     }
 
     @AutoLogged

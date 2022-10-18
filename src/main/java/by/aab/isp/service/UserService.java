@@ -6,13 +6,14 @@ import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserDto;
 import java.math.BigDecimal;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    List<CustomerDto> getAllCustomers(Pagination pagination);
+    Page<CustomerDto> getAllCustomers(Pageable pageable);
 
-    List<EmployeeDto> getAllEmployees(Pagination pagination);
+    Page<EmployeeDto> getAllEmployees(Pageable pageable);
 
     UserDto getById(long id);
 
