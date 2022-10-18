@@ -1,13 +1,18 @@
 package by.aab.isp.service.impl;
 
+import static by.aab.isp.Const.LDT_FOR_AGES;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.dto.converter.SubscriptionConverter;
+import by.aab.isp.dto.subscription.SubscriptionDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.entity.Tariff;
@@ -26,6 +31,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final CustomerRepository customerRepository;;
     private final SubscriptionRepository subscriptionRepository;
     private final TariffRepository tariffRepository;
+    private final SubscriptionConverter subscriptionConverter;
 
     private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
             new OrderOffsetLimit.Order("activeSince", true),
@@ -34,16 +40,24 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @AutoLogged
     @Override
-    public Iterable<Subscription> getByCustomerId(long customerId) {
+    public List<SubscriptionDto> getByCustomerId(long customerId) {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
         orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
-        return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit);
+        LocalDateTime now = LocalDateTime.now();
+        return subscriptionRepository.findByCustomerId(customerId, orderOffsetLimit)
+                .stream()
+                .map(subscription -> subscriptionConverter.toDto(subscription, now))
+                .collect(Collectors.toList());
     }
 
     @AutoLogged
     @Override
-    public Iterable<Subscription> getActiveSubscriptions(long customerId) {
-        return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, LocalDateTime.now());
+    public List<SubscriptionDto> getActiveSubscriptions(long customerId) {
+        LocalDateTime now = LocalDateTime.now();
+        return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, now)
+                .stream()
+                .map(subscription -> subscriptionConverter.toDto(subscription, now))
+                .collect(Collectors.toList());
     }
 
     @AutoLogged
@@ -56,9 +70,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     @Transactional
     public void setOneTariffForCustomer(long customerId, Long tariffId) {
-        Iterable<Subscription> subscriptions = getActiveSubscriptions(customerId);
-        boolean alreadySet = false;
         LocalDateTime now = LocalDateTime.now();
+        Iterable<Subscription> subscriptions = subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, now);
+        boolean alreadySet = false;
         for (Subscription subscription : subscriptions) {
             if (subscription.getTariff().getId().equals(tariffId)) {
                 alreadySet = true;
@@ -76,7 +90,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscription.setPrice(tariff.getPrice());
             subscription.setTrafficPerPeriod(tariff.getIncludedTraffic());
             subscription.setActiveSince(now);
-            subscription.setActiveUntil(null);
+            subscription.setActiveUntil(LDT_FOR_AGES);
             subscriptionRepository.save(subscription);
         }
     }

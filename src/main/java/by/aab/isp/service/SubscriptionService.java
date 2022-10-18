@@ -1,12 +1,14 @@
 package by.aab.isp.service;
 
-import by.aab.isp.entity.Subscription;
+import java.util.List;
+
+import by.aab.isp.dto.subscription.SubscriptionDto;
 
 public interface SubscriptionService {
 
-    Iterable<Subscription> getByCustomerId(long customerId);
+    List<SubscriptionDto> getByCustomerId(long customerId);
 
-    Iterable<Subscription> getActiveSubscriptions(long customerId);
+    List<SubscriptionDto> getActiveSubscriptions(long customerId);
 
     void subscribe(long customerId, long tariffId);
 

@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS "subscriptions" (
     "tariff_id" bigint NOT NULL,
     "price" numeric(10, 2) NOT NULL,
     "traffic_consumed" bigint NOT NULL,
-    "traffic_per_period" bigint,
-    "active_since" TIMESTAMP,
-    "active_until" TIMESTAMP,
+    "traffic_per_period" bigint NOT NULL,
+    "active_since" TIMESTAMP NOT NULL,
+    "active_until" TIMESTAMP NOT NULL,
     FOREIGN KEY ("customer_id") REFERENCES "customers"("user_id"),
     FOREIGN KEY ("tariff_id") REFERENCES "tariffs"("id")
 );

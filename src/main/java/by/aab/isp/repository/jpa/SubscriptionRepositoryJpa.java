@@ -42,13 +42,7 @@ public class SubscriptionRepositoryJpa extends AbstractRepositoryJpa<Subscriptio
     }
 
     @Override
-    protected String mapNullsOrder(Order order) {
-        if ("activeSince".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "FIRST" : "LAST");
-        }
-        if ("activeUntil".equals(order.getFieldName()) || "trafficPerPeriod".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
-        }
+    protected String mapNullsOrder(Order order) {      //TODO: remove this
         return "";
     }
 
