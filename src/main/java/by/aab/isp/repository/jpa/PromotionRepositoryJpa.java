@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import by.aab.isp.entity.Promotion;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.PromotionRepository;
-import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Transactional
 @Repository
@@ -27,11 +26,6 @@ public class PromotionRepositoryJpa extends AbstractRepositoryJpa<Promotion> imp
         query.setParameter("active_until", instant);
         applyOffsetLimit(query, orderOffsetLimit.getOffset(), orderOffsetLimit.getLimit());
         return query.getResultList();
-    }
-
-    @Override
-    protected String mapNullsOrder(Order order) {   //TODO: remove this
-        return "";
     }
 
 }

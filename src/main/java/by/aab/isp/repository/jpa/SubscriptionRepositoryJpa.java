@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import by.aab.isp.entity.Subscription;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.SubscriptionRepository;
-import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Transactional
 @Repository
@@ -38,11 +37,6 @@ public class SubscriptionRepositoryJpa extends AbstractRepositoryJpa<Subscriptio
         TypedQuery<Subscription> query = entityManager.createQuery(ql, Subscription.class);
         applyOffsetLimit(query, orderOffsetLimit.getOffset(), orderOffsetLimit.getLimit());
         return query.getResultList();
-    }
-
-    @Override
-    protected String mapNullsOrder(Order order) {      //TODO: remove this
-        return "";
     }
 
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import by.aab.isp.entity.User;
 import by.aab.isp.repository.UserRepository;
-import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Repository
 @Transactional
@@ -23,11 +22,6 @@ public class UserRepositoryJpa extends AbstractRepositoryJpa<User> implements Us
         TypedQuery<User> query = entityManager.createQuery(ql, User.class);
         query.setParameter("email", email);
         return Optional.ofNullable(query.getSingleResult());
-    }
-
-    @Override
-    protected String mapNullsOrder(Order order) {   //TODO: remove this
-        return "";
     }
 
 }

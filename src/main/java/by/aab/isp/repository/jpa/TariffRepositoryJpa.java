@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.TariffRepository;
-import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Transactional
 @Repository
@@ -34,11 +33,6 @@ public class TariffRepositoryJpa extends AbstractRepositoryJpa<Tariff> implement
         query.setParameter("since", moment);
         query.setParameter("until", moment);
         return query.getResultList();
-    }
-
-    @Override
-    protected String mapNullsOrder(Order order) {   //TODO: remove this
-        return "";
     }
 
 }

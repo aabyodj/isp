@@ -68,9 +68,7 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
     }
     
     protected final String formatOrder(OrderOffsetLimit.Order order) {
-        return order.getFieldName()
-                + (order.isAscending() ? " ASC" : " DESC")
-                + mapNullsOrder(order);
+        return order.getFieldName() + (order.isAscending() ? " ASC" : " DESC");
     }
 
     protected final String formatOrderList(List<OrderOffsetLimit.Order> orderList) {
@@ -96,6 +94,4 @@ public abstract class AbstractRepositoryJpa<T> implements CrudRepository<T> {
         }
         return query;
     }
-
-    protected abstract String mapNullsOrder(OrderOffsetLimit.Order order);
 }

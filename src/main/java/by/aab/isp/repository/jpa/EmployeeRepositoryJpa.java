@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Employee.Role;
 import by.aab.isp.repository.EmployeeRepository;
-import by.aab.isp.repository.OrderOffsetLimit.Order;
 
 @Repository
 @Transactional
@@ -33,11 +32,6 @@ public class EmployeeRepositoryJpa extends AbstractRepositoryJpa<Employee> imple
         query.setParameter("role", role);
         query.setParameter("active", active);
         return query.getSingleResult();
-    }
-
-    @Override
-    protected String mapNullsOrder(Order order) {
-        return "";
     }
 
 }
