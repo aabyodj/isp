@@ -2,13 +2,17 @@ package by.aab.isp.service.impl;
 
 import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
 import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
+import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
@@ -54,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public Iterable<Customer> getAllCustomers(Pagination pagination) {
+    public List<CustomerDto> getAllCustomers(Pagination pagination) {
         long count = customerRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
@@ -68,7 +72,10 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return customerRepository.findAll(orderOffsetLimit);
+            return customerRepository.findAll(orderOffsetLimit)
+                    .stream()
+                    .map(this::toCustomerDto)
+                    .collect(Collectors.toList());
         } else {
             return List.of();
         }
@@ -76,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public Iterable<Employee> getAllEmployees(Pagination pagination) {
+    public List<EmployeeDto> getAllEmployees(Pagination pagination) {
         long count = employeeRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
@@ -90,7 +97,10 @@ public class UserServiceImpl implements UserService {
             orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return employeeRepository.findAll(orderOffsetLimit);
+            return employeeRepository.findAll(orderOffsetLimit)
+                    .stream()
+                    .map(this::toEmployeeDto)
+                    .collect(Collectors.toList());
         } else {
             return List.of();
         }
@@ -110,7 +120,8 @@ public class UserServiceImpl implements UserService {
             CustomerDto customerDto = new CustomerDto();
             customerDto.setBalance(customer.getBalance());
             customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
-            customerDto.setPayoffDate(customer.getPayoffDate());
+            LocalDateTime payoffDate = customer.getPayoffDate();
+            customerDto.setPayoffDate(payoffDate.isBefore(LDT_FOR_AGES) ? payoffDate : null);
             dto = customerDto;
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
@@ -124,6 +135,14 @@ public class UserServiceImpl implements UserService {
         dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
         return dto;
+    }
+
+    private CustomerDto toCustomerDto(Customer customer) {
+        return (CustomerDto) toUserDto(customer);
+    }
+
+    private EmployeeDto toEmployeeDto(Employee employee) {
+        return (EmployeeDto) toUserDto(employee);
     }
 
     @AutoLogged
@@ -179,7 +198,8 @@ public class UserServiceImpl implements UserService {
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
-            customer.setPayoffDate(customerDto.getPayoffDate());
+            LocalDateTime payoffDate = customerDto.getPayoffDate();
+            customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
         } else if (dto instanceof EmployeeDto) {
             EmployeeDto employeeDto = (EmployeeDto) dto;
             Employee employee = (Employee) user;
@@ -348,6 +368,7 @@ public class UserServiceImpl implements UserService {
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
             customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
+            customer.setPayoffDate(LDT_FOR_AGES);
             customer.setActive(active);
             try {
                 customer = (Customer) userRepository.save(customer);

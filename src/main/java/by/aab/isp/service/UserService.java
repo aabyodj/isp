@@ -5,15 +5,14 @@ import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserDto;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface UserService {
 
-    Iterable<Customer> getAllCustomers(Pagination pagination);
+    List<CustomerDto> getAllCustomers(Pagination pagination);
 
-    Iterable<Employee> getAllEmployees(Pagination pagination);
+    List<EmployeeDto> getAllEmployees(Pagination pagination);
 
     UserDto getById(long id);
 

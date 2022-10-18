@@ -13,10 +13,7 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 public class CustomerRepositoryJpa extends AbstractRepositoryJpa<Customer> implements CustomerRepository {
 
     @Override
-    protected String mapNullsOrder(Order order) {
-        if ("payoffDate".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
-        }
+    protected String mapNullsOrder(Order order) {   //TODO: remove this
         return "";
     }
 

@@ -26,10 +26,7 @@ public class UserRepositoryJpa extends AbstractRepositoryJpa<User> implements Us
     }
 
     @Override
-    protected String mapNullsOrder(Order order) {
-        if ("payoffDate".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
-        }
+    protected String mapNullsOrder(Order order) {   //TODO: remove this
         return "";
     }
 
