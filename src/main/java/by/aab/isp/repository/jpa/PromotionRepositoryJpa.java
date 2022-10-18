@@ -17,8 +17,7 @@ import by.aab.isp.repository.OrderOffsetLimit.Order;
 public class PromotionRepositoryJpa extends AbstractRepositoryJpa<Promotion> implements PromotionRepository {
 
     private final String qlSelectWherePeriodContains = qlSelectAll
-            + " WHERE (activeSince IS null OR activeSince <= :active_since)"
-            + " AND (activeUntil IS null OR activeUntil >= :active_until)";
+            + " WHERE activeSince <= :active_since AND activeUntil >= :active_until";
 
     @Override
     public List<Promotion> findByActivePeriodContains(LocalDateTime instant, OrderOffsetLimit orderOffsetLimit) {
@@ -31,13 +30,7 @@ public class PromotionRepositoryJpa extends AbstractRepositoryJpa<Promotion> imp
     }
 
     @Override
-    protected String mapNullsOrder(Order order) {
-        if ("activeSince".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "FIRST" : "LAST");
-        }
-        if ("activeUntil".equals(order.getFieldName())) {
-            return " NULLS " + (order.isAscending() ? "LAST" : "FIRST");
-        }
+    protected String mapNullsOrder(Order order) {   //TODO: remove this
         return "";
     }
 

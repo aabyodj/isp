@@ -1,8 +1,8 @@
 package by.aab.isp.web.command;
 
+import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.dto.tariff.ShowTariffDto;
 import by.aab.isp.dto.user.UserDto;
-import by.aab.isp.entity.Promotion;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ public class HomeCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        Iterable<Promotion> promotions = promotionService.getForHomepage();
-        if (promotions.spliterator().estimateSize() > 0) {
+        List<PromotionDto> promotions = promotionService.getForHomepage();
+        if (!promotions.isEmpty()) {
             req.setAttribute("promotions", promotions);
         }
         List<ShowTariffDto> tariffs = tariffService.getForHomepage();

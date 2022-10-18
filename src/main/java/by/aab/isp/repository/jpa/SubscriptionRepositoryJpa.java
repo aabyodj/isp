@@ -19,8 +19,7 @@ public class SubscriptionRepositoryJpa extends AbstractRepositoryJpa<Subscriptio
 
     private final String qlSelectWhereCustomerAndPeriodContains = qlSelectAll
             + " WHERE customer_id = :customer_id"
-            + " AND (activeSince IS null OR activeSince <= :active_since)"
-            + " AND (activeUntil IS null OR activeUntil >= :active_until)";
+            + " AND activeSince <= :active_since AND activeUntil >= :active_until";
 
     @Override
     public List<Subscription> findByCustomerIdAndActivePeriodContains(long customerId, LocalDateTime instant) {

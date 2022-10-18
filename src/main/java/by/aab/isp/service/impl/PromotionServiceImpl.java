@@ -1,30 +1,34 @@
 package by.aab.isp.service.impl;
 
+import static by.aab.isp.Const.LDT_FOR_AGES;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.config.ConfigManager;
+import by.aab.isp.dto.converter.PromotionConverter;
+import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.entity.Promotion;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.PromotionRepository;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
+import lombok.RequiredArgsConstructor;
 
 @Service("promotionService")
+@RequiredArgsConstructor
 public class PromotionServiceImpl implements PromotionService {
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
     private final PromotionRepository promotionRepository;
+    private final PromotionConverter promotionConverter;
     private final ConfigManager config;
-
-    public PromotionServiceImpl(PromotionRepository promotionRepository, ConfigManager config) {
-        this.promotionRepository = promotionRepository;
-        this.config = config;
-    }
 
     private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
             new OrderOffsetLimit.Order("activeSince", true),
@@ -33,7 +37,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @AutoLogged
     @Override
-    public Iterable<Promotion> getAll(Pagination pagination) {
+    public List<PromotionDto> getAll(Pagination pagination) {
         long count = promotionRepository.count();
         pagination.setTotalItemsCount(count);
         long offset = pagination.getOffset();
@@ -47,7 +51,11 @@ public class PromotionServiceImpl implements PromotionService {
             orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
             orderOffsetLimit.setOffset(pagination.getOffset());
             orderOffsetLimit.setLimit(pagination.getPageSize());
-            return promotionRepository.findAll(orderOffsetLimit);
+            LocalDateTime now = LocalDateTime.now();
+            return promotionRepository.findAll(orderOffsetLimit)
+                    .stream()
+                    .map(promotion -> promotionConverter.toPromotionDto(promotion, now))
+                    .collect(Collectors.toList());
         } else {
             return List.of();
         }
@@ -60,11 +68,15 @@ public class PromotionServiceImpl implements PromotionService {
 
     @AutoLogged
     @Override
-    public Iterable<Promotion> getForHomepage() {
+    public List<PromotionDto> getForHomepage() {
         OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
         orderOffsetLimit.setOrderList(ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL);
         orderOffsetLimit.setLimit(config.getInt("homepage.promotionsCount", DEFAULT_PROMOTIONS_ON_HOMEPAGE));
-        return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit);
+        LocalDateTime now = LocalDateTime.now();
+        return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit)
+                .stream()
+                .map(promotion -> promotionConverter.toPromotionDto(promotion, now))
+                .collect(Collectors.toList());
     }
 
     @AutoLogged
@@ -80,9 +92,10 @@ public class PromotionServiceImpl implements PromotionService {
 
     @AutoLogged
     @Override
-    public Promotion save(Promotion promotion) {
-        promotion.setName(promotion.getName().strip());
-        promotion.setDescription(promotion.getDescription().strip());
+    public Promotion save(PromotionDto dto) {
+        dto.setName(dto.getName().strip());
+        dto.setDescription(dto.getDescription().strip());
+        Promotion promotion = promotionConverter.toPromotion(dto);
         if (promotion.getId() == null) {
             return promotionRepository.save(promotion);
         } else {
@@ -105,15 +118,13 @@ public class PromotionServiceImpl implements PromotionService {
     @AutoLogged
     @Override
     public void generatePromotions(int quantity, boolean active) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime today = LocalDate.now().atStartOfDay();
         for (int i = 1; i <= quantity; i++) {
             Promotion promotion = new Promotion();
             promotion.setName("Generated " + i);
             promotion.setDescription("Automatically generated promotion #" + i);
-            promotion.setActiveSince(now);
-            if (!active) {
-                promotion.setActiveUntil(now);
-            }
+            promotion.setActiveSince(today);
+            promotion.setActiveUntil(active ? LDT_FOR_AGES : today);
             promotionRepository.save(promotion);
         }
     }

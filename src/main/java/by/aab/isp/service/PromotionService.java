@@ -1,16 +1,19 @@
 package by.aab.isp.service;
 
+import java.util.List;
+
+import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.entity.Promotion;
 
 public interface PromotionService {
 
-    Iterable<Promotion> getAll(Pagination pagination);
+    List<PromotionDto> getAll(Pagination pagination);
 
-    Iterable<Promotion> getForHomepage();
+    List<PromotionDto> getForHomepage();
 
     Promotion getById(Long id);
 
-    Promotion save(Promotion promotion);
+    Promotion save(PromotionDto promotion);
 
     void stop(long id);
 

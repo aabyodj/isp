@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.promotion;
 
+import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UserDto;
-import by.aab.isp.entity.Promotion;
 import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
@@ -30,10 +30,9 @@ public class ManagePromotionsCommand extends Command {
         String page = req.getParameter("page");
         pagination.setPageNumber(page != null ? Integer.parseInt(page)
                                               : 0);
-        Iterable<Promotion> promotions = promotionService.getAll(pagination);
-        if (promotions.spliterator().estimateSize() > 0) {
+        List<PromotionDto> promotions = promotionService.getAll(pagination);
+        if (!promotions.isEmpty()) {
             req.setAttribute("promotions", promotions);
-            req.setAttribute("now", LocalDateTime.now());
         }
         req.setAttribute("pagination", pagination);
         return "jsp/manage-promotions.jsp";
