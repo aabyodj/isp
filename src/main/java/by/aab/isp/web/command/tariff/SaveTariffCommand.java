@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import by.aab.isp.dto.tariff.TariffDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UserDto;
-import by.aab.isp.entity.Tariff;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
 
@@ -26,7 +26,7 @@ public class SaveTariffCommand extends Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        Tariff tariff = new Tariff();
+        TariffDto tariff = new TariffDto();
         String id = req.getParameter("id");
         tariff.setId(id != null && !id.isBlank() ? Long.parseLong(id)
                                                  : null);

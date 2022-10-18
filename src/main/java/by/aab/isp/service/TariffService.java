@@ -3,7 +3,7 @@ package by.aab.isp.service;
 import java.util.List;
 
 import by.aab.isp.dto.tariff.ShowTariffDto;
-import by.aab.isp.entity.Tariff;
+import by.aab.isp.dto.tariff.TariffDto;
 
 public interface TariffService {
     
@@ -15,9 +15,9 @@ public interface TariffService {
 
     List<ShowTariffDto> getInactiveForCustomer(long customerId);
     
-    Tariff getById(Long id);
+    TariffDto getById(Long id);
 
-    Tariff save(Tariff tariff);
+    TariffDto save(TariffDto tariff);
 
     void generateTariffs(int quantity, boolean active);
 }

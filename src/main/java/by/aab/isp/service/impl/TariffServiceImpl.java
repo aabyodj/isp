@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.dto.converter.TariffConverter;
 import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffDto;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.TariffRepository;
@@ -77,26 +78,24 @@ public class TariffServiceImpl implements TariffService {
 
     @AutoLogged
     @Override
-    public Tariff getById(Long id) {
-        return id != null ? tariffRepository.findById(id).orElseThrow()
-                          : new Tariff();
+    public TariffDto getById(Long id) {
+        return id != null ? tariffConverter.toDto(tariffRepository.findById(id).orElseThrow())
+                          : new TariffDto();
     }
 
     @AutoLogged
     @Override
-    public Tariff save(Tariff tariff) {
-        tariff.setName(tariff.getName().strip());
-        tariff.setDescription(tariff.getDescription().strip());
-        try {
-            if (tariff.getId() == null) {
-                return tariffRepository.save(tariff);
-            } else {
-               tariffRepository.update(tariff);
-                return tariff;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    public TariffDto save(TariffDto dto) {
+        dto.setName(dto.getName().strip());
+        dto.setDescription(dto.getDescription().strip());
+        Tariff tariff = tariffConverter.toTariff(dto);
+        if (dto.getId() == null) {
+            tariffRepository.save(tariff);
+            dto.setId(tariff.getId());
+        } else {
+            tariffRepository.update(tariff);
         }
+        return dto;
     }
 
     private static final int MBIT_S = 1024;
