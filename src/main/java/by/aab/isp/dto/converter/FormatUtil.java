@@ -1,4 +1,4 @@
-package by.aab.isp.web;
+package by.aab.isp.dto.converter;
 
 import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
 import static by.aab.isp.Const.TRAFFIC_UNLIMITED;

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import by.aab.isp.dto.tariff.ShowTariffDto;
 import by.aab.isp.entity.Tariff;
-import by.aab.isp.web.FormatUtil;
 import lombok.RequiredArgsConstructor;
 
 @Component
