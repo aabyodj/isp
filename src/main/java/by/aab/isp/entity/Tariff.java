@@ -29,17 +29,15 @@ public class Tariff {
 
     /**
      * Kb/s
-     * null = unlimited
      */
-    @Column(name = "bandwidth")
-    private Integer bandwidth;
+    @Column(name = "bandwidth", nullable = false)
+    private int bandwidth;
 
     /**
      * Bytes
-     * null = unlimited
      */
-    @Column(name = "included_traffic")
-    private Long includedTraffic;
+    @Column(name = "included_traffic", nullable = false)
+    private long includedTraffic;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

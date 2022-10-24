@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.tariff;
 
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;

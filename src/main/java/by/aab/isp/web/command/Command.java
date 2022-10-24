@@ -1,8 +1,8 @@
 package by.aab.isp.web.command;
 
-import by.aab.isp.dto.UserDto;
-
 import javax.servlet.http.HttpServletRequest;
+
+import by.aab.isp.dto.user.UserDto;
 
 public abstract class Command {
     public abstract String execute(HttpServletRequest req);

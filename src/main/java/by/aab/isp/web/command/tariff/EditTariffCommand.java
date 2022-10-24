@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.tariff;
 
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
-import by.aab.isp.entity.Tariff;
+import by.aab.isp.dto.tariff.TariffDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +21,13 @@ public class EditTariffCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         String id = req.getParameter("id");
-        Tariff tariff = tariffService.getById(id != null ? Long.parseLong(id)
-                                                         : null);
+        TariffDto tariff = tariffService.getById(id != null ? Long.parseLong(id)
+                                                            : null);
         if (tariff.getBandwidth() == null) {
             tariff.setBandwidth(0);
+        }
+        if (tariff.getIncludedTraffic() == null) {
+            tariff.setIncludedTraffic(0L);
         }
         req.setAttribute("tariff", tariff);
         req.setAttribute("redirect", "?action=manage_tariffs"); //TODO: determine a referer

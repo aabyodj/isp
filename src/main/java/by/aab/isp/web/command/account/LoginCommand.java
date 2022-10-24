@@ -3,7 +3,7 @@ package by.aab.isp.web.command.account;
 import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
 import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 

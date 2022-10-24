@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS "tariffs" (
     "id" SERIAL8 PRIMARY KEY,
     "name" character varying(15) NOT NULL,
     "description" character varying(50) NOT NULL,
-    "bandwidth" int,
-    "included_traffic" bigint,
+    "bandwidth" int NOT NULL,
+    "included_traffic" bigint NOT NULL,
     "price" numeric(10,2) NOT NULL,
     "active" boolean NOT NULL
 );
@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS "promotions" (
     "id" SERIAL8 PRIMARY KEY,
     "name" varchar(25) NOT NULL,
     "description" varchar(100) NOT NULL,
-    "active_since" TIMESTAMP,
-    "active_until" TIMESTAMP
+    "active_since" TIMESTAMP NOT NULL,
+    "active_until" TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "users" (
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS "customers" (
     "user_id" bigint PRIMARY KEY,
     "balance" numeric(10,2) NOT NULL,
     "permitted_overdraft" numeric(10,2) NOT NULL,
-    "payoff_date" timestamp,
+    "payoff_date" timestamp NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "users"("id")
 );
 
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS "subscriptions" (
     "tariff_id" bigint NOT NULL,
     "price" numeric(10, 2) NOT NULL,
     "traffic_consumed" bigint NOT NULL,
-    "traffic_per_period" bigint,
-    "active_since" TIMESTAMP,
-    "active_until" TIMESTAMP,
+    "traffic_per_period" bigint NOT NULL,
+    "active_since" TIMESTAMP NOT NULL,
+    "active_until" TIMESTAMP NOT NULL,
     FOREIGN KEY ("customer_id") REFERENCES "customers"("user_id"),
     FOREIGN KEY ("tariff_id") REFERENCES "tariffs"("id")
 );

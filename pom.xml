@@ -15,6 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>17</maven.compiler.release>
 		<spring.version>5.3.23</spring.version>
+		<spring.data.version>2.7.5</spring.data.version>
 		<hibernate.version>5.6.12.Final</hibernate.version>
 	</properties>
 
@@ -119,7 +120,14 @@
             <version>${spring.version}</version>
         </dependency>
 
-		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring.data.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
 		<dependency>
 		    <groupId>javax.annotation</groupId>
 		    <artifactId>javax.annotation-api</artifactId>

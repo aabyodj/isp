@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.subscription;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;

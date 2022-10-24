@@ -1,33 +1,43 @@
 package by.aab.isp.service.impl;
 
-import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.repository.OrderOffsetLimit;
-import by.aab.isp.repository.TariffRepository;
-import by.aab.isp.service.Pagination;
-import by.aab.isp.service.ServiceException;
-import by.aab.isp.service.TariffService;
+import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
+import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.dto.converter.TariffConverter;
+import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffDto;
+import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.TariffRepository;
+import by.aab.isp.service.ServiceException;
+import by.aab.isp.service.TariffService;
+import lombok.RequiredArgsConstructor;
+
 @Service("tariffService")
+@RequiredArgsConstructor
 public class TariffServiceImpl implements TariffService {
     
     private final TariffRepository tariffRepository;
-    
-    public TariffServiceImpl(TariffRepository tariffDao) {
-        this.tariffRepository = tariffDao;
-    }
+    private final TariffConverter tariffConverter;
 
     @AutoLogged
     @Override
-    public Iterable<Tariff> getAll() {
+    public List<ShowTariffDto> getAll() {
         try {
-            return tariffRepository.findAll();
+            return tariffRepository.findAll()
+                    .stream()
+                    .map(tariffConverter::toShowTariffDto)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -35,59 +45,35 @@ public class TariffServiceImpl implements TariffService {
 
     @AutoLogged
     @Override
-    public Iterable<Tariff> getAll(Pagination pagination) {
-        long count = tariffRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return tariffRepository.findAll(orderOffsetLimit); //TODO: add "order" field to Tariff
-        } else {
-            return List.of();
-        }
+    public Page<ShowTariffDto> getAll(Pageable pageable) {
+        return tariffRepository.findAll(pageable).map(tariffConverter::toShowTariffDto);
     }
 
     @AutoLogged
     @Override
-    public Iterable<Tariff> getActive() {
-        return tariffRepository.findByActive(true);
+    public List<ShowTariffDto> getForHomepage() {
+        return tariffRepository.findByActive(true)
+                .stream()
+                .map(tariffConverter::toShowTariffDto)
+                .collect(Collectors.toList());
     }
 
     @AutoLogged
     @Override
-    public Iterable<Tariff> getForHomepage() {
-        return tariffRepository.findByActive(true);
+    public TariffDto getById(Long id) {
+        return id != null ? tariffConverter.toDto(tariffRepository.findById(id).orElseThrow())
+                          : new TariffDto();
     }
 
     @AutoLogged
     @Override
-    public Tariff getById(Long id) {
-        return id != null ? tariffRepository.findById(id).orElseThrow()
-                          : new Tariff();
-    }
-
-    @AutoLogged
-    @Override
-    public Tariff save(Tariff tariff) {
-        tariff.setName(tariff.getName().strip());
-        tariff.setDescription(tariff.getDescription().strip());
-        try {
-            if (tariff.getId() == null) {
-                return tariffRepository.save(tariff);
-            } else {
-               tariffRepository.update(tariff);
-                return tariff;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+    public TariffDto save(TariffDto dto) {
+        dto.setName(dto.getName().strip());
+        dto.setDescription(dto.getDescription().strip());
+        Tariff tariff = tariffConverter.toTariff(dto);
+        tariffRepository.save(tariff);
+        dto.setId(tariff.getId());
+        return dto;
     }
 
     private static final int MBIT_S = 1024;
@@ -111,17 +97,26 @@ public class TariffServiceImpl implements TariffService {
             if (random.nextBoolean()) {
                 int index = random.nextInt(BANDWIDTH.length);
                 tariff.setBandwidth(BANDWIDTH[index]);
-                tariff.setIncludedTraffic(null);
+                tariff.setIncludedTraffic(TRAFFIC_UNLIMITED);
                 tariff.setPrice(new BigDecimal(MAX_PRICE * (index + 1) / BANDWIDTH.length));
             } else {
                 int index = random.nextInt(TRAFFIC.length);
                 tariff.setIncludedTraffic(TRAFFIC[index]);
-                tariff.setBandwidth(null);
+                tariff.setBandwidth(BANDWIDTH_UNLIMITED);
                 tariff.setPrice(new BigDecimal(MAX_PRICE * (index + 1) / TRAFFIC.length));
             }
             tariff.setActive(active);
             tariffRepository.save(tariff);
         }
+    }
+
+    @Override
+    public List<ShowTariffDto> getInactiveForCustomer(long customerId) {
+        LocalDateTime now = LocalDateTime.now();
+        return tariffRepository.findInactiveForCustomer(customerId, now)
+                .stream()
+                .map(tariffConverter::toShowTariffDto)
+                .collect(Collectors.toList());
     }
 
 }

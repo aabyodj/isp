@@ -1,19 +1,19 @@
 package by.aab.isp.service;
 
-import by.aab.isp.dto.CredentialsDto;
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UpdateCredentialsDto;
-import by.aab.isp.dto.UserDto;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
+import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UpdateCredentialsDto;
+import by.aab.isp.dto.user.UserDto;
 import java.math.BigDecimal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    Iterable<Customer> getAllCustomers(Pagination pagination);
+    Page<CustomerDto> getAllCustomers(Pageable pageable);
 
-    Iterable<Employee> getAllEmployees(Pagination pagination);
+    Page<EmployeeDto> getAllEmployees(Pageable pageable);
 
     UserDto getById(long id);
 

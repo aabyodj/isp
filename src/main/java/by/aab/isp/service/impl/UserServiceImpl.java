@@ -2,38 +2,37 @@ package by.aab.isp.service.impl;
 
 import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
 import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
+import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.StreamSupport;
-
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.dto.CredentialsDto;
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UpdateCredentialsDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UpdateCredentialsDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
 import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
-import by.aab.isp.repository.OrderOffsetLimit;
+import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
-import by.aab.isp.service.Pagination;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
-import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -44,58 +43,22 @@ public class UserServiceImpl implements UserService {
     private static final String HASH_ALGORITHM = "SHA-256";
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
-    private static final List<OrderOffsetLimit.Order> ORDER_BY_EMAIL = List.of(
-            new OrderOffsetLimit.Order("email", true)
-    );
-
     private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
-    private final TariffService tariffService;
+    private final TariffRepository tariffRepository;
     private final SubscriptionService subscriptionService;
 
     @AutoLogged
     @Override
-    public Iterable<Customer> getAllCustomers(Pagination pagination) {
-        long count = customerRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return customerRepository.findAll(orderOffsetLimit);
-        } else {
-            return List.of();
-        }
+    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable).map(this::toCustomerDto);
     }
 
     @AutoLogged
     @Override
-    public Iterable<Employee> getAllEmployees(Pagination pagination) {
-        long count = employeeRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOrderList(ORDER_BY_EMAIL);
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return employeeRepository.findAll(orderOffsetLimit);
-        } else {
-            return List.of();
-        }
+    public Page<EmployeeDto> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable).map(this::toEmployeeDto);
     }
 
     @AutoLogged
@@ -112,7 +75,8 @@ public class UserServiceImpl implements UserService {
             CustomerDto customerDto = new CustomerDto();
             customerDto.setBalance(customer.getBalance());
             customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
-            customerDto.setPayoffDate(customer.getPayoffDate());
+            LocalDateTime payoffDate = customer.getPayoffDate();
+            customerDto.setPayoffDate(payoffDate.isBefore(LDT_FOR_AGES) ? payoffDate : null);
             dto = customerDto;
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
@@ -126,6 +90,14 @@ public class UserServiceImpl implements UserService {
         dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
         return dto;
+    }
+
+    private CustomerDto toCustomerDto(Customer customer) {
+        return (CustomerDto) toUserDto(customer);
+    }
+
+    private EmployeeDto toEmployeeDto(Employee employee) {
+        return (EmployeeDto) toUserDto(employee);
     }
 
     @AutoLogged
@@ -163,7 +135,7 @@ public class UserServiceImpl implements UserService {
         if (dto.getId() != null) {
             user = userRepository.findById(dto.getId()).orElseThrow();
             setFields(dto, user);
-            userRepository.update(user);
+            userRepository.save(user);
         } else {
             if (null == dto.getPassword()) {
                 throw new ServiceException("Password required");
@@ -181,11 +153,12 @@ public class UserServiceImpl implements UserService {
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
-            customer.setPayoffDate(customerDto.getPayoffDate());
+            LocalDateTime payoffDate = customerDto.getPayoffDate();
+            customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
         } else if (dto instanceof EmployeeDto) {
             EmployeeDto employeeDto = (EmployeeDto) dto;
             Employee employee = (Employee) user;
-            if (!isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
+            if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
                 throw new ServiceException("Unable to delete last admin");
             }
             employee.setRole(employeeDto.getRole());
@@ -293,7 +266,7 @@ public class UserServiceImpl implements UserService {
             validatePasswordConstraints(password);
             user.setPasswordHash(hashPassword(password));
         }
-        userRepository.update(user);
+        userRepository.save(user);
     }
 
     @AutoLogged
@@ -307,9 +280,9 @@ public class UserServiceImpl implements UserService {
         balance = balance.add(amount);
         customer.setBalance(balance);
         if (balance.compareTo(BigDecimal.ZERO) >= 0) {
-            customer.setPayoffDate(null);
+            customer.setPayoffDate(LDT_FOR_AGES);
         }
-        userRepository.update(customer);
+        userRepository.save(customer);
     }
 
     @AutoLogged
@@ -332,11 +305,12 @@ public class UserServiceImpl implements UserService {
     private static final double GENERATED_CUSTOMER_MAX_BALANCE = 100;
     private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
+    @Transactional
     @AutoLogged
     @Override
     public void generateCustomers(int quantity, boolean active) {
-        Tariff[] tariffs = StreamSupport
-                .stream(tariffService.getActive().spliterator(), true)
+        Tariff[] tariffs = tariffRepository.findByActive(true)
+                .stream()
                 .toArray(Tariff[]::new);
         Random random = new Random();
         int i = 1;
@@ -349,6 +323,7 @@ public class UserServiceImpl implements UserService {
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
             customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
+            customer.setPayoffDate(LDT_FOR_AGES);
             customer.setActive(active);
             try {
                 customer = (Customer) userRepository.save(customer);

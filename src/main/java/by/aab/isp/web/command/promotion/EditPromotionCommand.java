@@ -1,8 +1,8 @@
 package by.aab.isp.web.command.promotion;
 
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
-import by.aab.isp.entity.Promotion;
+import by.aab.isp.dto.promotion.PromotionDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +21,8 @@ public class EditPromotionCommand extends Command {
     @Override
     public String execute(HttpServletRequest req) {
         String id = req.getParameter("id");
-        Promotion promotion = promotionService.getById(id != null ? Long.parseLong(id)
-                                                                  : null);
+        PromotionDto promotion = promotionService.getById(id != null ? Long.parseLong(id)
+                                                                     : null);
         req.setAttribute("promotion", promotion);
         req.setAttribute("redirect", "?action=manage_promotions");  //TODO: determine a referer
         return "jsp/edit-promotion.jsp";

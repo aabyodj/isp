@@ -1,4 +1,4 @@
-package by.aab.isp.dto;
+package by.aab.isp.dto.user;
 
 import lombok.Data;
 import lombok.ToString;

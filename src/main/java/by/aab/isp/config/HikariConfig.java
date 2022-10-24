@@ -1,11 +1,10 @@
-package by.aab.isp.repository.jpa;
+package by.aab.isp.config;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.config.ConfigManager;
 import lombok.experimental.Delegate;
 
 @Component

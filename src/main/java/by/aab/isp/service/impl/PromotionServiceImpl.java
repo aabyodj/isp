@@ -1,119 +1,101 @@
 package by.aab.isp.service.impl;
 
+import static by.aab.isp.Const.LDT_FOR_AGES;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.config.ConfigManager;
+import by.aab.isp.dto.converter.PromotionConverter;
+import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.entity.Promotion;
-import by.aab.isp.repository.OrderOffsetLimit;
 import by.aab.isp.repository.PromotionRepository;
-import by.aab.isp.service.Pagination;
 import by.aab.isp.service.PromotionService;
+import lombok.RequiredArgsConstructor;
 
 @Service("promotionService")
+@RequiredArgsConstructor
 public class PromotionServiceImpl implements PromotionService {
 
     private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
 
     private final PromotionRepository promotionRepository;
+    private final PromotionConverter promotionConverter;
     private final ConfigManager config;
 
-    public PromotionServiceImpl(PromotionRepository promotionRepository, ConfigManager config) {
-        this.promotionRepository = promotionRepository;
-        this.config = config;
+    @AutoLogged
+    @Override
+    public Page<PromotionDto> getAll(Pageable pageable) {
+        LocalDateTime now = LocalDateTime.now();
+        return promotionRepository.findAll(pageable).map(promotion -> promotionConverter.toPromotionDto(promotion, now));
     }
 
-    private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_THEN_BY_UNTIL = List.of(
-            new OrderOffsetLimit.Order("activeSince", true),
-            new OrderOffsetLimit.Order("activeUntil", true)
-    );
+    private static final Sort ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL = Sort.by("activeSince").descending().and(Sort.by("activeUntil"));
 
     @AutoLogged
     @Override
-    public Iterable<Promotion> getAll(Pagination pagination) {
-        long count = promotionRepository.count();
-        pagination.setTotalItemsCount(count);
-        long offset = pagination.getOffset();
-        if (offset >= count) {
-            pagination.setPageNumber(pagination.getLastPageNumber());
-        } else {
-            pagination.setOffset(Long.max(0, offset));
-        }
-        if (count > 0) {
-            OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-            orderOffsetLimit.setOrderList(ORDER_BY_SINCE_THEN_BY_UNTIL);
-            orderOffsetLimit.setOffset(pagination.getOffset());
-            orderOffsetLimit.setLimit(pagination.getPageSize());
-            return promotionRepository.findAll(orderOffsetLimit);
-        } else {
-            return List.of();
-        }
-    }
-
-    private static final List<OrderOffsetLimit.Order> ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL = List.of(
-            new OrderOffsetLimit.Order("activeSince", false),
-            new OrderOffsetLimit.Order("activeUntil", true)
-    );
-
-    @AutoLogged
-    @Override
-    public Iterable<Promotion> getForHomepage() {
-        OrderOffsetLimit orderOffsetLimit = new OrderOffsetLimit();
-        orderOffsetLimit.setOrderList(ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL);
-        orderOffsetLimit.setLimit(config.getInt("homepage.promotionsCount", DEFAULT_PROMOTIONS_ON_HOMEPAGE));
-        return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), orderOffsetLimit);
+    public List<PromotionDto> getForHomepage() {
+        int pageSize = config.getInt("homepage.promotionsCount", DEFAULT_PROMOTIONS_ON_HOMEPAGE);
+        PageRequest request = PageRequest.of(0, pageSize, ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL);
+        LocalDateTime now = LocalDateTime.now();
+        return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), request)
+                .map(promotion -> promotionConverter.toPromotionDto(promotion, now))
+                .toList();
     }
 
     @AutoLogged
     @Override
-    public Promotion getById(Long id) {
+    public PromotionDto getById(Long id) {
         if (id != null) {
-            return promotionRepository.findById(id).orElseThrow();
+            return promotionConverter.toPromotionDto(promotionRepository.findById(id).orElseThrow()) ;
         }
-        Promotion promotion = new Promotion();
+        PromotionDto promotion = new PromotionDto();
         promotion.setActiveSince(LocalDateTime.now());
         return promotion;
     }
 
     @AutoLogged
     @Override
-    public Promotion save(Promotion promotion) {
-        promotion.setName(promotion.getName().strip());
-        promotion.setDescription(promotion.getDescription().strip());
-        if (promotion.getId() == null) {
-            return promotionRepository.save(promotion);
-        } else {
-            promotionRepository.update(promotion);
-            return promotion;
-        }
+    public PromotionDto save(PromotionDto dto) {
+        dto.setName(dto.getName().strip());
+        dto.setDescription(dto.getDescription().strip());
+        Promotion promotion = promotionConverter.toPromotion(dto);
+        promotion = promotionRepository.save(promotion);
+        dto.setId(promotion.getId());
+        return dto;
     }
 
     @AutoLogged
+    @Transactional
     @Override
     public void stop(long id) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow();
         LocalDateTime now = LocalDateTime.now();
         if (promotion.getActiveUntil() == null || promotion.getActiveUntil().isAfter(now)) {
             promotion.setActiveUntil(now);
-            promotionRepository.update(promotion);
+            promotionRepository.save(promotion);
         }
     }
 
     @AutoLogged
     @Override
     public void generatePromotions(int quantity, boolean active) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime today = LocalDate.now().atStartOfDay();
         for (int i = 1; i <= quantity; i++) {
             Promotion promotion = new Promotion();
             promotion.setName("Generated " + i);
             promotion.setDescription("Automatically generated promotion #" + i);
-            promotion.setActiveSince(now);
-            if (!active) {
-                promotion.setActiveUntil(now);
-            }
+            promotion.setActiveSince(today);
+            promotion.setActiveUntil(active ? LDT_FOR_AGES : today);
             promotionRepository.save(promotion);
         }
     }

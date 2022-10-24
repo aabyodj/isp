@@ -1,7 +1,7 @@
 package by.aab.isp.web.command.customer;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.UserDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.UserService;
 import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;

@@ -1,41 +1,36 @@
 package by.aab.isp.web.command.tariff;
 
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.service.Pagination;
+import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.TariffService;
-import by.aab.isp.web.FormatUtil;
+import lombok.RequiredArgsConstructor;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 
 @Component
+@RequiredArgsConstructor
 public class ManageTariffsCommand extends by.aab.isp.web.command.Command {
 
-    private final TariffService tariffService;
-    private final FormatUtil util;
+    private static final Sort ORDER_BY_NAME = Sort.by("name");
 
-    public ManageTariffsCommand(TariffService tariffService, FormatUtil util) {
-        this.tariffService = tariffService;
-		this.util = util;
-    }
+    private final TariffService tariffService;
 
     @Override
     public String execute(HttpServletRequest req) {
-        Pagination pagination = new Pagination();
-        pagination.setPageSize(DEFAULT_PAGE_SIZE);
-        String page = req.getParameter("page");
-        pagination.setPageNumber(page != null ? Integer.parseInt(page)
-                                              : 0);
-        Iterable<Tariff> tariffs = tariffService.getAll(pagination);
-        if (tariffs.spliterator().estimateSize() > 0) {
-            req.setAttribute("tariffs", tariffs);
-            req.setAttribute("util", util);
-        }
-        req.setAttribute("pagination", pagination);
+        String pageStr = req.getParameter("page");
+        int pageNumber = pageStr != null ? Integer.max(Integer.parseInt(pageStr) - 1, 0)
+                                         : 0;
+        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_NAME);
+        Page<ShowTariffDto> tariffs = tariffService.getAll(request);
+        req.setAttribute("page", tariffs);
         return "jsp/manage-tariffs.jsp";
     }
 

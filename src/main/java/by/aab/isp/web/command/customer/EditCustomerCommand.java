@@ -1,9 +1,10 @@
 package by.aab.isp.web.command.customer;
 
-import by.aab.isp.dto.CustomerDto;
-import by.aab.isp.dto.EmployeeDto;
-import by.aab.isp.dto.UserDto;
-import by.aab.isp.entity.*;
+import by.aab.isp.dto.subscription.SubscriptionDto;
+import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
@@ -11,8 +12,6 @@ import by.aab.isp.web.command.Command;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
-
-import java.util.stream.StreamSupport;
 
 @Component
 public class EditCustomerCommand extends Command {
@@ -34,9 +33,9 @@ public class EditCustomerCommand extends Command {
                                                                       : null);
         req.setAttribute("customer", customer);
         if (customer.getId() != null) {
-            Tariff tariff = StreamSupport
-                    .stream(subscriptionService.getActiveSubscriptions(customer.getId()).spliterator(), true)
-                    .map(Subscription::getTariff)
+            ShowTariffDto tariff = subscriptionService.getActiveSubscriptions(customer.getId())
+                    .stream()
+                    .map(SubscriptionDto::getTariff)
                     .findAny()
                     .orElse(null);
             req.setAttribute("activeTariff", tariff);

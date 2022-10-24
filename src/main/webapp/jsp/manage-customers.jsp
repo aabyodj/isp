@@ -24,29 +24,29 @@
                     <th>Email</th>
                     <th>Balance</th>
                     <th></th>
-                </tr><c:forEach var="customer" items="${customers}" varStatus="status">
+                </tr><c:forEach var="customer" items="${page.toList()}" varStatus="status">
                 <tr${customer.active ? ' class="active"' : ''}>
-                    <td>${pagination.offset + status.count}</td>
+                    <td>${page.size * page.number + status.count}</td>
                     <td><c:out value="${customer.email}" /></td>
                     <td${customer.balance < 0 ? ' class="negative"' : ''}>${customer.balance}</td>
                     <td><a href="?action=edit_customer&id=${customer.id}">Edit</a></td>
                 </tr></c:forEach>
-                <c:if test="${customers == null}">
+                <c:if test="${page.isEmpty()}">
                     <tr>
                         <td colspan=3>No customers</td>
                     </tr>
                 </c:if>
             </table>
-            <c:if test="${pagination.lastPageNumber > 0}">
+            <c:if test="${page.totalPages > 1}">
                 <p>
-                    <c:if test="${pagination.pageNumber > 0}">
-                        <a href="?action=manage_customers&page=0">First</a>
-                        <a href="?action=manage_customers&page=${pagination.pageNumber - 1}">Prev</a>
+                    <c:if test="${page.hasPrevious()}">
+                        <a href="?action=manage_customers">First</a>
+                        <a href="?action=manage_customers&page=${page.number}">Prev</a>
                     </c:if>
-                    ${pagination.pageNumber}
-                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
-                        <a href="?action=manage_customers&page=${pagination.pageNumber + 1}">Next</a>
-                        <a href="?action=manage_customers&page=${pagination.lastPageNumber}">Last</a>
+                    ${page.number + 1}
+                    <c:if test="${page.hasNext()}">
+                        <a href="?action=manage_customers&page=${page.number + 2}">Next</a>
+                        <a href="?action=manage_customers&page=${page.totalPages}">Last</a>
                     </c:if>
                 </p>
             </c:if>

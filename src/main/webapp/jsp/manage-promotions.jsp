@@ -27,37 +27,37 @@
                     <th>Description</th>
                     <th></th>
                 </tr>
-                <c:forEach var="promotion" items="${promotions}" varStatus="status">
-                    <tr${promotion.isActiveOn(now) ? ' class="active"' : ''}>
-                        <td>${pagination.offset + status.count}</td>
+                <c:forEach var="promotion" items="${page.toList()}" varStatus="status">
+                    <tr${promotion.active ? ' class="active"' : ''}>
+                        <td>${page.number * page.size + status.count}</td>
                         <td>${promotion.activeSince != null ? promotion.activeSince : 'Since the Big Bang'}</td>
                         <td>${promotion.activeUntil != null ? promotion.activeUntil : 'Until stopped'}</td>
                         <td><c:out value="${promotion.name}" /></td>
                         <td><c:out value="${promotion.description}" /></td>
                         <td>
                             <a href="?action=edit_promotion&id=${promotion.id}">Edit</a>
-                            <c:if test="${promotion.isActiveOn(now)}">
+                            <c:if test="${promotion.active}">
                                 <a href="?action=stop_promotion&id=${promotion.id}">Stop</a>
                             </c:if>
                         </td>
                     </tr>
                 </c:forEach>
-                <c:if test="${promotions == null}">
+                <c:if test="${page.isEmpty()}">
                     <tr>
                         <td colspan=5>No promotions</td>
                     </tr>
                 </c:if>
             </table>
-            <c:if test="${pagination.lastPageNumber > 0}">
+            <c:if test="${page.totalPages > 1}">
                 <p>
-                    <c:if test="${pagination.pageNumber > 0}">
-                        <a href="?action=manage_promotions&page=0">First</a>
-                        <a href="?action=manage_promotions&page=${pagination.pageNumber - 1}">Prev</a>
+                    <c:if test="${page.hasPrevious()}">
+                        <a href="?action=manage_promotions">First</a>
+                        <a href="?action=manage_promotions&page=${page.number}">Prev</a>
                     </c:if>
-                    ${pagination.pageNumber}
-                    <c:if test="${pagination.pageNumber < pagination.lastPageNumber}">
-                        <a href="?action=manage_promotions&page=${pagination.pageNumber + 1}">Next</a>
-                        <a href="?action=manage_promotions&page=${pagination.lastPageNumber}">Last</a>
+                    ${page.number + 1}
+                    <c:if test="${page.hasNext()}">
+                        <a href="?action=manage_promotions&page=${page.number + 2}">Next</a>
+                        <a href="?action=manage_promotions&page=${page.totalPages}">Last</a>
                     </c:if>
                 </p>
             </c:if>
