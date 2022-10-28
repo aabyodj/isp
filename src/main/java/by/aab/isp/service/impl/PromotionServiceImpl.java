@@ -39,6 +39,13 @@ public class PromotionServiceImpl implements PromotionService {
         return promotionRepository.findAll(pageable).map(promotion -> promotionConverter.toPromotionDto(promotion, now));
     }
 
+    @AutoLogged
+    @Override
+    public Page<PromotionDto> getActive(Pageable pageable) {
+        LocalDateTime now = LocalDateTime.now();
+        return promotionRepository.findByActivePeriodContains(now, pageable).map(promotion -> promotionConverter.toPromotionDto(promotion, now));
+    }
+
     private static final Sort ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL = Sort.by("activeSince").descending().and(Sort.by("activeUntil"));
 
     @AutoLogged

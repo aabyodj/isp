@@ -14,6 +14,10 @@ public interface TariffService {
 
     Page<ShowTariffDto> getAll(Pageable pageable);
 
+    List<ShowTariffDto> getActive();
+
+    Page<ShowTariffDto> getActive(Pageable pageable);
+
     List<ShowTariffDto> getForHomepage();
 
     List<ShowTariffDto> getInactiveForCustomer(long customerId);
