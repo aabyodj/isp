@@ -11,6 +11,8 @@ public interface PromotionService {
 
     Page<PromotionDto> getAll(Pageable pageable);
 
+    Page<PromotionDto> getActive(Pageable pageable);
+
     List<PromotionDto> getForHomepage();
 
     PromotionDto getById(Long id);

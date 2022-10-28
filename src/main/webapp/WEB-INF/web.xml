@@ -6,70 +6,25 @@
   version="4.0"
   metadata-complete="true">
   <display-name>Internet Server Provider</display-name>
-  <servlet>
-    <servlet-name>Controller</servlet-name>
-    <servlet-class>by.aab.isp.web.Controller</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Controller</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>default</servlet-name>
-    <url-pattern>*.css</url-pattern>
-  </servlet-mapping>
-  <filter>
-    <filter-name>pathFilter</filter-name>
-    <filter-class>by.aab.isp.web.filter.PathFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>userSessionFilter</filter-name>
-    <filter-class>by.aab.isp.web.filter.UserSessionFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>commandFilter</filter-name>
-    <filter-class>by.aab.isp.web.filter.CommandFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>authorizationFilter</filter-name>
-    <filter-class>by.aab.isp.web.filter.AuthorizationFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>pathFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>userSessionFilter</filter-name>
-    <url-pattern>/</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>commandFilter</filter-name>
-    <url-pattern>/</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>authorizationFilter</filter-name>
-    <url-pattern>/</url-pattern>
-  </filter-mapping>
   <error-page>
     <error-code>400</error-code>
-    <location>/jsp/error/400.jsp</location>
+    <location>/WEB-INF/jsp/error/400.jsp</location>
   </error-page>
   <error-page>
     <error-code>401</error-code>
-    <location>/jsp/login-form.jsp</location>
+    <location>/WEB-INF/jsp/login-form.jsp</location>
   </error-page>
   <error-page>
     <error-code>403</error-code>
-    <location>/jsp/error/403.jsp</location>
+    <location>/WEB-INF/jsp/error/403.jsp</location>
   </error-page>
   <error-page>
     <error-code>404</error-code>
-    <location>/jsp/error/404.jsp</location>
+    <location>/WEB-INF/jsp/error/404.jsp</location>
   </error-page>
   <error-page>
     <exception-type>java.lang.Throwable</exception-type>
-    <location>/jsp/error/default.jsp</location>
+    <location>/WEB-INF/jsp/error/default.jsp</location>
   </error-page>
 
 	<context-param>

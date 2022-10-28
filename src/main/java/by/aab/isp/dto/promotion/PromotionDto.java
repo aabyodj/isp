@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class PromotionDto {
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private LocalDateTime activeSince;

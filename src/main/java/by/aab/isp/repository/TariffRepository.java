@@ -3,6 +3,8 @@ package by.aab.isp.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import by.aab.isp.entity.Tariff;
 
 public interface TariffRepository extends JpaRepository<Tariff, Long> {
+
+    Page<Tariff> findByActive(boolean active, Pageable pageable);
 
     List<Tariff> findByActive(boolean active);
 

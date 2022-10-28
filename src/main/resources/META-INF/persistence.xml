@@ -11,6 +11,7 @@
             <property name="hibernate.transaction.manager_lookup_class"
                     value="org.hibernate.engine.transaction.jta.platform.internal.JBossStandAloneJtaPlatform"/>
             <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hikari.dataSourceClassName" value="org.postgresql.ds.PGSimpleDataSource"/>
         </properties>
     </persistence-unit>
 </persistence>
