@@ -11,7 +11,7 @@
                 <c:when test="${activeEmployee != null}">
                     <h1>Manage tariff plans</h1>
                     <p><a href="${pageContext.request.contextPath}/tariff/new">Add new tariff</a>
-                    <form action="?action=generate_tariffs" method="POST">
+                    <form action="${pageContext.request.contextPath}/tariff/generate" method="POST">
                         <input name="redirect" type="hidden" value="/tariff">
                         <label for="quantity">Automatically generate</label>
                         <input name="quantity" type="number" required min=1 value=10>
