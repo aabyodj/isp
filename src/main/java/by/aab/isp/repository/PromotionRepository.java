@@ -15,4 +15,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
     Page<Promotion> findByActivePeriodContains(
             @Param("instant") LocalDateTime instant, Pageable pageable);
 
+    @Query("SELECT count(*) FROM Promotion p WHERE p.name = :name")
+    long countByName(@Param("name") String name);
+
 }

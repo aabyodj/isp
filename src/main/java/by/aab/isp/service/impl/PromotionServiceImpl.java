@@ -92,16 +92,24 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @AutoLogged
+    @Transactional
     @Override
     public void generatePromotions(int quantity, boolean active) {
         LocalDateTime today = LocalDate.now().atStartOfDay();
-        for (int i = 1; i <= quantity; i++) {
+        int i = 0;
+        while (quantity > 0) {
+            i++;
+            String promotionName = "Generated " + i;
+            if (promotionRepository.countByName(promotionName) > 0) {
+                continue;
+            }
             Promotion promotion = new Promotion();
-            promotion.setName("Generated " + i);
+            promotion.setName(promotionName);
             promotion.setDescription("Automatically generated promotion #" + i);
             promotion.setActiveSince(today);
             promotion.setActiveUntil(active ? LDT_FOR_AGES : today);
             promotionRepository.save(promotion);
+            quantity--;
         }
     }
 
