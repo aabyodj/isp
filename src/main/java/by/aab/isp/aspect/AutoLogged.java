@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface AutoLogged {
 
+    String value() default "DEBUG";
 }
