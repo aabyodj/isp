@@ -23,6 +23,10 @@
     <location>/WEB-INF/jsp/error/404.jsp</location>
   </error-page>
   <error-page>
+    <error-code>500</error-code>
+    <location>/WEB-INF/jsp/error/default.jsp</location>
+  </error-page>
+  <error-page>
     <exception-type>java.lang.Throwable</exception-type>
     <location>/WEB-INF/jsp/error/default.jsp</location>
   </error-page>

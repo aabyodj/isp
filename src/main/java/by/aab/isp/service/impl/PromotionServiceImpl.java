@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.config.ConfigManager;
+import by.aab.isp.config.HomepageProperties;
 import by.aab.isp.dto.converter.PromotionConverter;
 import by.aab.isp.dto.promotion.PromotionDto;
 import by.aab.isp.entity.Promotion;
@@ -26,11 +26,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PromotionServiceImpl implements PromotionService {
 
-    private static final int DEFAULT_PROMOTIONS_ON_HOMEPAGE = 3;
-
     private final PromotionRepository promotionRepository;
     private final PromotionConverter promotionConverter;
-    private final ConfigManager config;
+    private final HomepageProperties homepageProperties;
 
     @AutoLogged
     @Override
@@ -51,7 +49,7 @@ public class PromotionServiceImpl implements PromotionService {
     @AutoLogged
     @Override
     public List<PromotionDto> getForHomepage() {
-        int pageSize = config.getInt("homepage.promotionsCount", DEFAULT_PROMOTIONS_ON_HOMEPAGE);
+        int pageSize = homepageProperties.getPromotionsCount();
         PageRequest request = PageRequest.of(0, pageSize, ORDER_BY_SINCE_REVERSED_THEN_BY_UNTIL);
         LocalDateTime now = LocalDateTime.now();
         return promotionRepository.findByActivePeriodContains(LocalDateTime.now(), request)
