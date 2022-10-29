@@ -345,21 +345,26 @@ public class UserServiceImpl implements UserService {
     @AutoLogged
     @Override
     public void generateEmployees(int quantity, boolean active) {
+        if (quantity < 1) {
+            return;
+        }
         Employee.Role[] roles = Employee.Role.values();
         Random random = new Random();
-        int i = 1;
+        int i = 0;
         while (quantity > 0) {
-            String emailName = GENERATED_EMPLOYEE_EMAIL_NAME + i++;
+            i++;
+            String emailName = GENERATED_EMPLOYEE_EMAIL_NAME + i;
+            String generatedEmail = emailName + GENERATED_EMAIL_DOMAIN;
+            if (userRepository.countByEmail(generatedEmail) > 0) {
+                continue;
+            }
             Employee employee = new Employee();
-            employee.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
+            employee.setEmail(generatedEmail);
             employee.setPasswordHash(hashPassword(emailName));
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
-            try {
-                userRepository.save(employee);
-                quantity--;
-            } catch (Exception ignore) {
-            }
+            userRepository.save(employee);
+            quantity--;
         }
     }
 }
