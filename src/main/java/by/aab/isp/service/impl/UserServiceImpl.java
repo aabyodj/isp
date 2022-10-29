@@ -309,15 +309,23 @@ public class UserServiceImpl implements UserService {
     @AutoLogged
     @Override
     public void generateCustomers(int quantity, boolean active) {
+        if (quantity < 1) {
+            return;
+        }
         Tariff[] tariffs = tariffRepository.findByActive(true)
                 .stream()
                 .toArray(Tariff[]::new);
         Random random = new Random();
-        int i = 1;
+        int i = 0;
         while (quantity > 0) {
-            String emailName = GENERATED_CUSTOMER_EMAIL_NAME + i++;
+            i++;
+            String emailName = GENERATED_CUSTOMER_EMAIL_NAME + i;
+            String generatedEmail = emailName + GENERATED_EMAIL_DOMAIN;
+            if (userRepository.countByEmail(generatedEmail) > 0) {
+                continue;
+            }
             Customer customer = new Customer();
-            customer.setEmail(emailName + GENERATED_EMAIL_DOMAIN);
+            customer.setEmail(generatedEmail);
             customer.setPasswordHash(hashPassword(emailName));
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
@@ -325,15 +333,12 @@ public class UserServiceImpl implements UserService {
             customer.setPermittedOverdraft(BigDecimal.ZERO);    //TODO: let managers set default permitted overdraft
             customer.setPayoffDate(LDT_FOR_AGES);
             customer.setActive(active);
-            try {
-                customer = (Customer) userRepository.save(customer);
-                int tariffIndex = random.nextInt(tariffs.length + 1);
-                if (tariffIndex < tariffs.length) {
-                    subscriptionService.subscribe(customer.getId(), tariffs[tariffIndex].getId());
-                }
-                quantity--;
-            } catch (Exception ignore) {
+            customer = (Customer) userRepository.save(customer);
+            int tariffIndex = random.nextInt(tariffs.length + 1);
+            if (tariffIndex < tariffs.length) {
+                subscriptionService.subscribe(customer.getId(), tariffs[tariffIndex].getId());
             }
+            quantity--;
         }
     }
 
