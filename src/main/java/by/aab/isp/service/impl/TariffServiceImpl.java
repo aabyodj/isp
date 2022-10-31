@@ -111,9 +111,15 @@ public class TariffServiceImpl implements TariffService {
     @AutoLogged
     @Override
     public void generateTariffs(int quantity, boolean active) {
-        for (int i = 1; i <= quantity; i++) {
+        int i = 0;
+        while (quantity > 0) {
+            i++;
+            String tariffName = "Generated " + i;
+            if (tariffRepository.countByName(tariffName) > 0) {
+                continue;
+            }
             Tariff tariff = new Tariff();
-            tariff.setName("Generated " + i);
+            tariff.setName(tariffName);
             tariff.setDescription("Automatically generated tariff #" + i);
             Random random = new Random();
             if (random.nextBoolean()) {
@@ -129,6 +135,7 @@ public class TariffServiceImpl implements TariffService {
             }
             tariff.setActive(active);
             tariffRepository.save(tariff);
+            quantity--;
         }
     }
 

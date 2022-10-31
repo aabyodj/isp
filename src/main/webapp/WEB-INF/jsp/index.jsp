@@ -15,7 +15,7 @@
                 <section id="promotions">
                     <h1><fmt:message key="msg.home.promotions.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="?action=new_promotion"><fmt:message key="msg.promotion.add" /></a>
+                        <p><a href="${pageContext.request.contextPath}/promotion/new?redirect=/"><fmt:message key="msg.promotion.add" /></a>
                     </c:if>
                     <ul><c:forEach var="promotion" items="${promotions}">
                         <li>
@@ -25,8 +25,8 @@
                                 <p><fmt:message key="msg.promotion.until" /> ${promotion.activeUntil.toLocalDate()}</p>
                             </c:if>
                             <c:if test="${activeEmployee != null}">
-                                <a href="?action=edit_promotion&id=${promotion.id}"><fmt:message key="msg.promotion.edit" /></a>
-                                <a href="?action=stop_promotion&id=${promotion.id}"><fmt:message key="msg.promotion.stop" /></a>
+                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?redirect=/"><fmt:message key="msg.promotion.edit" /></a>
+                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?stop&redirect=/"><fmt:message key="msg.promotion.stop" /></a>
                             </c:if>
                         </li></c:forEach>
                     </ul>
@@ -36,7 +36,7 @@
                 <section>
                     <h1><fmt:message key="msg.home.tariffs.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="?action=new_tariff"><fmt:message key="msg.tariff.add" /></a>
+                        <p><a href="${pageContext.request.contextPath}/tariff/new?redirect=/"><fmt:message key="msg.tariff.add" /></a>
                     </c:if>
                     <ul><c:forEach var="tariff" items="${tariffs}">
                         <li>
@@ -45,14 +45,9 @@
                             <p><fmt:message key="msg.tariff.bandwidth" />: <span>${tariff.bandwidth}</span>
                             <p><fmt:message key="msg.tariff.traffic" />: <span>${tariff.includedTraffic}</span>
                             <p><fmt:message key="msg.tariff.price" />: <span>${tariff.price}</span></p>
-                            <c:choose>
-                                <c:when test="${activeEmployee != null}">
-                                    <a href="?action=edit_tariff&id=${tariff.id}"><fmt:message key="msg.tariff.edit" /></a>
-                                </c:when>
-                                <c:otherwise>
-                                    <a href="?action=subscribe&tariff_id=${tariff.id}&redirect="><fmt:message key="msg.subscription.subscribe" /></a><%-- TODO: redirect to user account --%>
-                                </c:otherwise>
-                            </c:choose>
+                            <c:if test="${activeEmployee != null}">
+                                <a href="${pageContext.request.contextPath}/tariff/${tariff.id}?redirect=/"><fmt:message key="msg.tariff.edit" /></a>
+                            </c:if>
                         </li></c:forEach>
                     </ul>
                 </section>

@@ -1,5 +1,5 @@
         <header>
-            <h1><a href="${pageContext.request.contextPath}">Internet Service Provider</a></h1>
+            <h1><a href="${pageContext.request.contextPath}/">Internet Service Provider</a></h1>
             <nav><c:choose>
             <c:when test="${activeCustomer != null}">
                 <ul>

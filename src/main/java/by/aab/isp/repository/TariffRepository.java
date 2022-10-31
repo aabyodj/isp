@@ -21,4 +21,7 @@ public interface TariffRepository extends JpaRepository<Tariff, Long> {
             + "(SELECT DISTINCT s.tariff.id FROM Subscription s WHERE s.customer.id = :customerId AND s.activeSince <= :instant AND s.activeUntil >= :instant)")
     List<Tariff> findInactiveForCustomer(@Param("customerId") long customerId, @Param("instant") LocalDateTime instant);
 
+    @Query("SELECT count(*) FROM Tariff t WHERE t.name = :name")
+    long countByName(@Param("name") String name);
+
 }
