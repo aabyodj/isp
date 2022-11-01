@@ -13,11 +13,14 @@
                 <fmt:message key="msg.user.login.hintPassword" /> <b>${defaultAdminPassword}</b>
             </p>
             <form action="${pageContext.request.contextPath}/login/" method="POST">
-                <input name="redirect" type="hidden" value="${redirect != null ? redirect : '?'.concat(pageContext.request.queryString)}">
+                <c:if test="${wrongCredentials != null}">
+                    <p class="error-message">Wrong email/password. Please try again.
+                </c:if>
+                <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
                         <label for="user-email"><fmt:message key="msg.user.email" /></label>
-                        <input name="email" id="user-email" type="email" required placeholder="user@example.com">
+                        <input name="email" id="user-email" type="email" required placeholder="user@example.com" value="<c:out value='${credentials.email}'/>">
                     </li>
                     <li>
                         <label for="password"><fmt:message key="msg.user.password" /></label>

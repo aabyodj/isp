@@ -87,7 +87,7 @@ li > h2:first-child {
     margin-top: 0;
 }
 
-.negative {
+.negative, .error-message {
     color: #dd0000;
 }
 
