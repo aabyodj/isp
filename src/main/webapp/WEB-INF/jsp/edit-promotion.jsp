@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %><%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
@@ -8,30 +8,31 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1><fmt:message key="${promotion.id != null ? 'msg.promotion.h1.edit' : 'msg.promotion.h1.new'}" /></h1>
-            <form action="${pageContext.request.contextPath}/promotion" method="POST">
+            <form:form action="${pageContext.request.contextPath}/promotion" method="POST" modelAttribute="promotion">
                 <c:if test="${promotion.id != null}"><input type="hidden" name="id" value="${promotion.id}"></c:if>
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
-                        <label for="promotion-name"><fmt:message key="msg.promotion.name" /></label>
-                        <input name="name" id="promotion-name" type="text" required maxlength=25 placeholder="<fmt:message key="msg.promotion.name" />" <%-- TODO: define maxlength via a constant --%>
-                            value="<c:out value="${promotion.name}" />">
+                        <form:label path="name"><spring:message code="msg.promotion.name" /></form:label><spring:message code="msg.promotion.name" var="namePlaceholder" />
+                        <form:input path="name" type="text" required="true" maxlength="25" placeholder="${namePlaceholder}" cssErrorClass="error" />
+                        <form:errors path="name" cssClass="error-message" element="label" for="name" />
                     </li>
                     <li>
-                        <label for="description"><fmt:message key="msg.promotion.description" /></label>
-                        <textarea name="description" id="description" required maxlength=100 placeholder="<fmt:message key="msg.promotion.description" />"><c:out value="${promotion.description}" /></textarea>
+                        <form:label path="description"><spring:message code="msg.promotion.description" /></form:label><spring:message code="msg.promotion.description" var="descriptionPlaceholder" />
+                        <form:textarea path="description" required="true" maxlength="100" placeholder="${descriptionPlaceholder}" cssErrorClass="error"></form:textarea>
+                        <form:errors path="description" cssClass="error-message" element="label" for="description" />
                     </li>
                     <li>
                         <label for="active-since"><fmt:message key="msg.promotion.since" /></label>
-                        <input name="active-since" id="active-since" type="date" value="${promotion.activeSince.toLocalDate()}">
+                        <form:input path="activeSince" id="active-since" type="date" />
                     </li>
                     <li>
                         <label for="active-until"><fmt:message key="msg.promotion.until" /></label>
-                        <input name="active-until" id="active-until" type="date" value="${promotion.activeUntil.toLocalDate()}">
+                        <form:input path="activeUntil" id="active-until" type="date" />
                     </li>
                 </ul>
                 <button type="submit"><fmt:message key="msg.promotion.submit" /></button>
-            </form>
+            </form:form>
         </main>
     </body>
 </html>

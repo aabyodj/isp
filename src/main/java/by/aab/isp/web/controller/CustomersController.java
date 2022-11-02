@@ -56,22 +56,16 @@ public class CustomersController {
     }
 
     @GetMapping("/new")
-    public String createNewCustomer(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(required = false) String redirect, Model model) {
+    public String createNewCustomer(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/customer") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(null));
         model.addAttribute("tariffs", tariffService.getActive());
-        if (null == redirect || redirect.isBlank()) {
-            redirect = "/customer";
-        }
         model.addAttribute("redirect", redirect);
         return "edit-customer";
     }
 
     @GetMapping("/{customerId}")
     public String editCustomer(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long customerId,
-            @RequestParam(required = false) String redirect, Model model) {
-        if (null == redirect || redirect.isBlank()) {
-            redirect = "/customer";
-        }
+            @RequestParam(defaultValue = "/customer") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         ShowTariffDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()

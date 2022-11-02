@@ -8,13 +8,6 @@ main {
     display: grid;
 }
 
-form {/*
-    border: 1px solid #777;
-    border-radius: .25rem;
-    margin: 1rem 0;
-    padding: 1rem;*/
-}
-
 input[type="date"],
 input[type="email"],
 input[type="number"],
@@ -71,6 +64,7 @@ body#my-account > main > ul {
     padding: 0;
 }
 
+form,
 main > section > ul > li {
     border: 1px solid #777;
     border-radius: .25rem;
@@ -87,19 +81,28 @@ li > h2:first-child {
     margin-top: 0;
 }
 
+:where(input, textarea).error {
+    border: 2px solid #dd0000;
+}
+
 .negative, .error-message {
     color: #dd0000;
 }
 
 @media (min-width: 32rem) {
+
+    :where(button, input)[type="submit"] {
+        margin-left: calc(33.4% + .6rem);
+    }
+
     form > ul > li {
         display: grid;
         grid-column-gap: 1rem;
-        grid-row-gap: 1rem;
         grid-template-columns: 1fr 2fr;
     }
 
-    form > ul > li > label {
+    form > ul > li > label:first-child {
+        grid-row: span 2;
         text-align: right;
     }
 
