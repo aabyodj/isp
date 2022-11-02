@@ -10,9 +10,9 @@
             <c:choose>
                 <c:when test="${activeEmployee != null}">
                     <h1>Manage discounts and promotions</h1>
-                    <p><a href="${pageContext.request.contextPath}/promotion/new">Add a new promotion</a>
-                    <form action="${pageContext.request.contextPath}/promotion/generate" method="POST">
-                        <input name="redirect" type="hidden" value="/promotion">
+                    <p><a href="/promotions/new">Add a new promotion</a>
+                    <form action="/promotions/generate" method="POST">
+                        <input name="redirect" type="hidden" value="/promotions">
                         <ul>
                             <li>
                                 <label for="quantity">Automatically generate</label>
@@ -48,9 +48,9 @@
                         <td><c:out value="${promotion.description}" /></td>
                         <c:if test="${activeEmployee != null}">
                             <td>
-                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}">Edit</a>
+                                <a href="/promotions/${promotion.id}">Edit</a>
                                 <c:if test="${promotion.active}">
-                                    <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?stop">Stop</a>
+                                    <a href="/promotions/${promotion.id}?stop">Stop</a>
                                 </c:if>
                             </td>
                         </c:if>

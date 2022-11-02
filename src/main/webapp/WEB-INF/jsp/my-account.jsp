@@ -13,7 +13,7 @@
                     <ul>
                         <li>
                             <p${activeCustomer.balance < 0 ? ' class="negative"' : ''}>Balance: ${activeCustomer.balance}
-                            <form action="${pageContext.request.contextPath}/my_account/replenish_balance" method="POST">
+                            <form action="/my_account/replenish_balance" method="POST">
                                 <input name="redirect" type="hidden" value="/my_account">
                                 <label for="amount">Replenish balance by:</label>
                                 <input name="amount" type="number" required min="0.01" step="0.01">
@@ -46,13 +46,13 @@
                                         <td>${subscription.trafficConsumed}</td>
                                         <td>${subscription.trafficLeft}</td>
                                         <td><c:if test="${subscription.active}">
-                                            <a href="${pageContext.request.contextPath}/my_account/cancel_subscription?subscription_id=${subscription.id}">Cancel</a></c:if>
+                                            <a href="/my_account/cancel_subscription?subscription_id=${subscription.id}">Cancel</a></c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
                             </table>
                             <c:if test="${tariffs != null}">
-                                <form action="${pageContext.request.contextPath}/my_account/subscribe" method="POST">
+                                <form action="/my_account/subscribe" method="POST">
                                     <input name="redirect" type="hidden" value="/my_account">
                                     <label for="new-tariff">Subscribe to another tariff:</label>
                                     <select name="tariff_id" required>
@@ -70,7 +70,7 @@
                     <ul><li>Role: ${activeEmployee.role.name().toLowerCase()}</ul>
                 </c:when>
             </c:choose>
-            <form action="${pageContext.request.contextPath}/my_account/update_credentials" method="POST">
+            <form action="/my_account/update_credentials" method="POST">
                 <input name="redirect" type="hidden" value="${pageContext.request.queryString}/my_account">
                 <ul>
                     <li>

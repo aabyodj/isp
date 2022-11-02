@@ -8,9 +8,9 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1>Manage employees</h1>
-            <p><a href="${pageContext.request.contextPath}/employee/new">Add new employee</a>
-            <form action="${pageContext.request.contextPath}/employee/generate" method="POST">
-                <input name="redirect" type="hidden" value="/employee">
+            <p><a href="/employees/new">Add new employee</a>
+            <form action="/employees/generate" method="POST">
+                <input name="redirect" type="hidden" value="/employees">
                 <label for="quantity">Automatically generate</label>
                 <input name="quantity" type="number" required min=1 value=10>
                 <label for="active">activated</label>
@@ -31,7 +31,7 @@
                     <td><c:out value="${employee.role.toString().toLowerCase()}" /></td>
                     <td>
                         <c:if test="${employee.id != activeEmployee.id}">
-                            <a href="${pageContext.request.contextPath}/employee/${employee.id}">Edit</a>
+                            <a href="/employees/${employee.id}">Edit</a>
                         </c:if>
                     </td>
                 </tr></c:forEach>

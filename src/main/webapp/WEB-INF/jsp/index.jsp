@@ -15,7 +15,7 @@
                 <section id="promotions">
                     <h1><spring:message code="msg.home.promotions.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="${pageContext.request.contextPath}/promotion/new?redirect=/"><spring:message code="msg.promotion.add" /></a>
+                        <p><a href="/promotions/new?redirect=/"><spring:message code="msg.promotion.add" /></a>
                     </c:if>
                     <ul><c:forEach var="promotion" items="${promotions}">
                         <li>
@@ -25,8 +25,8 @@
                                 <p><spring:message code="msg.promotion.until" /> ${promotion.activeUntil.toLocalDate()}</p>
                             </c:if>
                             <c:if test="${activeEmployee != null}">
-                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?redirect=/"><spring:message code="msg.promotion.edit" /></a>
-                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?stop&redirect=/"><spring:message code="msg.promotion.stop" /></a>
+                                <a href="/promotions/${promotion.id}?redirect=/"><spring:message code="msg.promotion.edit" /></a>
+                                <a href="/promotions/${promotion.id}?stop&redirect=/"><spring:message code="msg.promotion.stop" /></a>
                             </c:if>
                         </li></c:forEach>
                     </ul>
@@ -36,7 +36,7 @@
                 <section>
                     <h1><spring:message code="msg.home.tariffs.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="${pageContext.request.contextPath}/tariff/new?redirect=/"><spring:message code="msg.tariff.add" /></a>
+                        <p><a href="/tariffs/new?redirect=/"><spring:message code="msg.tariff.add" /></a>
                     </c:if>
                     <ul><c:forEach var="tariff" items="${tariffs}">
                         <li>
@@ -46,7 +46,7 @@
                             <p><spring:message code="msg.tariff.traffic" />: <span>${tariff.includedTraffic}</span>
                             <p><spring:message code="msg.tariff.price" />: <span>${tariff.price}</span></p>
                             <c:if test="${activeEmployee != null}">
-                                <a href="${pageContext.request.contextPath}/tariff/${tariff.id}?redirect=/"><spring:message code="msg.tariff.edit" /></a>
+                                <a href="/tariffs/${tariff.id}?redirect=/"><spring:message code="msg.tariff.edit" /></a>
                             </c:if>
                         </li></c:forEach>
                     </ul>

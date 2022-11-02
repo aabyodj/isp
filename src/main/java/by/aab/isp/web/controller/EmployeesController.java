@@ -30,7 +30,7 @@ import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/employee")
+@RequestMapping("/employees")
 @RequiredArgsConstructor
 public class EmployeesController {
 
@@ -53,7 +53,7 @@ public class EmployeesController {
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
         if (null == redirect || redirect.isBlank()) {
-            redirect = "/employee";
+            redirect = "/employees";
         }
         model.addAttribute("redirect", redirect);
         return "edit-employee";
@@ -66,7 +66,7 @@ public class EmployeesController {
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
         if (null == redirect || redirect.isBlank()) {
-            redirect = "/employee";
+            redirect = "/employees";
         }
         model.addAttribute("redirect", redirect);
         return "edit-employee";

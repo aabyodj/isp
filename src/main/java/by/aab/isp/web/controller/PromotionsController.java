@@ -35,7 +35,7 @@ import by.aab.isp.service.PromotionService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/promotion")
+@RequestMapping("/promotions")
 @RequiredArgsConstructor
 public class PromotionsController {
 
@@ -57,7 +57,7 @@ public class PromotionsController {
     }
 
     @GetMapping("/new")
-    public String createNewPromotion(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/promotion") String redirect, Model model) {
+    public String createNewPromotion(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
         model.addAttribute("promotion", PromotionEditDto.builder()
                 .activeSince(now.getLocalDate())
                 .build());
@@ -67,7 +67,7 @@ public class PromotionsController {
 
     @GetMapping("/{promotionId}")
     public String editPromotion(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long promotionId, @RequestParam(required = false) String stop,
-            @RequestParam(defaultValue = "/promotion") String redirect, Model model) {
+            @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
         if (null != stop) {
             promotionService.stop(promotionId);
             return SCHEMA_REDIRECT + redirect;
@@ -77,13 +77,15 @@ public class PromotionsController {
         return "edit-promotion";
     }
 
-    @PostMapping
+    @PostMapping({"/new", "/{promotionId}"})
     public String savePromotion(@RequestAttribute EmployeeDto activeEmployee,
+            @PathVariable(required = false) Long promotionId,
             @Valid @ModelAttribute("promotion") PromotionEditDto promotion, BindingResult bindingResult,
             @ModelAttribute("redirect") String redirect) {
         if (bindingResult.hasErrors()) {
             return "edit-promotion";
         }
+        promotion.setId(promotionId);
         promotionService.save(promotion);
         return SCHEMA_REDIRECT + redirect;
     }

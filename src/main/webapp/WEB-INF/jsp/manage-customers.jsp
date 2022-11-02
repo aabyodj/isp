@@ -8,9 +8,9 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1><spring:message code="msg.customer.manage" /></h1>
-            <p><a href="${pageContext.request.contextPath}/customer/new">Add new customer</a>
-            <form action="${pageContext.request.contextPath}/customer/generate" method="POST">
-                <input name="redirect" type="hidden" value="/customer">
+            <p><a href="/customers/new">Add new customer</a>
+            <form action="/customers/generate" method="POST">
+                <input name="redirect" type="hidden" value="/customers">
                 <label for="quantity">Automatically generate</label>
                 <input name="quantity" type="number" required min=1 value=10>
                 <label for="active">activated</label>
@@ -29,7 +29,7 @@
                     <td>${page.size * page.number + status.count}</td>
                     <td><c:out value="${customer.email}" /></td>
                     <td${customer.balance < 0 ? ' class="negative"' : ''}>${customer.balance}</td>
-                    <td><a href="${pageContext.request.contextPath}/customer/${customer.id}">Edit</a></td>
+                    <td><a href="/customers/${customer.id}">Edit</a></td>
                 </tr></c:forEach>
                 <c:if test="${page.isEmpty()}">
                     <tr>

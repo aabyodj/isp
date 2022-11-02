@@ -36,7 +36,7 @@ import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/customer")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomersController {
 
@@ -56,7 +56,7 @@ public class CustomersController {
     }
 
     @GetMapping("/new")
-    public String createNewCustomer(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/customer") String redirect, Model model) {
+    public String createNewCustomer(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/customers") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(null));
         model.addAttribute("tariffs", tariffService.getActive());
         model.addAttribute("redirect", redirect);
@@ -65,7 +65,7 @@ public class CustomersController {
 
     @GetMapping("/{customerId}")
     public String editCustomer(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long customerId,
-            @RequestParam(defaultValue = "/customer") String redirect, Model model) {
+            @RequestParam(defaultValue = "/customers") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         ShowTariffDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()

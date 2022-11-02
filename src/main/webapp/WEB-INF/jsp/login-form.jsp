@@ -12,7 +12,7 @@
                 <spring:message code="msg.user.login.hintEmail" /> <b>${defaultAdminEmail}</b>,
                 <spring:message code="msg.user.login.hintPassword" /> <b>${defaultAdminPassword}</b>
             </p>
-            <form action="${pageContext.request.contextPath}/login/" method="POST">
+            <form action="/login/" method="POST">
                 <c:if test="${wrongCredentials != null}">
                     <p class="error-message">Wrong email/password. Please try again.
                 </c:if>

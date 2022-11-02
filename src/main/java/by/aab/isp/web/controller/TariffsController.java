@@ -31,7 +31,7 @@ import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/tariff")
+@RequestMapping("/tariffs")
 @RequiredArgsConstructor
 public class TariffsController {
 
@@ -52,7 +52,7 @@ public class TariffsController {
     @GetMapping("/new")
     public String createNewTariff(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(required = false) String redirect, Model model) {
         if (null == redirect || redirect.isBlank()) {
-            redirect = "/tariff";
+            redirect = "/tariffs";
         }
         model.addAttribute("redirect", redirect);
         model.addAttribute("tariff", new TariffDto());
@@ -62,7 +62,7 @@ public class TariffsController {
     @GetMapping("/{tariffId}")
     public String editTariff(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long tariffId, @RequestParam(required = false) String redirect, Model model) {
         if (null == redirect || redirect.isBlank()) {
-            redirect = "/tariff";
+            redirect = "/tariffs";
         }
         model.addAttribute("tariff", tariffService.getById(tariffId));
         model.addAttribute("redirect", redirect);

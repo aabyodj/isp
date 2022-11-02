@@ -8,7 +8,7 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1><spring:message code="${employee.id != null ? 'msg.employee.h1.edit' : 'msg.employee.h1.new'}" /></h1>
-            <form action="${pageContext.request.contextPath}/employee" method="POST">
+            <form action="/employees" method="POST">
                 <input name="redirect" type="hidden" value="${redirect}">
                 <c:if test="${employee.id != null}"><input type="hidden" name="id" value="${employee.id}"></c:if>
                 <ul>
