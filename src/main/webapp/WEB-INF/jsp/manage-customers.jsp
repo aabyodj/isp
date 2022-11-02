@@ -2,12 +2,12 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><fmt:message key="msg.customer.manage" /> | <fmt:message key="msg.home.title" /></title>
+        <title><spring:message code="msg.customer.manage" /> | <spring:message code="msg.home.title" /></title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="msg.customer.manage" /></h1>
+            <h1><spring:message code="msg.customer.manage" /></h1>
             <p><a href="${pageContext.request.contextPath}/customer/new">Add new customer</a>
             <form action="${pageContext.request.contextPath}/customer/generate" method="POST">
                 <input name="redirect" type="hidden" value="/customer">

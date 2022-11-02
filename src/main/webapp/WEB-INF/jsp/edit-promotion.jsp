@@ -1,13 +1,13 @@
-<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %><%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${promotion.name}" /><fmt:message key="${promotion.id != null ? 'msg.promotion.title.edit' : 'msg.promotion.title.new'}" /></title>
+        <title><c:out value="${promotion.name}" /><spring:message code="${promotion.id != null ? 'msg.promotion.title.edit' : 'msg.promotion.title.new'}" /></title>
     </head>
     <body>
 <%@ include file="inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="${promotion.id != null ? 'msg.promotion.h1.edit' : 'msg.promotion.h1.new'}" /></h1>
+            <h1><spring:message code="${promotion.id != null ? 'msg.promotion.h1.edit' : 'msg.promotion.h1.new'}" /></h1>
             <form:form action="${pageContext.request.contextPath}/promotion" method="POST" modelAttribute="promotion">
                 <c:if test="${promotion.id != null}"><input type="hidden" name="id" value="${promotion.id}"></c:if>
                 <input name="redirect" type="hidden" value="${redirect}">
@@ -23,15 +23,15 @@
                         <form:errors path="description" cssClass="error-message" element="label" for="description" />
                     </li>
                     <li>
-                        <label for="active-since"><fmt:message key="msg.promotion.since" /></label>
+                        <label for="active-since"><spring:message code="msg.promotion.since" /></label>
                         <form:input path="activeSince" id="active-since" type="date" />
                     </li>
                     <li>
-                        <label for="active-until"><fmt:message key="msg.promotion.until" /></label>
+                        <label for="active-until"><spring:message code="msg.promotion.until" /></label>
                         <form:input path="activeUntil" id="active-until" type="date" />
                     </li>
                 </ul>
-                <button type="submit"><fmt:message key="msg.promotion.submit" /></button>
+                <button type="submit"><spring:message code="msg.promotion.submit" /></button>
             </form:form>
         </main>
     </body>
