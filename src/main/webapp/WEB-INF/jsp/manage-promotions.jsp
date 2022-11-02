@@ -13,12 +13,17 @@
                     <p><a href="${pageContext.request.contextPath}/promotion/new">Add a new promotion</a>
                     <form action="${pageContext.request.contextPath}/promotion/generate" method="POST">
                         <input name="redirect" type="hidden" value="/promotion">
-                        <label for="quantity">Automatically generate</label>
-                        <input name="quantity" type="number" required min=1 value=10>
-                        <label for="active">activated</label>
-                        <input name="active" type="checkbox" checked>
-                        promotions.
-                        <input type="submit" value="Generate">
+                        <ul>
+                            <li>
+                                <label for="quantity">Automatically generate</label>
+                                <input id="quantity" name="quantity" type="number" required min=1 value=10>
+                            </li>
+                            <li>
+                                <label for="active">activated</label>
+                                <span><input id="active" name="active" type="checkbox" checked> promotions.</span>
+                            </li>
+                        </ul>
+                        <button type="submit">Generate</button>
                     </form>
                 </c:when>
                 <c:otherwise>
