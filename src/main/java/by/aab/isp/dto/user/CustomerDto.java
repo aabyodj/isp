@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper=true)
+@ToString(callSuper = true)
 public class CustomerDto extends UserDto {
 
     private BigDecimal balance;

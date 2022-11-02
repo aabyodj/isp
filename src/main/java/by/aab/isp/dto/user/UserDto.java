@@ -8,11 +8,19 @@ public abstract class UserDto {
 
     private Long id;
 
-    @ToString.Exclude
     private String email;
 
-    @ToString.Exclude
+    @ToString.Include(name = "email")
+    private String getHiddenEmail() {
+        return "[PROTECTED]";
+    }
+
     private String password;
+
+    @ToString.Include(name = "password")
+    private String getHiddenPassword() {
+        return "[PROTECTED]";
+    }
 
     private boolean active;
 

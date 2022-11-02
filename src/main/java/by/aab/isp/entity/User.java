@@ -24,12 +24,20 @@ public abstract class User {
     private Long id;
 
     @Column(name = "email", unique = true, nullable = false, length = 50)
-    @ToString.Exclude
     private String email;
 
+    @ToString.Include(name = "email")
+    private String getHiddenEmail() {
+        return "[PROTECTED]";
+    }
+
     @Column(name = "password_hash", nullable = false)
-    @ToString.Exclude
     private byte[] passwordHash;
+
+    @ToString.Include(name = "passwordHash")
+    private String getHiddenPasswordHash() {
+        return "[PROTECTED]";
+    }
 
     @Column(name = "active", nullable = false)
     private boolean active;
