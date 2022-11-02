@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import by.aab.isp.dto.promotion.PromotionDto;
+import by.aab.isp.dto.promotion.PromotionViewDto;
 import by.aab.isp.dto.tariff.ShowTariffDto;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
@@ -21,7 +21,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String getHomepage(Model model) {
-        List<PromotionDto> promotions = promotionService.getForHomepage();
+        List<PromotionViewDto> promotions = promotionService.getForHomepage();
         if (!promotions.isEmpty()) {
             model.addAttribute("promotions", promotions);
         }
