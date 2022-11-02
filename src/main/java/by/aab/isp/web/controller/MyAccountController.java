@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.subscription.SubscriptionDto;
-import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserDto;
@@ -47,7 +47,7 @@ public class MyAccountController {
             if (!subscriptions.isEmpty()) {
                 model.addAttribute("subscriptions", subscriptions);
             }
-            List<ShowTariffDto> absentTariffs = tariffService.getInactiveForCustomer(activeCustomer.getId());
+            List<TariffViewDto> absentTariffs = tariffService.getInactiveForCustomer(activeCustomer.getId());
             if (!absentTariffs.isEmpty()) {
                 model.addAttribute("tariffs", absentTariffs);
             }

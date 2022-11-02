@@ -13,12 +13,17 @@
                     <p><a href="/tariffs/new">Add new tariff</a>
                     <form action="/tariffs/generate" method="POST">
                         <input name="redirect" type="hidden" value="/tariffs">
-                        <label for="quantity">Automatically generate</label>
-                        <input name="quantity" type="number" required min=1 value=10>
-                        <label for="active">activated</label>
-                        <input name="active" type="checkbox" checked>
-                        tariffs.
-                        <input type="submit" value="Generate">
+                        <ul>
+                            <li>
+                                <label for="quantity">Automatically generate</label>
+                                <input name="quantity" type="number" required min=1 value=10>
+                            </li>
+                            <li>
+                                <label for="active">activated</label>
+                                <span><input name="active" type="checkbox" checked> tariffs.</span>
+                            </li>
+                        </ul>
+                        <button type="submit">Generate</button>
                     </form>
                 </c:when>
                 <c:otherwise>

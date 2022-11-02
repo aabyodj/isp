@@ -1,9 +1,11 @@
 package by.aab.isp.dto.tariff;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class ShowTariffDto {
+@Builder
+public class TariffViewDto {
     private long id;
     private String name;
     private String description;

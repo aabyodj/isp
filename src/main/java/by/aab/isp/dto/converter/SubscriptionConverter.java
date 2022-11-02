@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import by.aab.isp.converter.tariff.TariffToTariffViewDtoConverter;
 import by.aab.isp.dto.subscription.SubscriptionDto;
 import by.aab.isp.entity.Subscription;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubscriptionConverter {
 
-    private final TariffConverter tariffConverter;
     private final FormatUtil formatUtil;
+    private final TariffToTariffViewDtoConverter tariffConverter;
 
     public SubscriptionDto toDto(Subscription subscription, LocalDateTime now) {
         SubscriptionDto dto = new SubscriptionDto();
         dto.setId(subscription.getId());
-        dto.setTariff(tariffConverter.toShowTariffDto(subscription.getTariff()));
+        dto.setTariff(tariffConverter.convert(subscription.getTariff()));
         dto.setPrice(subscription.getPrice());
         dto.setTrafficConsumed(formatUtil.formatTraffic(subscription.getTrafficConsumed()));
         long trafficPerPeriod = subscription.getTrafficPerPeriod();

@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
@@ -8,38 +8,42 @@
 <%@ include file="inc/page-header.inc" %>
         <main>
             <h1><spring:message code="${tariff.id != null ? 'msg.tariff.h1.edit' : 'msg.tariff.h1.new'}" /></h1>
-            <form action="/tariffs" method="POST">
-                <c:if test="${tariff.id != null}"><input type="hidden" name="id" value="${tariff.id}"></c:if>
+            <form:form method="POST" modelAttribute="tariff">
+                <form:input type="hidden" path="id" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
-                        <label for="tariff-name"><spring:message code="msg.tariff.name" /></label>
-                        <input name="name" id="tariff-name" type="text" required maxlength=15 placeholder="<spring:message code="msg.tariff.name" />"
-                            value="<c:out value="${tariff.name}" />">
+                        <form:label path="name"><spring:message code="msg.tariff.name" /></form:label><spring:message code="msg.tariff.name" var="namePlaceholder" />
+                        <form:input path="name" type="text" required="true" maxlength="15" placeholder="${namePlaceholder}" cssErrorClass="error" />
+                        <form:errors path="name" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="description"><spring:message code="msg.tariff.description" /></label>
-                        <textarea name="description" id="description" required maxlength=50 placeholder="<spring:message code="msg.tariff.description" />"><c:out value="${tariff.description}" /></textarea>
+                        <form:label path="description"><spring:message code="msg.tariff.description" /></form:label><spring:message code="msg.tariff.description" var="descriptionPlaceholder" />
+                        <form:textarea path="description" required="true" maxlength="50" placeholder="${descriptionPlaceholder}" cssErrorClass="error" />
+                        <form:errors path="description" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="bandwidth"><spring:message code="msg.tariff.bandwidthLabel" /></label>
-                        <input name="bandwidth" id="bandwidth" type="number" required min=0 step=1 value="${tariff.bandwidth != null ? tariff.bandwidth : 0}">
+                        <form:label path="bandwidth"><spring:message code="msg.tariff.bandwidthLabel" /></form:label>
+                        <form:input path="bandwidth" type="number" required="true" min="0" step="1" cssErrorClass="error" />
+                        <form:errors path="bandwidth" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="included-traffic"><spring:message code="msg.tariff.trafficLabel" /></label>
-                        <input name="included-traffic" id="included-traffic" type="number" required min=0 step=1 value="${tariff.includedTraffic / (1024 * 1024)}">
+                        <form:label path="includedTraffic"><spring:message code="msg.tariff.trafficLabel" /></form:label>
+                        <form:input path="includedTraffic" type="number" required="true" min="0" step="1" cssErrorClass="error" />
+                        <form:errors path="includedTraffic" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="price"><spring:message code="msg.tariff.priceLabel" /></label>
-                        <input name="price" id="price" type="number" required min="0.01" step="0.01" value="${tariff.price}">
+                        <form:label path="price"><spring:message code="msg.tariff.priceLabel" /></form:label>
+                        <form:input path="price" type="number" required="true" min="0.01" step="0.01" cssErrorClass="error" />
+                        <form:errors path="price" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="active"><spring:message code="msg.tariff.active" /></label>
-                        <input name="active" id="active" type="checkbox"${tariff.active ? ' checked' : ''}>
+                        <form:label path="active"><spring:message code="msg.tariff.active" /></form:label>
+                        <form:checkbox path="active" />
                     </li>
                 </ul>
-                <button type="submit"><spring:message code="msg.tariff.submit" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.tariff.submit" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

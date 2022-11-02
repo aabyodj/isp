@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.subscription.SubscriptionDto;
-import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.UserDto;
@@ -67,7 +67,7 @@ public class CustomersController {
     public String editCustomer(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long customerId,
             @RequestParam(defaultValue = "/customers") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
-        ShowTariffDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
+        TariffViewDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()
                 .map(SubscriptionDto::getTariff)
                 .findAny()

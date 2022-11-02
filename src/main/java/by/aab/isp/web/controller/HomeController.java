@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class HomeController {
         if (!promotions.isEmpty()) {
             model.addAttribute("promotions", promotions);
         }
-        List<ShowTariffDto> tariffs = tariffService.getForHomepage();
+        List<TariffViewDto> tariffs = tariffService.getForHomepage();
         if (!tariffs.isEmpty()) {
             model.addAttribute("tariffs", tariffs);
         }

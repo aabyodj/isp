@@ -2,13 +2,13 @@ package by.aab.isp.dto.subscription;
 
 import java.math.BigDecimal;
 
-import by.aab.isp.dto.tariff.ShowTariffDto;
+import by.aab.isp.dto.tariff.TariffViewDto;
 import lombok.Data;
 
 @Data
 public class SubscriptionDto {
     private long id;
-    private ShowTariffDto tariff;
+    private TariffViewDto tariff;
     private BigDecimal price;
     private String trafficConsumed;
     private String trafficLeft;
