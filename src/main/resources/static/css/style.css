@@ -109,6 +109,10 @@ li > h2:first-child {
     form > ul > li > input[type="checkbox"] {
         width: fit-content;
     }
+
+    form > p.error-message {
+        text-align: center;
+    }
 }
 
 @media (min-width: 48rem) {
