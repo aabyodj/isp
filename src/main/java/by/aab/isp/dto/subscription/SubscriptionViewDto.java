@@ -6,7 +6,7 @@ import by.aab.isp.dto.tariff.TariffViewDto;
 import lombok.Data;
 
 @Data
-public class SubscriptionDto {
+public class SubscriptionViewDto {
     private long id;
     private TariffViewDto tariff;
     private BigDecimal price;

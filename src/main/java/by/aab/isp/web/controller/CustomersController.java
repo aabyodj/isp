@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.subscription.SubscriptionDto;
+import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.EmployeeDto;
@@ -69,7 +69,7 @@ public class CustomersController {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         TariffViewDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()
-                .map(SubscriptionDto::getTariff)
+                .map(SubscriptionViewDto::getTariff)
                 .findAny()
                 .orElse(null);
         model.addAttribute("activeTariff", activeTariff);

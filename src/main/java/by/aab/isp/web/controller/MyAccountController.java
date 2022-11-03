@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.subscription.SubscriptionDto;
+import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
@@ -43,7 +43,7 @@ public class MyAccountController {
     @GetMapping
     public String showMyAccount(@RequestAttribute UserDto activeUser, @RequestAttribute(required = false) CustomerDto activeCustomer, Model model) {
         if (activeCustomer != null) {
-            List<SubscriptionDto> subscriptions = subscriptionService.getByCustomerId(activeCustomer.getId());
+            List<SubscriptionViewDto> subscriptions = subscriptionService.getByCustomerId(activeCustomer.getId());
             if (!subscriptions.isEmpty()) {
                 model.addAttribute("subscriptions", subscriptions);
             }
