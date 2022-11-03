@@ -5,7 +5,7 @@
         <title>Manage promotions | Internet Service Provider</title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <c:choose>
                 <c:when test="${activeEmployee != null}">

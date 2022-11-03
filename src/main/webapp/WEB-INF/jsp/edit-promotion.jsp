@@ -5,7 +5,7 @@
         <title><c:out value="${promotion.name}" /><spring:message code="${promotion.id != null ? 'msg.promotion.title.edit' : 'msg.promotion.title.new'}" /></title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1><spring:message code="${promotion.id != null ? 'msg.promotion.h1.edit' : 'msg.promotion.h1.new'}" /></h1>
             <form:form method="POST" modelAttribute="promotion">

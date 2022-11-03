@@ -5,7 +5,7 @@
         <title>My account | Internet Service Provider</title>
     </head>
     <body id="my-account">
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1>My account</h1>
             <c:choose>

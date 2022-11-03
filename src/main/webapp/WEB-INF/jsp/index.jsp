@@ -5,7 +5,7 @@
         <title><spring:message code="msg.home.title" /></title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <section id="about">
                 <h1><spring:message code="msg.home.about.h1" /></h1>

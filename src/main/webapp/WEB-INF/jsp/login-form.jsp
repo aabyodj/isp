@@ -1,11 +1,11 @@
-<%@ include file="/WEB-INF/jsp/inc/html-start-error.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/html-start-error.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
         <title><spring:message code="msg.user.login" /> | <spring:message code="msg.home.title" /></title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1><spring:message code="msg.user.login" /></h1>
             <p>

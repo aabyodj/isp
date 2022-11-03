@@ -5,7 +5,7 @@
         <title>Manage employees | Internet Service Provider</title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1>Manage employees</h1>
             <p><a href="/employees/new">Add new employee</a>

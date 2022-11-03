@@ -5,7 +5,7 @@
         <title><c:out value="${employee.email}" /><spring:message code="${employee.id != null ? 'msg.employee.title.edit' : 'msg.employee.title.new'}" /></title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1><spring:message code="${employee.id != null ? 'msg.employee.h1.edit' : 'msg.employee.h1.new'}" /></h1>
             <form action="/employees" method="POST">
