@@ -4,16 +4,15 @@ import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.converter.subscription.SubscriptionToSubscriptionViewDtoConverter;
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Subscription;
@@ -33,8 +32,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final CustomerRepository customerRepository;;
     private final SubscriptionRepository subscriptionRepository;
     private final TariffRepository tariffRepository;
-    private final ConversionService conversionService;
-//    private final SubscriptionToSubscriptionDtoConverter subscriptionConverter;
+    private final SubscriptionToSubscriptionViewDtoConverter viewConverter;
 
     @Autowired
     private Now now;
@@ -44,8 +42,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @AutoLogged
     @Override
     public List<SubscriptionViewDto> getByCustomerId(long customerId) {
-        return StreamSupport.stream(subscriptionRepository.findByCustomerId(customerId, ORDER_BY_SINCE_THEN_BY_UNTIL).spliterator(), false)
-                .map(subscription -> conversionService.convert(subscription, SubscriptionViewDto.class))
+        return subscriptionRepository.findByCustomerId(customerId, ORDER_BY_SINCE_THEN_BY_UNTIL)
+                .stream()
+                .map(viewConverter::convert)
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +53,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<SubscriptionViewDto> getActiveSubscriptions(long customerId) {
         return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, now.getLocalDateTime())
                 .stream()
-                .map(subscription -> conversionService.convert(subscription, SubscriptionViewDto.class))
+                .map(viewConverter::convert)
                 .collect(Collectors.toList());
     }
 

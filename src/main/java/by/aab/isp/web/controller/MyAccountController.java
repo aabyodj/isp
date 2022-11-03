@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
@@ -41,7 +41,7 @@ public class MyAccountController {
     private final UserService userService;
 
     @GetMapping
-    public String showMyAccount(@RequestAttribute UserDto activeUser, @RequestAttribute(required = false) CustomerDto activeCustomer, Model model) {
+    public String showMyAccount(@RequestAttribute UserViewDto activeUser, @RequestAttribute(required = false) CustomerViewDto activeCustomer, Model model) {
         if (activeCustomer != null) {
             List<SubscriptionViewDto> subscriptions = subscriptionService.getByCustomerId(activeCustomer.getId());
             if (!subscriptions.isEmpty()) {
@@ -56,19 +56,19 @@ public class MyAccountController {
     }
 
     @PostMapping("/replenish_balance")
-    public String replenishBalance(@RequestAttribute CustomerDto activeCustomer, @RequestParam BigDecimal amount, @RequestParam String redirect) {
+    public String replenishBalance(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam BigDecimal amount, @RequestParam String redirect) {
         userService.replenishBalance(activeCustomer.getId(), amount);
         return SCHEMA_REDIRECT + redirect;
     }
 
     @PostMapping("/subscribe")
-    public String subscribe(@RequestAttribute CustomerDto activeCustomer, @RequestParam("tariff_id") long tariffId, String redirect) {
+    public String subscribe(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam("tariff_id") long tariffId, String redirect) {
         subscriptionService.subscribe(activeCustomer.getId(), tariffId);
         return SCHEMA_REDIRECT + redirect;
     }
 
     @GetMapping("/cancel_subscription")
-    public String cancelSubscription(@RequestAttribute CustomerDto activeCustomer, @RequestParam("subscription_id") long subscriptionId, String redirect) {
+    public String cancelSubscription(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam("subscription_id") long subscriptionId, String redirect) {
         subscriptionService.cancelSubscription(activeCustomer.getId(), subscriptionId);
         if (null == redirect) {
             redirect = "/my_account";
@@ -77,7 +77,7 @@ public class MyAccountController {
     }
 
     @PostMapping("/update_credentials")
-    public String updateCredentials(@RequestAttribute UserDto activeUser, @RequestParam String email, 
+    public String updateCredentials(@RequestAttribute UserViewDto activeUser, @RequestParam String email, 
             @RequestParam("new-password1") String newPassword, @RequestParam("new-password2") String repeatPassword, 
             @RequestParam("current-password") String currentPassword, @RequestParam String redirect, HttpSession session) {
         UpdateCredentialsDto dto = new UpdateCredentialsDto();
@@ -97,7 +97,7 @@ public class MyAccountController {
     }
 
     @ExceptionHandler
-    public String handleAnonymous(ServletRequestBindingException e, @RequestAttribute(required = false) UserDto activeUser, HttpServletRequest req)
+    public String handleAnonymous(ServletRequestBindingException e, @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
             throws ServletRequestBindingException, UnsupportedEncodingException {
         if (activeUser != null) {
             throw e;

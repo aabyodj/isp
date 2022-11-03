@@ -7,9 +7,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import by.aab.isp.dto.user.CustomerDto;
-import by.aab.isp.dto.user.EmployeeDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.CustomerViewDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,12 +38,12 @@ public class UserSessionInterceptor implements HandlerInterceptor {
             log.debug("Anonymous user. Session id=" + session.getId());
             return;
         }
-        UserDto user = userService.getById(userId);
+        UserViewDto user = userService.getById(userId);
         req.setAttribute("activeUser", user);
         log.debug(user + ". Session id=" + session.getId());
-        if (user instanceof CustomerDto) {
+        if (user instanceof CustomerViewDto) {
             req.setAttribute("activeCustomer", user);
-        } else if (user instanceof EmployeeDto) {
+        } else if (user instanceof EmployeeViewDto) {
             req.setAttribute("activeEmployee", user);
         }
     }

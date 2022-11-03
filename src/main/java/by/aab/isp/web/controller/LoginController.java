@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.user.CredentialsDto;
-import by.aab.isp.dto.user.UserDto;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +36,8 @@ public class LoginController {
     @PostMapping("/login")
     public String checkLogin(@ModelAttribute(name = "credentials") CredentialsDto credentials, @RequestParam String redirect, Model model, HttpSession session) {
         try {
-            UserDto user = userService.login(credentials);
-            session.setAttribute("userId", user.getId());
+            long userId = userService.login(credentials);
+            session.setAttribute("userId", userId);
             return SCHEMA_REDIRECT + redirect;
         } catch (UnauthorizedException e) {
             model.addAttribute("wrongCredentials", true);

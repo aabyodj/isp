@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.tariff.TariffEditDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.dto.user.EmployeeDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +42,8 @@ public class TariffsController {
     private final TariffService tariffService;
 
     @GetMapping
-    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber, @RequestAttribute(required = false) EmployeeDto activeEmployee, Model model) {
+    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_NAME);
         Page<TariffViewDto> tariffs = activeEmployee != null ? tariffService.getAll(request)
@@ -52,14 +53,15 @@ public class TariffsController {
     }
 
     @GetMapping("/new")
-    public String createNewTariff(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/tariffs") String redirect, Model model) {
+    public String createNewTariff(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam(defaultValue = "/tariffs") String redirect, Model model) {
         model.addAttribute("redirect", redirect);
         model.addAttribute("tariff", new TariffEditDto());
         return "edit-tariff";
     }
 
     @GetMapping("/{tariffId}")
-    public String editTariff(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long tariffId, 
+    public String editTariff(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long tariffId,
             @RequestParam(defaultValue = "/tariffs") String redirect, Model model) {
         model.addAttribute("tariff", tariffService.getById(tariffId));
         model.addAttribute("redirect", redirect);
@@ -67,7 +69,7 @@ public class TariffsController {
     }
 
     @PostMapping({"/new", "/{tariffId}"})
-    public String saveTariff(@RequestAttribute EmployeeDto activeEmployee,
+    public String saveTariff(@RequestAttribute EmployeeViewDto activeEmployee,
             @PathVariable(required = false) Long tariffId,
             @Valid @ModelAttribute("tariff") TariffEditDto tariff,
             BindingResult bindingResult,
@@ -81,7 +83,8 @@ public class TariffsController {
     }
 
     @PostMapping("/generate")
-    public String generateTariffs(@RequestAttribute EmployeeDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
+    public String generateTariffs(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         tariffService.generateTariffs(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
@@ -89,8 +92,8 @@ public class TariffsController {
 
     @ExceptionHandler
     public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeDto activeEmployee,
-            @RequestAttribute(required = false) UserDto activeUser,
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
+            @RequestAttribute(required = false) UserViewDto activeUser,
             HttpServletRequest req)
             throws ServletRequestBindingException, UnsupportedEncodingException {
         if (activeEmployee != null) {

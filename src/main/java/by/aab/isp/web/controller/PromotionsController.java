@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.promotion.PromotionEditDto;
 import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.dto.user.EmployeeDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,8 @@ public class PromotionsController {
     private Now now;
 
     @GetMapping
-    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber, @RequestAttribute(required = false) EmployeeDto activeEmployee, Model model) {
+    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_SINCE_THEN_BY_UNTIL);
         Page<PromotionViewDto> promotions = activeEmployee != null ? promotionService.getAll(request)
@@ -57,7 +58,8 @@ public class PromotionsController {
     }
 
     @GetMapping("/new")
-    public String createNewPromotion(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
+    public String createNewPromotion(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
         model.addAttribute("promotion", PromotionEditDto.builder()
                 .activeSince(now.getLocalDate())
                 .build());
@@ -66,7 +68,8 @@ public class PromotionsController {
     }
 
     @GetMapping("/{promotionId}")
-    public String editPromotion(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long promotionId, @RequestParam(required = false) String stop,
+    public String editPromotion(@RequestAttribute EmployeeViewDto activeEmployee,
+            @PathVariable long promotionId, @RequestParam(required = false) String stop,
             @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
         if (null != stop) {
             promotionService.stop(promotionId);
@@ -78,7 +81,7 @@ public class PromotionsController {
     }
 
     @PostMapping({"/new", "/{promotionId}"})
-    public String savePromotion(@RequestAttribute EmployeeDto activeEmployee,
+    public String savePromotion(@RequestAttribute EmployeeViewDto activeEmployee,
             @PathVariable(required = false) Long promotionId,
             @Valid @ModelAttribute("promotion") PromotionEditDto promotion, BindingResult bindingResult,
             @ModelAttribute("redirect") String redirect) {
@@ -91,7 +94,8 @@ public class PromotionsController {
     }
 
     @PostMapping("/generate")
-    public String generatePromotions(@RequestAttribute EmployeeDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
+    public String generatePromotions(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         promotionService.generatePromotions(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
@@ -99,7 +103,8 @@ public class PromotionsController {
 
     @ExceptionHandler
     public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeDto activeEmployee, @RequestAttribute(required = false) UserDto activeUser, HttpServletRequest req)
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
+            @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
             throws ServletRequestBindingException, UnsupportedEncodingException {
         if (activeEmployee != null) {
             throw e;

@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.user.EmployeeDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -39,16 +40,18 @@ public class EmployeesController {
     private final UserService userService;
 
     @GetMapping
-    public String viewAll(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
+    public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_EMAIL);
-        Page<EmployeeDto> employees = userService.getAllEmployees(request);
+        Page<EmployeeViewDto> employees = userService.getAllEmployees(request);
         model.addAttribute("page", employees);
         return "manage-employees";
     }
 
     @GetMapping("/new")
-    public String createNewEmployee(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(required = false) String redirect, Model model) {
+    public String createNewEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam(defaultValue = "/employees") String redirect, Model model) {
         EmployeeDto employee = userService.getEmployeeById(null);
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
@@ -60,7 +63,7 @@ public class EmployeesController {
     }
 
     @GetMapping("/{employeeId}")
-    public String editEmployee(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long employeeId,
+    public String editEmployee(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long employeeId,
             @RequestParam(required = false) String redirect, Model model) {
         EmployeeDto employee = userService.getEmployeeById(employeeId);
         model.addAttribute("employee", employee);
@@ -73,7 +76,7 @@ public class EmployeesController {
     }
 
     @PostMapping
-    public String saveEmployee(@RequestAttribute EmployeeDto activeEmployee,
+    public String saveEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam(required = false) Long id,
             @RequestParam String email,
             @RequestParam(name = "password1", required = false) String password,
@@ -98,7 +101,8 @@ public class EmployeesController {
     }
 
     @PostMapping("/generate")
-    public String generateEmployees(@RequestAttribute EmployeeDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
+    public String generateEmployees(@RequestAttribute EmployeeViewDto activeEmployee,
+            @RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         userService.generateEmployees(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
@@ -106,7 +110,8 @@ public class EmployeesController {
 
     @ExceptionHandler
     public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeDto activeEmployee, @RequestAttribute(required = false) UserDto activeUser, HttpServletRequest req)
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
+            @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
             throws ServletRequestBindingException, UnsupportedEncodingException {
         if (activeEmployee != null) {
             throw e;

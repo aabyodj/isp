@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Random;
+
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
@@ -18,11 +19,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
+import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
+import by.aab.isp.converter.user.UserToUserViewDtoConverter;
 import by.aab.isp.dto.user.CredentialsDto;
 import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
@@ -31,6 +38,7 @@ import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
+import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
@@ -48,24 +56,30 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TariffRepository tariffRepository;
     private final SubscriptionService subscriptionService;
+    private final CustomerToCustomerViewDtoConverter customerViewConverter;
+    private final EmployeeToEmployeeViewDtoConverter employeeViewConverter;
+    private final UserToUserViewDtoConverter userViewConverter;
 
     @AutoLogged
     @Override
-    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
-        return customerRepository.findAll(pageable).map(this::toCustomerDto);
+    public Page<CustomerViewDto> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(customerViewConverter::convert);
     }
 
     @AutoLogged
     @Override
-    public Page<EmployeeDto> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable).map(this::toEmployeeDto);
+    public Page<EmployeeViewDto> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(employeeViewConverter::convert);
     }
 
     @AutoLogged
     @Override
-    public UserDto getById(long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return toUserDto(user);
+    public UserViewDto getById(long id) {
+        return userRepository.findById(id)
+                .map(userViewConverter::convert)
+                .orElseThrow(NotFoundException::new);
     }
 
     private UserDto toUserDto(User user) {
@@ -90,14 +104,6 @@ public class UserServiceImpl implements UserService {
         dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
         return dto;
-    }
-
-    private CustomerDto toCustomerDto(Customer customer) {
-        return (CustomerDto) toUserDto(customer);
-    }
-
-    private EmployeeDto toEmployeeDto(Employee employee) {
-        return (EmployeeDto) toUserDto(employee);
     }
 
     @AutoLogged
@@ -232,7 +238,7 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public UserDto login(CredentialsDto credentials) {
+    public long login(CredentialsDto credentials) {
         byte[] hash = hashWithDelay(credentials.getPassword());
         User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
         if (user != null) {
@@ -244,7 +250,7 @@ public class UserServiceImpl implements UserService {
         if (null == user) {
             throw new UnauthorizedException(credentials.getEmail());
         }
-        return toUserDto(user);
+        return user.getId();
     }
 
     @AutoLogged

@@ -15,6 +15,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("FROM Subscription s WHERE s.customer.id = :customerId AND s.activeSince <= :instant AND s.activeUntil >= :instant")
     List<Subscription> findByCustomerIdAndActivePeriodContains(@Param("customerId") long customerId, @Param("instant") LocalDateTime instant);
 
-    Iterable<Subscription> findByCustomerId(long customerId, Sort sort);
+    List<Subscription> findByCustomerId(long customerId, Sort sort);
 
 }

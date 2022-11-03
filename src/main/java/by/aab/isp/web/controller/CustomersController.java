@@ -28,8 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.CustomerDto;
-import by.aab.isp.dto.user.EmployeeDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.CustomerViewDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
@@ -47,16 +48,16 @@ public class CustomersController {
     private final TariffService tariffService;
 
     @GetMapping
-    public String viewAll(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
+    public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_EMAIL);
-        Page<CustomerDto> customers = userService.getAllCustomers(request);
+        Page<CustomerViewDto> customers = userService.getAllCustomers(request);
         model.addAttribute("page", customers);
         return "manage-customers";
     }
 
     @GetMapping("/new")
-    public String createNewCustomer(@RequestAttribute EmployeeDto activeEmployee, @RequestParam(defaultValue = "/customers") String redirect, Model model) {
+    public String createNewCustomer(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(defaultValue = "/customers") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(null));
         model.addAttribute("tariffs", tariffService.getActive());
         model.addAttribute("redirect", redirect);
@@ -64,7 +65,7 @@ public class CustomersController {
     }
 
     @GetMapping("/{customerId}")
-    public String editCustomer(@RequestAttribute EmployeeDto activeEmployee, @PathVariable long customerId,
+    public String editCustomer(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long customerId,
             @RequestParam(defaultValue = "/customers") String redirect, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         TariffViewDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
@@ -79,7 +80,7 @@ public class CustomersController {
     }
 
     @PostMapping
-    public String saveCustomer(@RequestAttribute EmployeeDto activeEmployee,
+    public String saveCustomer(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam(required = false) Long id,
             @RequestParam String email,
             @RequestParam(name = "password1", required = false) String password,
@@ -114,7 +115,7 @@ public class CustomersController {
     }
 
     @PostMapping("/generate")
-    public String generatePromotions(@RequestAttribute EmployeeDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
+    public String generatePromotions(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         userService.generateCustomers(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
@@ -122,7 +123,7 @@ public class CustomersController {
 
     @ExceptionHandler
     public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeDto activeEmployee, @RequestAttribute(required = false) UserDto activeUser, HttpServletRequest req)
+            @RequestAttribute(required = false) EmployeeViewDto activeEmployee, @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
             throws ServletRequestBindingException, UnsupportedEncodingException {
         if (activeEmployee != null) {
             throw e;
