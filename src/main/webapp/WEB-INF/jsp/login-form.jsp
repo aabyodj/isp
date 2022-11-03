@@ -12,23 +12,21 @@
                 <spring:message code="msg.user.login.hintEmail" /> <b>${defaultAdminEmail}</b>,
                 <spring:message code="msg.user.login.hintPassword" /> <b>${defaultAdminPassword}</b>
             </p>
-            <form action="/login/" method="POST">
-                <c:if test="${wrongCredentials != null}">
-                    <p class="error-message">Wrong email/password. Please try again.
-                </c:if>
+            <form:form action="/login/" method="POST" modelAttribute="credentials">
+                <form:errors cssClass="error-message" element="p" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
-                        <label for="user-email"><spring:message code="msg.user.email" /></label>
-                        <input name="email" id="user-email" type="email" required placeholder="user@example.com" value="<c:out value='${credentials.email}'/>">
+                        <form:label path="email"><spring:message code="msg.user.email" /></form:label>
+                        <form:input path="email" type="email" required="true" placeholder="user@example.com" />
                     </li>
                     <li>
-                        <label for="password"><spring:message code="msg.user.password" /></label>
-                        <input name="password" id="password" type="password" required>
+                        <form:label path="password"><spring:message code="msg.user.password" /></form:label>
+                        <form:input path="password" type="password" required="true" />
                     </li>
                 </ul>
-                <button type="submit"><spring:message code="msg.user.login" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.user.login" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

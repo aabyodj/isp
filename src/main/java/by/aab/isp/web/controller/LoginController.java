@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,16 +35,17 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String checkLogin(@ModelAttribute(name = "credentials") CredentialsDto credentials, @RequestParam String redirect, Model model, HttpSession session) {
+    public String checkLogin(@ModelAttribute("credentials") CredentialsDto credentials, Errors errors,
+            @ModelAttribute("redirect") String redirect, Model model, HttpSession session) {
         try {
             long userId = userService.login(credentials);
             session.setAttribute("userId", userId);
             return SCHEMA_REDIRECT + redirect;
         } catch (UnauthorizedException e) {
-            model.addAttribute("wrongCredentials", true);
+            errors.reject("msg.user.login.error");
+            credentials.setPassword(null);
             model.addAttribute("defaultAdminEmail", DEFAULT_ADMIN_EMAIL);
             model.addAttribute("defaultAdminPassword", DEFAULT_ADMIN_PASSWORD);
-            model.addAttribute("redirect", redirect);
             return "login-form";
         }
     }
