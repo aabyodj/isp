@@ -1,7 +1,5 @@
 package by.aab.isp.web.controller;
 
-import static by.aab.isp.Const.DEFAULT_ADMIN_EMAIL;
-import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import javax.servlet.http.HttpSession;
@@ -27,8 +25,6 @@ public class LoginController {
 
     @GetMapping("/login")
     public String getLoginForm(@RequestParam(defaultValue = "/") String redirect, Model model) {
-        model.addAttribute("defaultAdminEmail", DEFAULT_ADMIN_EMAIL);
-        model.addAttribute("defaultAdminPassword", DEFAULT_ADMIN_PASSWORD);
         model.addAttribute("credentials", new CredentialsDto());
         model.addAttribute("redirect", redirect);
         return "login-form";
@@ -44,8 +40,6 @@ public class LoginController {
         } catch (UnauthorizedException e) {
             errors.reject("msg.user.login.error");
             credentials.setPassword(null);
-            model.addAttribute("defaultAdminEmail", DEFAULT_ADMIN_EMAIL);
-            model.addAttribute("defaultAdminPassword", DEFAULT_ADMIN_PASSWORD);
             return "login-form";
         }
     }

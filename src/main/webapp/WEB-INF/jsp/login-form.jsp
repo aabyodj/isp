@@ -9,8 +9,8 @@
         <main>
             <h1><spring:message code="msg.user.login" /></h1>
             <p>
-                <spring:message code="msg.user.login.hintEmail" /> <b>${defaultAdminEmail}</b>,
-                <spring:message code="msg.user.login.hintPassword" /> <b>${defaultAdminPassword}</b>
+                <spring:message code="msg.user.login.hintEmail" /> <b><spring:eval expression="T(by.aab.isp.Const).DEFAULT_ADMIN_EMAIL" /></b>,
+                <spring:message code="msg.user.login.hintPassword" /> <b><spring:eval expression="T(by.aab.isp.Const).DEFAULT_ADMIN_PASSWORD" /></b>
             </p>
             <form:form action="/login/" method="POST" modelAttribute="credentials">
                 <form:errors cssClass="error-message" element="p" />
