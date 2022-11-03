@@ -5,6 +5,7 @@ import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,12 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class SubscriptionToSubscriptionDtoConverter implements Converter<Subscription, SubscriptionViewDto> {
+public class SubscriptionToSubscriptionViewDtoConverter implements Converter<Subscription, SubscriptionViewDto> {
 
     private final FormatUtil formatUtil;
     private final TariffToTariffViewDtoConverter tariffConverter;
 
+    @Autowired
     private Now now;
 
     public SubscriptionViewDto convert(Subscription entity) {
