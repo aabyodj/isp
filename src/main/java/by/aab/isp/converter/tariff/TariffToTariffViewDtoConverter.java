@@ -6,7 +6,7 @@ import java.util.WeakHashMap;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.dto.converter.FormatUtil;
+import by.aab.isp.converter.FormatUtil;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.entity.Tariff;
 import lombok.RequiredArgsConstructor;
