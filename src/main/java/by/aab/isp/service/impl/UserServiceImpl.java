@@ -171,12 +171,10 @@ public class UserServiceImpl implements UserService {
         }
         String email = dto.getEmail().strip();
         if (!email.equals(user.getEmail())) {
-            validateEmailConstraints(email);
             user.setEmail(email);
         }
         String password = dto.getPassword();
-        if (password != null) {
-            validatePasswordConstraints(password);
+        if (password != null && !password.isBlank()) {
             user.setPasswordHash(hashPassword(password));
         }
         user.setActive(dto.isActive());
@@ -201,20 +199,6 @@ public class UserServiceImpl implements UserService {
 
     private boolean noMoreAdmins(EmployeeDto employee) {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
-    }
-
-    private void validateEmailConstraints(String email) {
-        // TODO Auto-generated method stub
-    }
-
-    private void validatePasswordConstraints(String password) {
-        if (!isStrongPassword(password)) {
-            throw new ServiceException("Password is too weak");
-        }
-    }
-
-    private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
-        return password.length() > 0;
     }
 
     private byte[] hashPassword(String password) {
@@ -260,16 +244,14 @@ public class UserServiceImpl implements UserService {
         byte[] hash = hashWithDelay(dto.getCurrentPassword());
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
         if (!Arrays.equals(user.getPasswordHash(), hash)) {
-            throw new ServiceException("Wrong current password");   //TODO: maybe invalidate the user session?
+            throw new UnauthorizedException("Wrong current password");
         }
         String email = dto.getEmail().strip();
         if (!email.equals(user.getEmail())) {
-            validateEmailConstraints(email);
             user.setEmail(email);
         }
         String password = dto.getNewPassword();
-        if (password != null) {
-            validatePasswordConstraints(password);
+        if (password != null && !password.isBlank()) {
             user.setPasswordHash(hashPassword(password));
         }
         userRepository.save(user);

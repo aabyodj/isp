@@ -6,16 +6,20 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +32,9 @@ import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
+import by.aab.isp.validator.UpdateCredentialsDtoValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -39,6 +45,7 @@ public class MyAccountController {
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;
     private final UserService userService;
+    private final UpdateCredentialsDtoValidator credentialsValidator;
 
     @GetMapping
     public String showMyAccount(@RequestAttribute UserViewDto activeUser, @RequestAttribute(required = false) CustomerViewDto activeCustomer, Model model) {
@@ -76,24 +83,34 @@ public class MyAccountController {
         return SCHEMA_REDIRECT + redirect;
     }
 
+    @ModelAttribute("credentials")
+    public UpdateCredentialsDto initUpdateCredentials(@RequestAttribute UserViewDto activeUser) {
+        UpdateCredentialsDto credentials =  new UpdateCredentialsDto();
+        credentials.setUserId(activeUser.getId());
+        credentials.setEmail(activeUser.getEmail());
+        return credentials;
+    }
+
     @PostMapping("/update_credentials")
-    public String updateCredentials(@RequestAttribute UserViewDto activeUser, @RequestParam String email, 
-            @RequestParam("new-password1") String newPassword, @RequestParam("new-password2") String repeatPassword, 
-            @RequestParam("current-password") String currentPassword, @RequestParam String redirect, HttpSession session) {
-        UpdateCredentialsDto dto = new UpdateCredentialsDto();
-        dto.setUserId(activeUser.getId());
-        dto.setEmail(email);
-        if (!Objects.equals(newPassword, repeatPassword)) {
-            throw new RuntimeException("Passwords do not match. Handler unimplemented");  //TODO: implement this
+    public String updateCredentials(@RequestAttribute UserViewDto activeUser,
+            @Valid @ModelAttribute("credentials") UpdateCredentialsDto credentials, BindingResult bindingResult,
+            @ModelAttribute("redirect") String redirect, HttpSession session) {
+        if (!bindingResult.hasErrors()) {
+            try {
+                userService.updateCredentials(credentials);
+                session.invalidate();
+                return SCHEMA_REDIRECT + redirect;
+            } catch (UnauthorizedException e) {
+                bindingResult.rejectValue("currentPassword", "msg.account.wrong-password");
+            }
         }
-        if (null != newPassword && newPassword.isBlank()) {
-            newPassword = null;
-        }
-        dto.setNewPassword(newPassword);
-        dto.setCurrentPassword(currentPassword);
-        userService.updateCredentials(dto);
-        session.invalidate();
-        return SCHEMA_REDIRECT + redirect;
+        credentials.setCurrentPassword(null);
+        return "my-account";
+    }
+
+    @InitBinder("credentials")
+    private void initBinder(WebDataBinder binder) {
+        binder.addValidators(credentialsValidator);
     }
 
     @ExceptionHandler

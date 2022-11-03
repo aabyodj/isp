@@ -70,29 +70,33 @@
                     <ul><li>Role: ${activeEmployee.role.name().toLowerCase()}</ul>
                 </c:when>
             </c:choose>
-            <form action="/my_account/update_credentials" method="POST">
-                <input name="redirect" type="hidden" value="${pageContext.request.queryString}/my_account">
+            <form:form action="/my_account/update_credentials" method="POST" modelAttribute="credentials">
+                <input name="redirect" type="hidden" value="/my_account">
+                <form:input path="userId" type="hidden" />
                 <ul>
                     <li>
-                        <label for="email">Email:</label>
-                        <input name="email" type="email" required maxlength=25
-                            value="<c:out value="${activeUser.email}" />">
+                        <form:label path="email">Email:</form:label>
+                        <form:input path="email" type="text" required="true" maxlength="25" cssErrorClass="error" />
+                        <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="new-password1">New password:</label>
-                        <input name="new-password1" type="password">
+                        <form:label path="newPassword">New password:</form:label>
+                        <form:input path="newPassword" type="password" cssErrorClass="error" />
+                        <form:errors path="newPassword" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="new-password2">Confirm new password:</label>
-                        <input name="new-password2" type="password">
+                        <form:label path="newPasswordConfirmation">Confirm new password:</form:label>
+                        <form:input path="newPasswordConfirmation" type="password" cssErrorClass="error" />
+                        <form:errors path="newPasswordConfirmation" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="current-password">Current password:</label>
-                        <input name="current-password" type="password" required>
+                        <form:label path="currentPassword">Current password:</form:label>
+                        <form:input path="currentPassword" type="password" required="true" cssErrorClass="error" />
+                        <form:errors path="currentPassword" cssClass="error-message" />
                     </li>
-                    <input type="submit" value="Update">
                 </ul>
-            </form>
+                <form:button type="submit">Update</form:button>
+            </form:form>
         </main>
     </body>
 </html>
