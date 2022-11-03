@@ -1,7 +1,5 @@
 package by.aab.isp.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,8 +11,6 @@ public interface PromotionService {
     Page<PromotionViewDto> getAll(Pageable pageable);
 
     Page<PromotionViewDto> getActive(Pageable pageable);
-
-    List<PromotionViewDto> getForHomepage();
 
     PromotionEditDto getById(Long id);
 

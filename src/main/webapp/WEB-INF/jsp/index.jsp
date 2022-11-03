@@ -11,13 +11,13 @@
                 <h1><spring:message code="msg.home.about.h1" /></h1>
                 <p><spring:message code="msg.home.about.content" />
             </section>
-            <c:if test="${promotions != null || activeEmployee != null}">
+            <c:if test="${!promotions.isEmpty() || activeEmployee != null}">
                 <section id="promotions">
                     <h1><spring:message code="msg.home.promotions.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
                         <p><a href="/promotions/new?redirect=/"><spring:message code="msg.promotion.add" /></a>
                     </c:if>
-                    <ul><c:forEach var="promotion" items="${promotions}">
+                    <ul><c:forEach var="promotion" items="${promotions.toList()}">
                         <li>
                             <h2><c:out value="${promotion.name}" /></h2>
                             <div><c:out value="${promotion.description}" /></div>
@@ -30,15 +30,18 @@
                             </c:if>
                         </li></c:forEach>
                     </ul>
+                    <c:if test="${promotions.hasNext() || activeEmployee != null}">
+                        <p><a href="/promotions">View all promotions</a>
+                    </c:if>
                 </section>
             </c:if>
-            <c:if test="${tariffs != null || activeEmployee != null}">
+            <c:if test="${!tariffs.isEmpty() || activeEmployee != null}">
                 <section>
                     <h1><spring:message code="msg.home.tariffs.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
                         <p><a href="/tariffs/new?redirect=/"><spring:message code="msg.tariff.add" /></a>
                     </c:if>
-                    <ul><c:forEach var="tariff" items="${tariffs}">
+                    <ul><c:forEach var="tariff" items="${tariffs.toList()}">
                         <li>
                             <h2><c:out value="${tariff.name}" /></h2>
                             <div><c:out value="${tariff.description}" /></div>
@@ -50,6 +53,9 @@
                             </c:if>
                         </li></c:forEach>
                     </ul>
+                    <c:if test="${tariffs.hasNext() || activeEmployee != null}">
+                        <p><a href="/tariffs">View all tariffs</a>
+                    </c:if>
                 </section>
             </c:if>
         </main>

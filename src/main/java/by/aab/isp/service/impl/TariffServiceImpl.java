@@ -11,9 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
@@ -29,8 +27,6 @@ import lombok.RequiredArgsConstructor;
 @Service("tariffService")
 @RequiredArgsConstructor
 public class TariffServiceImpl implements TariffService {
-
-    private static final int DEFAULT_TARIFFS_ON_HOMEPAGE = 3;
 
     private final TariffRepository tariffRepository;
     private final ConversionService conversionService;
@@ -69,18 +65,6 @@ public class TariffServiceImpl implements TariffService {
                 .stream()
                 .map(tariff -> conversionService.convert(tariff, TariffViewDto.class))
                 .collect(Collectors.toList());
-    }
-
-    private static final Sort ORDER_BY_PRICE = Sort.by("price");
-
-    @AutoLogged
-    @Override
-    public List<TariffViewDto> getForHomepage() {
-        int pageSize = DEFAULT_TARIFFS_ON_HOMEPAGE;
-        PageRequest request = PageRequest.of(0, pageSize, ORDER_BY_PRICE);
-        return tariffRepository.findByActive(true, request)
-                .map(tariff -> conversionService.convert(tariff, TariffViewDto.class))
-                .toList();
     }
 
     @AutoLogged

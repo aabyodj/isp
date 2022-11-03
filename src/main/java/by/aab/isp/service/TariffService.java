@@ -18,8 +18,6 @@ public interface TariffService {
 
     Page<TariffViewDto> getActive(Pageable pageable);
 
-    List<TariffViewDto> getForHomepage();
-
     List<TariffViewDto> getInactiveForCustomer(long customerId);
     
     TariffEditDto getById(long id);
