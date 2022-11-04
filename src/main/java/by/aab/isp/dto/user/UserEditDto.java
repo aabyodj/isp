@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-public abstract class UserDto {
+public abstract class UserEditDto {
 
     private Long id;
 

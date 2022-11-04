@@ -8,7 +8,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper = true)
-public class EmployeeDto extends UserDto {
+public class EmployeeDto extends UserEditDto {
 
     private Role role;
 

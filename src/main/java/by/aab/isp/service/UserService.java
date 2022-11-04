@@ -6,7 +6,7 @@ import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserEditDto;
 import by.aab.isp.dto.user.UserViewDto;
 
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ public interface UserService {
 
     EmployeeDto getEmployeeById(Long id);
 
-    UserDto save(UserDto user);
+    UserEditDto save(UserEditDto user);
 
     long login(LoginCredentialsDto credentials);
 

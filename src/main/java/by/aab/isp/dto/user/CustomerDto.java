@@ -10,7 +10,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper = true)
-public class CustomerDto extends UserDto {
+public class CustomerDto extends UserEditDto {
 
     private BigDecimal balance;
     private BigDecimal permittedOverdraft;

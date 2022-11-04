@@ -28,7 +28,7 @@ import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserEditDto;
 import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
@@ -82,8 +82,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    private UserDto toUserDto(User user) {
-        UserDto dto;
+    private UserEditDto toUserDto(User user) {
+        UserEditDto dto;
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
             CustomerDto customerDto = new CustomerDto();
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
     @AutoLogged
     @Override
     @Transactional
-    public UserDto save(UserDto dto) {
+    public UserEditDto save(UserEditDto dto) {
         User user;
         if (dto.getId() != null) {
             user = userRepository.findById(dto.getId()).orElseThrow();
@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-    private void setFields(UserDto dto, User user) {
+    private void setFields(UserEditDto dto, User user) {
         if (dto instanceof CustomerDto) {
             CustomerDto customerDto = (CustomerDto) dto;
             Customer customer = (Customer) user;
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
         user.setActive(dto.isActive());
     }
 
-    private User toNewUser(UserDto dto) {
+    private User toNewUser(UserEditDto dto) {
         User user;
         if (dto instanceof CustomerDto) {
             user = new Customer();
