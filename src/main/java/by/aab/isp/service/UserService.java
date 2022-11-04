@@ -1,7 +1,7 @@
 package by.aab.isp.service;
 
 import by.aab.isp.dto.user.LoginCredentialsDto;
-import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
@@ -21,7 +21,7 @@ public interface UserService {
 
     UserViewDto getById(long id);
 
-    CustomerDto getCustomerById(Long id);
+    CustomerEditDto getCustomerById(Long id);
 
     EmployeeDto getEmployeeById(Long id);
 

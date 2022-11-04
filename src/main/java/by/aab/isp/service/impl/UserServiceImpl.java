@@ -23,7 +23,7 @@ import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
 import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
 import by.aab.isp.converter.user.UserToUserViewDtoConverter;
 import by.aab.isp.dto.user.LoginCredentialsDto;
-import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
         UserEditDto dto;
         if (user instanceof Customer) {
             Customer customer = (Customer) user;
-            CustomerDto customerDto = new CustomerDto();
+            CustomerEditDto customerDto = new CustomerEditDto();
             customerDto.setBalance(customer.getBalance());
             customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
             LocalDateTime payoffDate = customer.getPayoffDate();
@@ -108,14 +108,14 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public CustomerDto getCustomerById(Long id) {
-        CustomerDto customer;
+    public CustomerEditDto getCustomerById(Long id) {
+        CustomerEditDto customer;
         if (null == id) {
-            customer = new CustomerDto();
+            customer = new CustomerEditDto();
             customer.setBalance(BigDecimal.ZERO);
             customer.setPermittedOverdraft(BigDecimal.ZERO);
         } else {
-            customer = (CustomerDto) toUserDto(customerRepository.findById(id).orElseThrow());
+            customer = (CustomerEditDto) toUserDto(customerRepository.findById(id).orElseThrow());
         }
         return customer;
     }
@@ -154,8 +154,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private void setFields(UserEditDto dto, User user) {
-        if (dto instanceof CustomerDto) {
-            CustomerDto customerDto = (CustomerDto) dto;
+        if (dto instanceof CustomerEditDto) {
+            CustomerEditDto customerDto = (CustomerEditDto) dto;
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
     private User toNewUser(UserEditDto dto) {
         User user;
-        if (dto instanceof CustomerDto) {
+        if (dto instanceof CustomerEditDto) {
             user = new Customer();
         } else if (dto instanceof EmployeeDto) {
             user = new Employee();

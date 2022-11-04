@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.dto.user.CustomerDto;
+import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UserViewDto;
@@ -97,7 +97,7 @@ public class CustomersController {
         if (null != password && password.isBlank()) {
             password = null;
         }
-        CustomerDto customer = new CustomerDto();
+        CustomerEditDto customer = new CustomerEditDto();
         customer.setId(id);
         customer.setEmail(email);
         customer.setPassword(password);
@@ -107,7 +107,7 @@ public class CustomersController {
         if (payoffDate != null && !payoffDate.isBlank()) {
             customer.setPayoffDate(LocalDate.parse(payoffDate).plusDays(1).atStartOfDay().minusNanos(1000));
         }
-        customer = (CustomerDto) userService.save(customer);   //TODO: terminate their session
+        customer = (CustomerEditDto) userService.save(customer);   //TODO: terminate their session
         Long tariffId = !tariff.equals("none") ? Long.parseLong(tariff)
                                                : null;
         subscriptionService.setOneTariffForCustomer(customer.getId(), tariffId);    //TODO: use extended DTO for this
