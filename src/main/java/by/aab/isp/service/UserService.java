@@ -1,6 +1,6 @@
 package by.aab.isp.service;
 
-import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
@@ -27,7 +27,7 @@ public interface UserService {
 
     UserDto save(UserDto user);
 
-    long login(CredentialsDto credentials);
+    long login(LoginCredentialsDto credentials);
 
     void updateCredentials(UpdateCredentialsDto dto);
 

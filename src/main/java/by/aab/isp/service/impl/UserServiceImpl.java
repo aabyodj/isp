@@ -22,7 +22,7 @@ import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
 import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
 import by.aab.isp.converter.user.UserToUserViewDtoConverter;
-import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.CustomerDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeDto;
@@ -222,7 +222,7 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public long login(CredentialsDto credentials) {
+    public long login(LoginCredentialsDto credentials) {
         byte[] hash = hashWithDelay(credentials.getPassword());
         User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
         if (user != null) {

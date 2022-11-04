@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-public class CredentialsDto {
+public class LoginCredentialsDto {
 
     private String email;
 

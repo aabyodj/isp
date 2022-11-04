@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.user.CredentialsDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ public class LoginController {
 
     @GetMapping("/login")
     public String getLoginForm(@RequestParam(defaultValue = "/") String redirect, Model model) {
-        model.addAttribute("credentials", new CredentialsDto());
+        model.addAttribute("credentials", new LoginCredentialsDto());
         model.addAttribute("redirect", redirect);
         return "login-form";
     }
 
     @PostMapping("/login")
-    public String checkLogin(@ModelAttribute("credentials") CredentialsDto credentials, Errors errors,
+    public String checkLogin(@ModelAttribute("credentials") LoginCredentialsDto credentials, Errors errors,
             @ModelAttribute("redirect") String redirect, Model model, HttpSession session) {
         try {
             long userId = userService.login(credentials);
