@@ -3,7 +3,7 @@ package by.aab.isp.service;
 import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserEditDto;
@@ -23,7 +23,7 @@ public interface UserService {
 
     CustomerEditDto getCustomerById(Long id);
 
-    EmployeeDto getEmployeeById(Long id);
+    EmployeeEditDto getEmployeeById(Long id);
 
     UserEditDto save(UserEditDto user);
 

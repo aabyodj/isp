@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Employee;
@@ -52,7 +52,7 @@ public class EmployeesController {
     @GetMapping("/new")
     public String createNewEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam(defaultValue = "/employees") String redirect, Model model) {
-        EmployeeDto employee = userService.getEmployeeById(null);
+        EmployeeEditDto employee = userService.getEmployeeById(null);
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
         if (null == redirect || redirect.isBlank()) {
@@ -65,7 +65,7 @@ public class EmployeesController {
     @GetMapping("/{employeeId}")
     public String editEmployee(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long employeeId,
             @RequestParam(required = false) String redirect, Model model) {
-        EmployeeDto employee = userService.getEmployeeById(employeeId);
+        EmployeeEditDto employee = userService.getEmployeeById(employeeId);
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
         if (null == redirect || redirect.isBlank()) {
@@ -90,7 +90,7 @@ public class EmployeesController {
         if (null != password && password.isBlank()) {
             password = null;
         }
-        EmployeeDto employee = new EmployeeDto();
+        EmployeeEditDto employee = new EmployeeEditDto();
         employee.setId(id);
         employee.setEmail(email);
         employee.setPassword(password);

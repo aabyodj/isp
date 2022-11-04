@@ -25,7 +25,7 @@ import by.aab.isp.converter.user.UserToUserViewDtoConverter;
 import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserEditDto;
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
             dto = customerDto;
         } else if (user instanceof Employee) {
             Employee employee = (Employee) user;
-            EmployeeDto employeeDto = new EmployeeDto();
+            EmployeeEditDto employeeDto = new EmployeeEditDto();
             employeeDto.setRole(employee.getRole());
             dto = employeeDto;
         } else {
@@ -122,13 +122,13 @@ public class UserServiceImpl implements UserService {
 
     @AutoLogged
     @Override
-    public EmployeeDto getEmployeeById(Long id) {
-        EmployeeDto employee;
+    public EmployeeEditDto getEmployeeById(Long id) {
+        EmployeeEditDto employee;
         if (null == id) {
-            employee = new EmployeeDto();
+            employee = new EmployeeEditDto();
             employee.setRole(Employee.Role.MANAGER);
         } else {
-            employee = (EmployeeDto) toUserDto(employeeRepository.findById(id).orElseThrow());
+            employee = (EmployeeEditDto) toUserDto(employeeRepository.findById(id).orElseThrow());
         }
         return employee;
     }
@@ -161,8 +161,8 @@ public class UserServiceImpl implements UserService {
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
             LocalDateTime payoffDate = customerDto.getPayoffDate();
             customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
-        } else if (dto instanceof EmployeeDto) {
-            EmployeeDto employeeDto = (EmployeeDto) dto;
+        } else if (dto instanceof EmployeeEditDto) {
+            EmployeeEditDto employeeDto = (EmployeeEditDto) dto;
             Employee employee = (Employee) user;
             if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
                 throw new ServiceException("Unable to delete last admin");
@@ -184,7 +184,7 @@ public class UserServiceImpl implements UserService {
         User user;
         if (dto instanceof CustomerEditDto) {
             user = new Customer();
-        } else if (dto instanceof EmployeeDto) {
+        } else if (dto instanceof EmployeeEditDto) {
             user = new Employee();
         } else {
             throw new ServiceException("Converter is undefined for DTO " + dto.getClass());
@@ -193,11 +193,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private static boolean isActiveAdmin(EmployeeDto employee) {
+    private static boolean isActiveAdmin(EmployeeEditDto employee) {
         return employee.getRole() == Employee.Role.ADMIN && employee.isActive();
     }
 
-    private boolean noMoreAdmins(EmployeeDto employee) {
+    private boolean noMoreAdmins(EmployeeEditDto employee) {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
