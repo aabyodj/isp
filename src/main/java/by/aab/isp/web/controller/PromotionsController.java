@@ -5,6 +5,7 @@ import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -57,26 +58,32 @@ public class PromotionsController {
         return "manage-promotions";
     }
 
-    @GetMapping("/new")
-    public String createNewPromotion(@RequestAttribute EmployeeViewDto activeEmployee,
-            @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
-        model.addAttribute("promotion", PromotionEditDto.builder()
+    @ModelAttribute("promotion")
+    public PromotionEditDto initPromotion() {
+        return PromotionEditDto.builder()
                 .activeSince(now.getLocalDate())
-                .build());
-        model.addAttribute("redirect", redirect);
+                .build();
+    }
+
+    @ModelAttribute("redirect")
+    public String getDefaultRedirect() {
+        return "/promotions";
+    }
+
+    @GetMapping("/new")
+    public String createNewPromotion(@RequestAttribute EmployeeViewDto activeEmployee) {
         return "edit-promotion";
     }
 
     @GetMapping("/{promotionId}")
     public String editPromotion(@RequestAttribute EmployeeViewDto activeEmployee,
             @PathVariable long promotionId, @RequestParam(required = false) String stop,
-            @RequestParam(defaultValue = "/promotions") String redirect, Model model) {
+            @ModelAttribute String redirect, Model model) {
         if (null != stop) {
             promotionService.stop(promotionId);
             return SCHEMA_REDIRECT + redirect;
         }
         model.addAttribute("promotion", promotionService.getById(promotionId));
-        model.addAttribute("redirect", redirect);
         return "edit-promotion";
     }
 
@@ -85,6 +92,9 @@ public class PromotionsController {
             @PathVariable(required = false) Long promotionId,
             @Valid @ModelAttribute("promotion") PromotionEditDto promotion, BindingResult bindingResult,
             @ModelAttribute("redirect") String redirect) {
+        if (!Objects.equals(promotionId, promotion.getId())) {
+            throw new IllegalArgumentException();
+        }
         if (bindingResult.hasErrors()) {
             return "edit-promotion";
         }
@@ -96,7 +106,7 @@ public class PromotionsController {
     @PostMapping("/generate")
     public String generatePromotions(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam int quantity, @RequestParam(required = false) String active,
-            @RequestParam String redirect) {
+            @ModelAttribute("redirect") String redirect) {
         promotionService.generatePromotions(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
     }
