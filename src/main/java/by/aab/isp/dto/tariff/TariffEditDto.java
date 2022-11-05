@@ -3,6 +3,7 @@ package by.aab.isp.dto.tariff;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -20,27 +21,30 @@ public class TariffEditDto {
 
     private Long id;
 
-    @NotBlank
-    @Size(min=2, max=15)
+    @NotBlank(message = "{msg.validation.not-blank}")
+    @Size(min=2, max=15, message = "{msg.validation.size}")
     private String name;
 
-    @NotBlank
-    @Size(min=2, max=50)
+    @NotBlank(message = "{msg.validation.not-blank}")
+    @Size(min=2, max=50, message = "{msg.validation.size}")
     private String description;
 
     /**
      * Kb/s
      */
-    @PositiveOrZero
+    @NotNull(message = "{msg.validation.not-blank}")
+    @PositiveOrZero(message = "{msg.validation.positive-or-zero}")
     private Integer bandwidth;
 
     /**
      * Megabytes
      */
-    @PositiveOrZero
+    @NotNull(message = "{msg.validation.not-blank}")
+    @PositiveOrZero(message = "{msg.validation.positive-or-zero}")
     private Long includedTraffic;
 
-    @Positive
+    @NotNull(message = "{msg.validation.not-blank}")
+    @Positive(message = "{msg.validation.positive}")
     private BigDecimal price;
 
     private boolean active;
