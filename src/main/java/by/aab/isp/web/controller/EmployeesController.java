@@ -52,7 +52,7 @@ public class EmployeesController {
     @GetMapping("/new")
     public String createNewEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam(defaultValue = "/employees") String redirect, Model model) {
-        EmployeeEditDto employee = userService.getEmployeeById(null);
+        EmployeeEditDto employee = new EmployeeEditDto();
         model.addAttribute("employee", employee);
         model.addAttribute("roles", Employee.Role.values());
         if (null == redirect || redirect.isBlank()) {

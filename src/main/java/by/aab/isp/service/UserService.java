@@ -23,7 +23,7 @@ public interface UserService {
 
     CustomerEditDto getCustomerById(Long id);
 
-    EmployeeEditDto getEmployeeById(Long id);
+    EmployeeEditDto getEmployeeById(long id);
 
     UserEditDto save(UserEditDto user);
 

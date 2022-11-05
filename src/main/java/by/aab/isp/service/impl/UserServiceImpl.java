@@ -5,8 +5,6 @@ import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Random;
@@ -19,14 +17,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
+import by.aab.isp.converter.PasswordUtil;
+import by.aab.isp.converter.user.CustomerToCustomerEditDtoConverter;
 import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
+import by.aab.isp.converter.user.EmployeeToEmployeeEditDtoConverter;
 import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
+import by.aab.isp.converter.user.UserEditDtoToUserConverter;
 import by.aab.isp.converter.user.UserToUserViewDtoConverter;
-import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
 import by.aab.isp.dto.user.UserEditDto;
 import by.aab.isp.dto.user.UserViewDto;
@@ -48,17 +50,22 @@ import lombok.RequiredArgsConstructor;
 @Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String HASH_ALGORITHM = "SHA-256";
+
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
+
     private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final TariffRepository tariffRepository;
     private final SubscriptionService subscriptionService;
     private final CustomerToCustomerViewDtoConverter customerViewConverter;
+    private final CustomerToCustomerEditDtoConverter toCustomerEditConverter;
     private final EmployeeToEmployeeViewDtoConverter employeeViewConverter;
+    private final EmployeeToEmployeeEditDtoConverter toEmployeeEditConverter;
     private final UserToUserViewDtoConverter userViewConverter;
+    private final UserEditDtoToUserConverter toUserConverter;
+    private final PasswordUtil passwordUtil;
 
     @AutoLogged
     @Override
@@ -82,55 +89,20 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    private UserEditDto toUserDto(User user) {
-        UserEditDto dto;
-        if (user instanceof Customer) {
-            Customer customer = (Customer) user;
-            CustomerEditDto customerDto = new CustomerEditDto();
-            customerDto.setBalance(customer.getBalance());
-            customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
-            LocalDateTime payoffDate = customer.getPayoffDate();
-            customerDto.setPayoffDate(payoffDate.isBefore(LDT_FOR_AGES) ? payoffDate : null);
-            dto = customerDto;
-        } else if (user instanceof Employee) {
-            Employee employee = (Employee) user;
-            EmployeeEditDto employeeDto = new EmployeeEditDto();
-            employeeDto.setRole(employee.getRole());
-            dto = employeeDto;
-        } else {
-            throw new ServiceException("Converter is undefined for entity " + user.getClass());
-        }
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail());
-        dto.setActive(user.isActive());
-        return dto;
-    }
-
     @AutoLogged
     @Override
     public CustomerEditDto getCustomerById(Long id) {
-        CustomerEditDto customer;
-        if (null == id) {
-            customer = new CustomerEditDto();
-            customer.setBalance(BigDecimal.ZERO);
-            customer.setPermittedOverdraft(BigDecimal.ZERO);
-        } else {
-            customer = (CustomerEditDto) toUserDto(customerRepository.findById(id).orElseThrow());
-        }
-        return customer;
+        return customerRepository.findById(id)
+                .map(toCustomerEditConverter::convert)
+                .orElseThrow(NotFoundException::new);
     }
 
     @AutoLogged
     @Override
-    public EmployeeEditDto getEmployeeById(Long id) {
-        EmployeeEditDto employee;
-        if (null == id) {
-            employee = new EmployeeEditDto();
-            employee.setRole(Employee.Role.MANAGER);
-        } else {
-            employee = (EmployeeEditDto) toUserDto(employeeRepository.findById(id).orElseThrow());
-        }
-        return employee;
+    public EmployeeEditDto getEmployeeById(long id) {
+        return employeeRepository.findById(id)
+                .map(toEmployeeEditConverter::convert)
+                .orElseThrow(NotFoundException::new);
     }
 
     @AutoLogged
@@ -139,14 +111,12 @@ public class UserServiceImpl implements UserService {
     public UserEditDto save(UserEditDto dto) {
         User user;
         if (dto.getId() != null) {
-            user = userRepository.findById(dto.getId()).orElseThrow();
+            user = userRepository.findById(dto.getId())
+                    .orElseThrow(NotFoundException::new);
             setFields(dto, user);
             userRepository.save(user);
         } else {
-            if (null == dto.getPassword()) {
-                throw new ServiceException("Password required");
-            }
-            user = toNewUser(dto);
+            user = toUserConverter.convert(dto);
             user = userRepository.save(user);
             dto.setId(user.getId());
         }
@@ -154,43 +124,25 @@ public class UserServiceImpl implements UserService {
     }
 
     private void setFields(UserEditDto dto, User user) {
-        if (dto instanceof CustomerEditDto) {
-            CustomerEditDto customerDto = (CustomerEditDto) dto;
+        if (dto instanceof CustomerEditDto customerDto) {
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
             LocalDateTime payoffDate = customerDto.getPayoffDate();
             customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
-        } else if (dto instanceof EmployeeEditDto) {
-            EmployeeEditDto employeeDto = (EmployeeEditDto) dto;
+        } else if (dto instanceof EmployeeEditDto employeeDto) {
             Employee employee = (Employee) user;
             if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
                 throw new ServiceException("Unable to delete last admin");
             }
             employee.setRole(employeeDto.getRole());
         }
-        String email = dto.getEmail().strip();
-        if (!email.equals(user.getEmail())) {
-            user.setEmail(email);
-        }
+        user.setEmail(dto.getEmail());
         String password = dto.getPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(hashPassword(password));
+            user.setPasswordHash(passwordUtil.hashPassword(password));
         }
         user.setActive(dto.isActive());
-    }
-
-    private User toNewUser(UserEditDto dto) {
-        User user;
-        if (dto instanceof CustomerEditDto) {
-            user = new Customer();
-        } else if (dto instanceof EmployeeEditDto) {
-            user = new Employee();
-        } else {
-            throw new ServiceException("Converter is undefined for DTO " + dto.getClass());
-        }
-        setFields(dto, user);
-        return user;
     }
 
     private static boolean isActiveAdmin(EmployeeEditDto employee) {
@@ -201,23 +153,13 @@ public class UserServiceImpl implements UserService {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
-    private byte[] hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
-            digest.update(password.getBytes());
-            return digest.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException(e);
-        }
-    }
-
     private byte[] hashWithDelay(String password) {
         long timeout = (long) (LOGIN_TIMEOUT * (Math.random() + TIMEOUT_SHIFT_FACTOR));
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
         }
-        return hashPassword(password);
+        return passwordUtil.hashPassword(password);
     }
 
     @AutoLogged
@@ -242,7 +184,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
         byte[] hash = hashWithDelay(dto.getCurrentPassword());
-        User user = userRepository.findById(dto.getUserId()).orElseThrow();
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(NotFoundException::new);
         if (!Arrays.equals(user.getPasswordHash(), hash)) {
             throw new UnauthorizedException("Wrong current password");
         }
@@ -252,7 +195,7 @@ public class UserServiceImpl implements UserService {
         }
         String password = dto.getNewPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(hashPassword(password));
+            user.setPasswordHash(passwordUtil.hashPassword(password));
         }
         userRepository.save(user);
     }
@@ -263,7 +206,8 @@ public class UserServiceImpl implements UserService {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("Cannot replenish balance by nonpositive amount");
         }
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(NotFoundException::new);
         BigDecimal balance = customer.getBalance();
         balance = balance.add(amount);
         customer.setBalance(balance);
@@ -280,7 +224,7 @@ public class UserServiceImpl implements UserService {
         if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
             Employee admin = new Employee();
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
-            admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
+            admin.setPasswordHash(passwordUtil.hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
             userRepository.save(admin);
@@ -314,7 +258,7 @@ public class UserServiceImpl implements UserService {
             }
             Customer customer = new Customer();
             customer.setEmail(generatedEmail);
-            customer.setPasswordHash(hashPassword(emailName));
+            customer.setPasswordHash(passwordUtil.hashPassword(emailName));
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
@@ -348,7 +292,7 @@ public class UserServiceImpl implements UserService {
             }
             Employee employee = new Employee();
             employee.setEmail(generatedEmail);
-            employee.setPasswordHash(hashPassword(emailName));
+            employee.setPasswordHash(passwordUtil.hashPassword(emailName));
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             userRepository.save(employee);
