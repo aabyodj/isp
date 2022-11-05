@@ -2,75 +2,86 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title>Manage tariffs | Internet Service Provider</title>
+        <c:choose>
+            <c:when test="${activeEmployee != null}">
+                <title><spring:message code="msg.tariff.manage" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.tariff.view-all.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <c:choose>
                 <c:when test="${activeEmployee != null}">
-                    <h1>Manage tariff plans</h1>
-                    <p><a href="/tariffs/new">Add new tariff</a>
+                    <h1><spring:message code="msg.tariff.manage.h1" /></h1>
+                    <p><a href="/tariffs/new"><spring:message code="msg.tariff.add" /></a>
                     <form action="/tariffs/generate" method="POST">
                         <input name="redirect" type="hidden" value="/tariffs">
                         <ul>
                             <li>
-                                <label for="quantity">Automatically generate</label>
+                                <label for="quantity"><spring:message code="msg.tariff.generate.prefix" /></label>
                                 <input name="quantity" type="number" required min=1 value=10>
                             </li>
                             <li>
-                                <label for="active">activated</label>
-                                <span><input name="active" type="checkbox" checked> tariffs.</span>
+                                <label for="active"><spring:message code="msg.tariff.generate.activated" /></label>
+                                <span><input name="active" type="checkbox" checked> <spring:message code="msg.tariff.generate.postfix" /></span>
                             </li>
                         </ul>
-                        <button type="submit">Generate</button>
+                        <button type="submit"><spring:message code="msg.tariff.generate.submit" /></button>
                     </form>
                 </c:when>
                 <c:otherwise>
-                    <h1>View all tariff plans</h1>
+                    <h1><spring:message code="msg.tariff.view-all.h1" /></h1>
                 </c:otherwise>
             </c:choose>
             <table>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Bandwidth</th>
-                    <th>Traffic limit</th>
-                    <th>Price</th>
-                    <c:if test="${activeEmployee != null}"><th></th></c:if>
-                </tr>
-                <c:forEach var="tariff" items="${page.toList()}" varStatus="status">
-                    <tr${tariff.active ? ' class="active"' : ''}>
-                        <td>${page.number * page.size + status.count}</td>
-                        <td><c:out value="${tariff.name}" /></td>
-                        <td><c:out value="${tariff.description}" /></td>
-                        <td>${tariff.bandwidth}</td>
-                        <td>${tariff.includedTraffic}</td>
-                        <td><c:out value="${tariff.price}" /></td>
-                        <c:if test="${activeEmployee != null}">
-                            <td>
-                                <a href="/tariffs/${tariff.id}">Edit</a>
-                            </td>
-                        </c:if>
-                    </tr>
-                </c:forEach>
-                <c:if test="${page.isEmpty()}">
+                <thead>
                     <tr>
-                        <td colspan=6>No tariff plans</td>
+                        <th></th>
+                        <th><spring:message code="msg.tariff.table.name" /></th>
+                        <th><spring:message code="msg.tariff.table.description" /></th>
+                        <th><spring:message code="msg.tariff.table.bandwidth" /></th>
+                        <th><spring:message code="msg.tariff.table.included-traffic" /></th>
+                        <th><spring:message code="msg.tariff.table.price" /></th>
+                        <c:if test="${activeEmployee != null}"><th></th></c:if>
                     </tr>
-                </c:if>
+                </thead>
+                <tbody>
+                    <c:forEach var="tariff" items="${page.toList()}" varStatus="status">
+                        <tr${tariff.active ? ' class="active"' : ''}>
+                            <td>${page.number * page.size + status.count}</td>
+                            <td><c:out value="${tariff.name}" /></td>
+                            <td><c:out value="${tariff.description}" /></td>
+                            <td>${tariff.bandwidth}</td>
+                            <td>${tariff.includedTraffic}</td>
+                            <td><c:out value="${tariff.price}" /></td>
+                            <c:if test="${activeEmployee != null}">
+                                <td>
+                                    <a href="/tariffs/${tariff.id}"><spring:message code="msg.tariff.edit" /></a>
+                                </td>
+                            </c:if>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${page.isEmpty()}">
+                        <tr>
+                            <td colspan="${activeEmployee != null ? 7 : 6}"><spring:message code="msg.tariff.table.empty" /></td>
+                        </tr>
+                    </c:if>
+                </tbody>
             </table>
             <c:if test="${page.totalPages > 1}">
                 <p>
                     <c:if test="${page.hasPrevious()}">
-                        <a href="?page=1">First</a>
-                        <a href="?page=${page.number}">Prev</a>
+                        <a href="?page=1"><spring:message code="msg.page.first" /></a>
+                        <a href="?page=${page.number}"><spring:message code="msg.page.prev" /></a>
                     </c:if>
                     ${page.number + 1}
                     <c:if test="${page.hasNext()}">
-                        <a href="?page=${page.number + 2}">Next</a>
-                        <a href="?page=${page.totalPages}">Last</a>
+                        <a href="?page=${page.number + 2}"><spring:message code="msg.page.next" /></a>
+                        <a href="?page=${page.totalPages}"><spring:message code="msg.page.last" /></a>
                     </c:if>
                 </p>
             </c:if>
