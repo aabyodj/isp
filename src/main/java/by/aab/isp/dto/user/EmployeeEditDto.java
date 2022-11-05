@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class EmployeeEditDto extends UserEditDto {
 
-    @NotNull
+    @NotNull(message = "{msg.validation.not-blank}")
     private Role role;
 
 }
