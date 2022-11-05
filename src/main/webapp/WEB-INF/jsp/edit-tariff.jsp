@@ -2,12 +2,19 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${tariff.name}" /><spring:message code="${tariff.id != null ? 'msg.tariff.title.edit' : 'msg.tariff.title.new'}" /></title>
+        <c:choose>
+            <c:when test="${tariff.id != null}">
+                <title><c:out value="${tariff.name}" /> | <spring:message code="msg.tariff.edit.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.tariff.add.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><spring:message code="${tariff.id != null ? 'msg.tariff.h1.edit' : 'msg.tariff.h1.new'}" /></h1>
+            <h1><spring:message code="${tariff.id != null ? 'msg.tariff.edit.h1' : 'msg.tariff.add.h1'}" /></h1>
             <form:form method="POST" modelAttribute="tariff">
                 <form:input type="hidden" path="id" />
                 <input name="redirect" type="hidden" value="${redirect}">
