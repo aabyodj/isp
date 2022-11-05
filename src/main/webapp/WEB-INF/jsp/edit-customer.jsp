@@ -8,34 +8,50 @@
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <h1><spring:message code="${customer.id != null ? 'msg.customer.h1.edit' : 'msg.customer.h1.new'}" /></h1>
-            <form action="/customers" method="POST">
-                <c:if test="${customer.id != null}"><input type="hidden" name="id" value="${customer.id}"></c:if>
+            <form:form method="POST" modelAttribute="customer">
                 <input name="redirect" type="hidden" value="${redirect}">
+                <form:input path="id" type="hidden" />
                 <ul>
                     <li>
-                        <label for="email"><spring:message code="msg.user.email" /></label>
-                        <input name="email" id="email" type="email" required maxlength=50 placeholder="user@example.com"
-                            value="<c:out value="${customer.email}" />">
+                        <form:label path="email"><spring:message code="msg.user.email" /></form:label>
+                        <form:input path="email" type="email" required="true" maxlength="50" placeholder="user@example.com" errorCssClass="error" />
+                        <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password1"><spring:message code="msg.user.password" /></label>
-                        <input name="password1" id="password1" type="password"${customer.id == 0 ? ' required' : ''}>
+                        <form:label path="password"><spring:message code="msg.user.password" /></form:label>
+                        <c:choose>
+                            <c:when test="${customer.id == null}">
+                                <form:input path="password" type="password" required="true" errorCssClass="error" />
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="password" type="password" errorCssClass="error" />
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="password" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password2"><spring:message code="msg.user.confirmPassword" /></label>
-                        <input name="password2" id="password2" type="password"${customer.id == 0 ? ' required' : ''}>
+                        <form:label path="passwordConfirmation"><spring:message code="msg.user.confirmPassword" /></form:label>
+                        <c:choose>
+                            <c:when test="${customer.id == null}">
+                                <form:input path="passwordConfirmation" type="password" required="true" errorCssClass="error" />
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="passwordConfirmation" type="password" errorCssClass="error" />
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="passwordConfirmation" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="balance"><spring:message code="msg.customer.balance" /></label>
-                        <input name="balance" id="balance" type="number" required step="0.01" value="${customer.balance}">
+                        <form:label path="balance"><spring:message code="msg.customer.balance" /></form:label>
+                        <form:input path="balance" type="number" required="true" step="0.01" />
                     </li>
                     <li>
-                        <label for="permitted-overdraft"><spring:message code="msg.customer.permittedOverdraft" /></label>
-                        <input name="permitted-overdraft" id="permitted-overdraft" type="number" required min="0" step="0.01" value="${customer.permittedOverdraft}">
+                        <form:label path="permittedOverdraft"><spring:message code="msg.customer.permittedOverdraft" /></form:label>
+                        <form:input path="permittedOverdraft" type="number" required="true" min="0" step="0.01" />
                     </li>
                     <li>
-                        <label for="payoff-date"><spring:message code="msg.customer.payoffDate" /></label>
-                        <input name="payoff-date" id="payoff-date" type="date" value="${customer.payoffDate.toLocalDate()}">
+                        <form:label path="payoffDate"><spring:message code="msg.customer.payoffDate" /></form:label>
+                        <form:input path="payoffDate" type="date" />
                     </li>
                     <li>
                         <label for="tariff"><spring:message code="msg.subscription.tariff" /></label>
@@ -51,12 +67,12 @@
                         </select>
                     </li>
                     <li>
-                        <label for="active"><spring:message code="msg.user.active" /></label>
-                        <input name="active" id="active" type="checkbox"${customer.active ? ' checked' : ''}>
+                        <form:label path="active"><spring:message code="msg.user.active" /></form:label>
+                        <form:checkbox path="active" />
                     </li>
                 </ul>
-                <button type="submit"><spring:message code="msg.user.submit" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.user.submit" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

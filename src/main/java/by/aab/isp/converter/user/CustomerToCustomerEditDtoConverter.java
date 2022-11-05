@@ -16,7 +16,8 @@ public class CustomerToCustomerEditDtoConverter implements Converter<Customer, C
         CustomerEditDto dto = CustomerEditDto.builder()
                 .balance(entity.getBalance())
                 .permittedOverdraft(entity.getPermittedOverdraft())
-                .payoffDate(entity.getPayoffDate().isBefore(LDT_FOR_AGES) ? entity.getPayoffDate() : null)
+                .payoffDate(entity.getPayoffDate().isBefore(LDT_FOR_AGES) ? entity.getPayoffDate().toLocalDate()
+                                                                          : null)
                 .build();
         UserToUserEditDtoConverter.setFields(entity, dto);
         return dto;

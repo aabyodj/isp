@@ -5,7 +5,7 @@ import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -128,8 +128,9 @@ public class UserServiceImpl implements UserService {
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
-            LocalDateTime payoffDate = customerDto.getPayoffDate();
-            customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
+            LocalDate payoffDate = customerDto.getPayoffDate();
+            customer.setPayoffDate(payoffDate != null ? payoffDate.plusDays(1).atStartOfDay().minusNanos(1000)
+                                                      : LDT_FOR_AGES);
         } else if (dto instanceof EmployeeEditDto employeeDto) {
             Employee employee = (Employee) user;
             if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {

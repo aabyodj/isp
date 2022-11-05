@@ -20,7 +20,8 @@ public class CustomerEditDtoToCustomerConverter implements Converter<CustomerEdi
         Customer entity = Customer.builder()
                 .balance(dto.getBalance())
                 .permittedOverdraft(dto.getPermittedOverdraft())
-                .payoffDate(dto.getPayoffDate() != null ? dto.getPayoffDate() : LDT_FOR_AGES)
+                .payoffDate(dto.getPayoffDate() != null ? dto.getPayoffDate().plusDays(1).atStartOfDay().minusNanos(1000)
+                                                        : LDT_FOR_AGES)
                 .build();
         util.setFields(dto, entity);
         return entity;

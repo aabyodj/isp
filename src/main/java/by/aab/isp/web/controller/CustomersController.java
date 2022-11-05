@@ -6,19 +6,24 @@ import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -34,6 +39,7 @@ import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
+import by.aab.isp.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -46,6 +52,7 @@ public class CustomersController {
     private final UserService userService;
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;
+    private final UserEditDtoValidator userValidator;
 
     @GetMapping
     public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
@@ -56,17 +63,32 @@ public class CustomersController {
         return "manage-customers";
     }
 
+    @ModelAttribute("customer")
+    public CustomerEditDto initCustomer() {
+        return CustomerEditDto.builder()
+                .balance(BigDecimal.ZERO)
+                .permittedOverdraft(BigDecimal.ZERO)
+                .build();
+    }
+
+    @ModelAttribute("tariffs")
+    public List<TariffViewDto> getActiveTariffs() {
+        return tariffService.getActive();
+    }
+
+    @ModelAttribute("redirect")
+    public String getDefaultRedirect() {
+        return "/customers";
+    }
+
     @GetMapping("/new")
-    public String createNewCustomer(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(defaultValue = "/customers") String redirect, Model model) {
-        model.addAttribute("customer", userService.getCustomerById(null));
-        model.addAttribute("tariffs", tariffService.getActive());
-        model.addAttribute("redirect", redirect);
+    public String createNewCustomer(@RequestAttribute EmployeeViewDto activeEmployee) {
         return "edit-customer";
     }
 
     @GetMapping("/{customerId}")
-    public String editCustomer(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long customerId,
-            @RequestParam(defaultValue = "/customers") String redirect, Model model) {
+    public String editCustomer(@RequestAttribute EmployeeViewDto activeEmployee,
+            @PathVariable long customerId, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         TariffViewDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()
@@ -74,38 +96,22 @@ public class CustomersController {
                 .findAny()
                 .orElse(null);
         model.addAttribute("activeTariff", activeTariff);
-        model.addAttribute("tariffs", tariffService.getActive());
-        model.addAttribute("redirect", redirect);
         return "edit-customer";
     }
 
-    @PostMapping
+    @PostMapping({"/new", "/{customerId}"})
     public String saveCustomer(@RequestAttribute EmployeeViewDto activeEmployee,
-            @RequestParam(required = false) Long id,
-            @RequestParam String email,
-            @RequestParam(name = "password1", required = false) String password,
-            @RequestParam(name = "password2", required = false) String confirmPassword,
-            @RequestParam(required = false) String active,
-            @RequestParam BigDecimal balance,
-            @RequestParam("permitted-overdraft") BigDecimal permittedOverdraft,
-            @RequestParam(name = "payoff-date", required = false) String payoffDate,
-            @RequestParam String tariff,
-            @RequestParam String redirect) {
-        if (!Objects.equals(password, confirmPassword)) {
-            throw new RuntimeException("Passwords do not match. Handler unimplemented"); //TODO: implement this
+            @Valid @ModelAttribute("customer") CustomerEditDto customer, BindingResult bindingResult,
+            @PathVariable(required = false) Long customerId,
+            @RequestParam String tariff, @ModelAttribute("redirect") String redirect) {
+        if (!Objects.equals(customer.getId(), customerId)) {
+            throw new IllegalArgumentException();
         }
-        if (null != password && password.isBlank()) {
-            password = null;
+        if (null == customerId && (null == customer.getPassword() || customer.getPassword().isBlank())) {
+            bindingResult.rejectValue("password", "msg.user.password.empty");
         }
-        CustomerEditDto customer = new CustomerEditDto();
-        customer.setId(id);
-        customer.setEmail(email);
-        customer.setPassword(password);
-        customer.setActive(active != null);
-        customer.setBalance(balance);
-        customer.setPermittedOverdraft(permittedOverdraft);
-        if (payoffDate != null && !payoffDate.isBlank()) {
-            customer.setPayoffDate(LocalDate.parse(payoffDate).plusDays(1).atStartOfDay().minusNanos(1000));
+        if (bindingResult.hasErrors()) {
+            return "edit-customer";
         }
         customer = (CustomerEditDto) userService.save(customer);   //TODO: terminate their session
         Long tariffId = !tariff.equals("none") ? Long.parseLong(tariff)
@@ -119,6 +125,11 @@ public class CustomersController {
             @RequestParam String redirect) {
         userService.generateCustomers(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
+    }
+
+    @InitBinder("customer")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(userValidator);
     }
 
     @ExceptionHandler
