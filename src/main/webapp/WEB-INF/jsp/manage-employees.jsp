@@ -41,19 +41,7 @@
                     </td>
                 </tr></c:forEach>
             </table>
-            <c:if test="${page.totalPages > 1}">
-                <p>
-                    <c:if test="${page.hasPrevious()}">
-                        <a href="?page=1">First</a>
-                        <a href="?page=${page.number}">Prev</a>
-                    </c:if>
-                    ${page.number + 1}
-                    <c:if test="${page.hasNext()}">
-                        <a href="?page=${page.number + 2}">Next</a>
-                        <a href="?page=${page.totalPages}">Last</a>
-                    </c:if>
-                </p>
-            </c:if>
+<%@ include file="/WEB-INF/jsp/inc/pagination-links.inc" %>
         </main>
     </body>
 </html>
