@@ -2,12 +2,19 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${promotion.name}" /><spring:message code="${promotion.id != null ? 'msg.promotion.title.edit' : 'msg.promotion.title.new'}" /></title>
+        <c:choose>
+            <c:when test="${promotion.id != null}">
+                <title><c:out value="${promotion.name}" /> | <spring:message code="msg.promotion.edit.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.promotion.add.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><spring:message code="${promotion.id != null ? 'msg.promotion.h1.edit' : 'msg.promotion.h1.new'}" /></h1>
+            <h1><spring:message code="${promotion.id != null ? 'msg.promotion.edit.title' : 'msg.promotion.add.title'}" /></h1>
             <form:form method="POST" modelAttribute="promotion">
                 <c:if test="${promotion.id != null}"><input type="hidden" name="id" value="${promotion.id}"></c:if>
                 <input name="redirect" type="hidden" value="${redirect}">
