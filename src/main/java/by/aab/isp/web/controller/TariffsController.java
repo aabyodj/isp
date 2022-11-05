@@ -5,6 +5,7 @@ import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -52,19 +53,25 @@ public class TariffsController {
         return "manage-tariffs";
     }
 
+    @ModelAttribute("tariff")
+    public TariffEditDto initTariff() {
+        return new TariffEditDto();
+    }
+
+    @ModelAttribute("redirect")
+    public String getDefaultRedirect() {
+        return "/tariffs";
+    }
+
     @GetMapping("/new")
-    public String createNewTariff(@RequestAttribute EmployeeViewDto activeEmployee,
-            @RequestParam(defaultValue = "/tariffs") String redirect, Model model) {
-        model.addAttribute("redirect", redirect);
-        model.addAttribute("tariff", new TariffEditDto());
+    public String createNewTariff(@RequestAttribute EmployeeViewDto activeEmployee) {
         return "edit-tariff";
     }
 
     @GetMapping("/{tariffId}")
-    public String editTariff(@RequestAttribute EmployeeViewDto activeEmployee, @PathVariable long tariffId,
-            @RequestParam(defaultValue = "/tariffs") String redirect, Model model) {
+    public String editTariff(@RequestAttribute EmployeeViewDto activeEmployee,
+            @PathVariable long tariffId, Model model) {
         model.addAttribute("tariff", tariffService.getById(tariffId));
-        model.addAttribute("redirect", redirect);
         return "edit-tariff";
     }
 
@@ -74,10 +81,12 @@ public class TariffsController {
             @Valid @ModelAttribute("tariff") TariffEditDto tariff,
             BindingResult bindingResult,
             @ModelAttribute("redirect") String redirect) {
+        if (!Objects.equals(tariffId, tariff.getId())) {
+            throw new IllegalArgumentException();
+        }
         if (bindingResult.hasErrors()) {
             return "edit-tariff";
         }
-        tariff.setId(tariffId);
         tariffService.save(tariff);
         return SCHEMA_REDIRECT + redirect;
     }
@@ -85,7 +94,7 @@ public class TariffsController {
     @PostMapping("/generate")
     public String generateTariffs(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam int quantity, @RequestParam(required = false) String active,
-            @RequestParam String redirect) {
+            @ModelAttribute("redirect") String redirect) {
         tariffService.generateTariffs(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
     }
