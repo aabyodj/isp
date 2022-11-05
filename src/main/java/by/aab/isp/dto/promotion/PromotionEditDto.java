@@ -21,12 +21,12 @@ public class PromotionEditDto {
 
     private Long id;
 
-    @NotBlank
-    @Size(min = 2, max = 25)
+    @NotBlank(message = "{msg.validation.not-blank}")
+    @Size(min = 2, max = 25, message = "{msg.validation.size}")
     private String name;
 
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @NotBlank(message = "{msg.validation.not-blank}")
+    @Size(min = 2, max = 100, message = "{msg.validation.size}")
     private String description;
 
     @DateTimeFormat(iso = ISO.DATE)
