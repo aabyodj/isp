@@ -1,5 +1,8 @@
 package by.aab.isp.dto.user;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -8,6 +11,8 @@ public abstract class UserEditDto {
 
     private Long id;
 
+    @NotNull
+    @Email
     private String email;
 
     @ToString.Include(name = "email")
@@ -19,6 +24,13 @@ public abstract class UserEditDto {
 
     @ToString.Include(name = "password")
     private String getHiddenPassword() {
+        return "[PROTECTED]";
+    }
+
+    private String passwordConfirmation;
+
+    @ToString.Include(name = "passwordConfirmation")
+    private String getHiddenPasswordConfirmation() {
         return "[PROTECTED]";
     }
 
