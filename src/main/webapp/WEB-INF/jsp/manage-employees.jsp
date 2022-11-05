@@ -11,12 +11,17 @@
             <p><a href="/employees/new">Add new employee</a>
             <form action="/employees/generate" method="POST">
                 <input name="redirect" type="hidden" value="/employees">
-                <label for="quantity">Automatically generate</label>
-                <input name="quantity" type="number" required min=1 value=10>
-                <label for="active">activated</label>
-                <input name="active" type="checkbox" checked>
-                employees.
-                <input type="submit" value="Generate">
+                <ul>
+                    <li>
+                        <label for="quantity">Automatically generate</label>
+                        <input name="quantity" type="number" required min=1 value=10>
+                    </li>
+                    <li>
+                        <label for="active">activated</label>
+                        <span><input name="active" type="checkbox" checked> employees.</span>
+                    </li>
+                </ul>
+                <button type="submit">Generate</button>
             </form>
             <table>
                 <tr>
