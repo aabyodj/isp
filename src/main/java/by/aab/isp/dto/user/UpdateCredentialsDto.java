@@ -10,8 +10,8 @@ import lombok.ToString;
 public class UpdateCredentialsDto {
     private long userId;
 
-    @NotNull
-    @Email(regexp = ".{3,50}")
+    @NotNull(message = "{msg.validation.not-blank}")
+    @Email(regexp = ".{3,50}", message = "{msg.validation.email}")
     private String email;
 
     @ToString.Include(name = "email")

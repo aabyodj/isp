@@ -91,7 +91,7 @@
                     </c:if>
                     <li>
                         <form:label path="email"><spring:message code="msg.user.email" /></form:label>
-                        <form:input path="email" type="text" required="true" maxlength="25" cssErrorClass="error" />
+                        <form:input path="email" type="text" required="true" maxlength="50" cssErrorClass="error" />
                         <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
