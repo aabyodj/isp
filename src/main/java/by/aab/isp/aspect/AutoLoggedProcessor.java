@@ -2,6 +2,8 @@ package by.aab.isp.aspect;
 
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +23,19 @@ public class AutoLoggedProcessor {
         Class<?> clazz = signature.getDeclaringType();
         Logger log = LogManager.getLogger(clazz);
         Level level = Level.valueOf(autoLogged.value());
-        log.log(level, signature + Arrays.toString(jp.getArgs()));
+        String requestUrl = Arrays.stream(jp.getArgs())
+                .filter(arg -> arg instanceof HttpServletRequest)
+                .map(arg -> System.lineSeparator() + "Request URL is: " + ((HttpServletRequest) arg).getRequestURL())
+                .findFirst()
+                .orElseGet(() -> "");
+        String message = signature + Arrays.toString(jp.getArgs()) + requestUrl;
+        Arrays.stream(jp.getArgs())
+                .filter(arg -> arg instanceof Throwable)
+                .findFirst()
+                .ifPresentOrElse(
+                        throwable -> log.log(level, message, throwable),
+                        () -> log.log(level, message));
     }
+
+
 }
