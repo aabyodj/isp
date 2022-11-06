@@ -101,7 +101,7 @@ public class EmployeesController {
             throw new IllegalArgumentException();
         }
         if (null == employeeId && (null == employee.getPassword() || employee.getPassword().isBlank())) {
-            bindingResult.rejectValue("password", "msg.user.password.empty");
+            bindingResult.rejectValue("password", "msg.validation.password.empty");
         }
         if (bindingResult.hasErrors()) {
             return "edit-employee";

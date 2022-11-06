@@ -101,7 +101,7 @@ public class MyAccountController {
                 session.invalidate();
                 return SCHEMA_REDIRECT + redirect;
             } catch (UnauthorizedException e) {
-                bindingResult.rejectValue("currentPassword", "msg.account.wrong-password");
+                bindingResult.rejectValue("currentPassword", "msg.user.wrong-password");
             }
         }
         credentials.setCurrentPassword(null);

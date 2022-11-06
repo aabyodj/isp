@@ -30,12 +30,12 @@
                         <form:errors path="description" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="bandwidth"><spring:message code="msg.tariff.bandwidthLabel" /></form:label>
+                        <form:label path="bandwidth"><spring:message code="msg.tariff.bandwidth.label" /></form:label>
                         <form:input path="bandwidth" type="number" required="true" min="0" step="1" cssErrorClass="error" />
                         <form:errors path="bandwidth" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="includedTraffic"><spring:message code="msg.tariff.trafficLabel" /></form:label>
+                        <form:label path="includedTraffic"><spring:message code="msg.tariff.traffic.label" /></form:label>
                         <form:input path="includedTraffic" type="number" required="true" min="0" step="1" cssErrorClass="error" />
                         <form:errors path="includedTraffic" cssClass="error-message" />
                     </li>

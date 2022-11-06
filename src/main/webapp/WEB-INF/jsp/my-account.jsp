@@ -55,7 +55,7 @@
                                         </tr>
                                     </c:forEach>
                                     <c:if test="${subscriptions == null}">
-                                        <tr><td colspan=8><spring:message code="msg.subscription.no-subscriptions" /></td></tr>
+                                        <tr><td colspan=8><spring:message code="msg.subscription.table.empty" /></td></tr>
                                     </c:if>
                                 </tbody>
                             </table>

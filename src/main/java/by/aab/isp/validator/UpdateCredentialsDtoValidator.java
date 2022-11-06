@@ -29,11 +29,11 @@ public class UpdateCredentialsDtoValidator implements Validator {
         };
         String password = credentials.getNewPassword();
         if (password != null && !password.isBlank() && !passwordValidator.isStrongPassword(password)) {
-            errors.rejectValue("newPassword", "msg.user.password.too-weak");
+            errors.rejectValue("newPassword", "msg.validation.password.too-weak");
         }
         if (!Objects.equals(credentials.getNewPassword(), credentials.getNewPasswordConfirmation())) {
-            errors.rejectValue("newPassword", "msg.account.passwords-dont-match");
-            errors.rejectValue("newPasswordConfirmation", "msg.account.passwords-dont-match");
+            errors.rejectValue("newPassword", "msg.validation.passwords-dont-match");
+            errors.rejectValue("newPasswordConfirmation", "msg.validation.passwords-dont-match");
         }
     }
 

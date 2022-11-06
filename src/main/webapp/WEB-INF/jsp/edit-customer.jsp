@@ -53,18 +53,18 @@
                         <form:input path="balance" type="number" required="true" step="0.01" />
                     </li>
                     <li>
-                        <form:label path="permittedOverdraft"><spring:message code="msg.customer.permittedOverdraft" /></form:label>
+                        <form:label path="permittedOverdraft"><spring:message code="msg.customer.permitted-overdraft" /></form:label>
                         <form:input path="permittedOverdraft" type="number" required="true" min="0" step="0.01" />
                     </li>
                     <li>
-                        <form:label path="payoffDate"><spring:message code="msg.customer.payoffDate" /></form:label>
+                        <form:label path="payoffDate"><spring:message code="msg.customer.payoff-date" /></form:label>
                         <form:input path="payoffDate" type="date" />
                     </li>
                     <li>
                         <label for="tariff"><spring:message code="msg.subscription.tariff" /></label>
                         <select name="tariff" id="tariff">
                             <option value="none" ${activeTariff == null ? ' selected' : ''}>
-                                <spring:message code="msg.subscription.noTariff" />
+                                <spring:message code="msg.subscription.tariff.none" />
                             </option>
                             <c:forEach var="tariff" items="${tariffs}">
                                 <option value="${tariff.id}"${activeTariff.id == tariff.id ? ' selected' : ''}>

@@ -29,11 +29,11 @@ public class UserEditDtoValidator implements Validator {
         }
         String password = user.getPassword();
         if (password != null && !password.isBlank() && !passwordValidator.isStrongPassword(password)) {
-            errors.rejectValue("password", "msg.user.password.too-weak");
+            errors.rejectValue("password", "msg.validation.password.too-weak");
         }
         if (!Objects.equals(user.getPassword(), user.getPasswordConfirmation())) {
-            errors.rejectValue("password", "msg.account.passwords-dont-match");
-            errors.rejectValue("passwordConfirmation", "msg.account.passwords-dont-match");
+            errors.rejectValue("password", "msg.validation.passwords-dont-match");
+            errors.rejectValue("passwordConfirmation", "msg.validation.passwords-dont-match");
         }
     }
 

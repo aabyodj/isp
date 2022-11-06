@@ -108,7 +108,7 @@ public class CustomersController {
             throw new IllegalArgumentException();
         }
         if (null == customerId && (null == customer.getPassword() || customer.getPassword().isBlank())) {
-            bindingResult.rejectValue("password", "msg.user.password.empty");
+            bindingResult.rejectValue("password", "msg.validation.password.empty");
         }
         if (bindingResult.hasErrors()) {
             return "edit-customer";
