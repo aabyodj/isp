@@ -3,16 +3,23 @@ package by.aab.isp.converter;
 import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
 import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class FormatUtil {
 
     private static final String[] BANDWIDTH_RANGES = {" Kb/s", " Mb/s", " Gb/s", " Tb/s"};
 
+    private final MessageSource messageSource;
+
     public String formatBandwidth(int kbps) {
         if (kbps >= BANDWIDTH_UNLIMITED || kbps < 0) {
-            return "unlimited";
+            return messageSource.getMessage("msg.tariff.bandwidth.unlimited", null, LocaleContextHolder.getLocale());
         }
         double bandwidth = kbps;
         for (int i = 0; i < BANDWIDTH_RANGES.length - 1; i++) {
@@ -28,7 +35,7 @@ public class FormatUtil {
 
     public String formatTraffic(long bytes) {
         if (bytes >= TRAFFIC_UNLIMITED || bytes < 0) {
-            return "unlimited";
+            return messageSource.getMessage("msg.tariff.traffic.unlimited", null, LocaleContextHolder.getLocale());
         }
         if (bytes < 1024) {
             return bytes + TRAFFIC_RANGES[0];

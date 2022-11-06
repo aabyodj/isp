@@ -6,6 +6,8 @@ import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,7 @@ public class SubscriptionToSubscriptionViewDtoConverter implements Converter<Sub
 
     private final FormatUtil formatUtil;
     private final TariffToTariffViewDtoConverter tariffConverter;
+    private final MessageSource messageSource;
 
     @Autowired
     private Now now;
@@ -46,7 +49,7 @@ public class SubscriptionToSubscriptionViewDtoConverter implements Converter<Sub
 
     private String formatActiveUntil(LocalDateTime activeUntil) {
         if (!activeUntil.isBefore(LDT_FOR_AGES)) {
-            return "until cancelled";
+            return messageSource.getMessage("msg.subscription.table.until.for-ages", null, LocaleContextHolder.getLocale());
         }
         return activeUntil.toString();
     }

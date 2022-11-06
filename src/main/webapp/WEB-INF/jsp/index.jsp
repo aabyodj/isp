@@ -31,7 +31,7 @@
                         </li></c:forEach>
                     </ul>
                     <c:if test="${promotions.hasNext() || activeEmployee != null}">
-                        <p><a href="/promotions">View all promotions</a>
+                        <p><a href="/promotions"><spring:message code="msg.home.promotions.view-all" /></a>
                     </c:if>
                 </section>
             </c:if>
@@ -54,7 +54,7 @@
                         </li></c:forEach>
                     </ul>
                     <c:if test="${tariffs.hasNext() || activeEmployee != null}">
-                        <p><a href="/tariffs">View all tariffs</a>
+                        <p><a href="/tariffs"><spring:message code="msg.home.tariffs.view-all" /></a>
                     </c:if>
                 </section>
             </c:if>
