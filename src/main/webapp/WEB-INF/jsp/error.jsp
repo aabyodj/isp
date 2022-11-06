@@ -2,7 +2,7 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><spring:message code="msg.error.title" /></title>
+        <title><spring:message code="msg.error.title" /> | <spring:message code="msg.home.title" /></title>
     </head>
     <body>
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
