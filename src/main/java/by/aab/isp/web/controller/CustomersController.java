@@ -36,6 +36,7 @@ import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UserViewDto;
+import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
@@ -140,7 +141,7 @@ public class CustomersController {
             throw e;
         }
         if (activeUser != null) {
-            throw new RuntimeException("Access denied");    //TODO: create a custom handler
+            throw new AccessDeniedException();
         }
         String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
         return SCHEMA_REDIRECT + "/login?redirect=" + redirect;

@@ -35,6 +35,7 @@ import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Employee;
+import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.UserService;
 import by.aab.isp.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
@@ -132,7 +133,7 @@ public class EmployeesController {
             throw e;
         }
         if (activeUser != null) {
-            throw new RuntimeException("Access denied");    //TODO: create a custom handler
+            throw new AccessDeniedException();
         }
         String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
         return SCHEMA_REDIRECT + "/login?redirect=" + redirect;

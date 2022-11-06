@@ -30,6 +30,7 @@ import by.aab.isp.dto.tariff.TariffEditDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UserViewDto;
+import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.TariffService;
 import lombok.RequiredArgsConstructor;
 
@@ -109,7 +110,7 @@ public class TariffsController {
             throw e;
         }
         if (activeUser != null) {
-            throw new RuntimeException("Access denied");    //TODO: create a custom handler
+            throw new AccessDeniedException();
         }
         String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
         return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
