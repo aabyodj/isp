@@ -9,7 +9,7 @@
                         <p><c:out value="${activeCustomer.email}" /></p>
                         <ul>
                             <li${activeCustomer.balance < 0 ? ' class="negative"' : ''}><spring:message code="msg.customer.balance" />: ${activeCustomer.balance}
-                            <li><a href="/my_account"><spring:message code="msg.user.myAccount" /></a>
+                            <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
                             <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
                         </ul>
                     </li>
@@ -23,7 +23,7 @@
                     <li>
                         <p>${activeEmployee.email}</p>
                         <ul>
-                            <li><a href="/my_account"><spring:message code="msg.user.myAccount" /></a>
+                            <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
                             <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
                         </ul>
                     </li>
@@ -38,7 +38,7 @@
                     <li>
                         <p><c:out value="${activeEmployee.email}" /></p>
                         <ul>
-                            <li><a href="/my_account"><spring:message code="msg.user.myAccount" /></a>
+                            <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
                             <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
                         </ul>
                     </li>

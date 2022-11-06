@@ -25,7 +25,7 @@
                         <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="password"><spring:message code="msg.user.password" /></form:label>
+                        <form:label path="password"><spring:message code="msg.user.new-password" /></form:label>
                         <c:choose>
                             <c:when test="${employee.id == null}">
                                 <form:input path="password" type="password" required="true" errorCssClass="error "/>
@@ -37,7 +37,7 @@
                         <form:errors path="password" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="passwordConfirmation"><spring:message code="msg.user.confirmPassword" /></form:label>
+                        <form:label path="passwordConfirmation"><spring:message code="msg.user.confirm-password" /></form:label>
                         <c:choose>
                             <c:when test="${employee.id == null}">
                                 <form:input path="passwordConfirmation" type="password" required="true" errorCssClass="error" />
