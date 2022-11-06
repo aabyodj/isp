@@ -91,6 +91,66 @@ li > h2:first-child {
 
 @media (min-width: 32rem) {
 
+    body > header > nav > ul {
+        display: flex;
+        align-items: flex-start;
+        text-align: center;
+        justify-content: space-around;
+        list-style: none;
+        padding: 0;
+        margin: 0 1rem;
+    }
+
+    body > header > nav > ul > li:not(:first-child) {
+        margin-left: 1rem;
+    }
+
+    body > header > nav > ul > li > p {
+        color: #551a8b;
+        cursor: pointer;
+        text-decoration: underline;
+        margin: 0;
+    }
+
+    body > header > nav > ul > li > ul {
+        text-align: left;
+        opacity: 0;
+        transform: translateY(-50%) scaleY(0);
+        transition: .3s;
+        position: absolute;
+        background: #fff;
+        border-radius: 0.25rem;
+        box-shadow: 0.5rem 0.5rem 1rem #bbb;
+        margin: 0 0 0 .5rem;
+        list-style: circle inside;
+        padding: 0.5rem 1rem 0.5rem 0;
+    }
+
+    body > header > nav > ul > li:hover > ul {
+        opacity: 1;
+        transform: none;
+    }
+
+    body > header > nav > ul > li > ul > li {
+        margin: 0 0 .5rem 0;
+    }
+
+    body > header > nav > ul p.lang-selector,
+    body > header > nav > ul p.lang-selector + ul,
+    body > header > nav > ul p.lang-selector + ul > li {
+        color: #000;
+        cursor: initial;
+        text-decoration: none;
+        display: inline;
+        box-shadow: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    body > header > nav > ul p.lang-selector + ul {
+        padding: 0;
+    }
+
     :where(button, input)[type="submit"] {
         margin-left: calc(33.4% + .6rem);
     }
@@ -130,6 +190,7 @@ li > h2:first-child {
 
 @media (min-width: 64rem) {
 
+    body > header > *,
     main > *:not(section),
     main > section > * {
         margin: 1rem auto;
