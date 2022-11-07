@@ -1,6 +1,7 @@
 package by.aab.isp.web.controller;
 
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
+import static by.aab.isp.web.Const.DEFAULT_TARIFFS_SORT;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import java.io.UnsupportedEncodingException;
@@ -12,7 +13,6 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,15 +39,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TariffsController {
 
-    private static final Sort ORDER_BY_NAME = Sort.by("name");
-
     private final TariffService tariffService;
 
     @GetMapping
     public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
             @RequestAttribute(required = false) EmployeeViewDto activeEmployee, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
-        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_NAME);
+        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, DEFAULT_TARIFFS_SORT);
         Page<TariffViewDto> tariffs = activeEmployee != null ? tariffService.getAll(request)
                                                              : tariffService.getActive(request);
         model.addAttribute("page", tariffs);

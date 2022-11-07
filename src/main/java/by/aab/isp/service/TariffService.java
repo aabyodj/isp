@@ -24,5 +24,7 @@ public interface TariffService {
 
     TariffEditDto save(TariffEditDto tariff);
 
+    void deactivate(long tariffId);
+
     void generateTariffs(int quantity, boolean active);
 }

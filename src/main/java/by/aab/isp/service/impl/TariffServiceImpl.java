@@ -86,6 +86,14 @@ public class TariffServiceImpl implements TariffService {
         return dto;
     }
 
+    @AutoLogged
+    @Override
+    public void deactivate(long tariffId) {
+        if (tariffRepository.setActiveById(tariffId, false) == 0) {
+            throw new NotFoundException();
+        }
+    }
+
     private static final int MBIT_S = 1024;
     private static final Integer[] BANDWIDTH = {
             MBIT_S, 5 * MBIT_S, 10 * MBIT_S, 20 * MBIT_S, 50 * MBIT_S,
