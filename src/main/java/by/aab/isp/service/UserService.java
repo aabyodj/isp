@@ -1,29 +1,33 @@
 package by.aab.isp.service;
 
-import by.aab.isp.dto.user.CredentialsDto;
-import by.aab.isp.dto.user.CustomerDto;
-import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
+import by.aab.isp.dto.user.CustomerEditDto;
+import by.aab.isp.dto.user.CustomerViewDto;
+import by.aab.isp.dto.user.EmployeeEditDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserEditDto;
+import by.aab.isp.dto.user.UserViewDto;
+
 import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    Page<CustomerDto> getAllCustomers(Pageable pageable);
+    Page<CustomerViewDto> getAllCustomers(Pageable pageable);
 
-    Page<EmployeeDto> getAllEmployees(Pageable pageable);
+    Page<EmployeeViewDto> getAllEmployees(Pageable pageable);
 
-    UserDto getById(long id);
+    UserViewDto getById(long id);
 
-    CustomerDto getCustomerById(Long id);
+    CustomerEditDto getCustomerById(Long id);
 
-    EmployeeDto getEmployeeById(Long id);
+    EmployeeEditDto getEmployeeById(long id);
 
-    UserDto save(UserDto user);
+    UserEditDto save(UserEditDto user);
 
-    UserDto login(CredentialsDto credentials);
+    long login(LoginCredentialsDto credentials);
 
     void updateCredentials(UpdateCredentialsDto dto);
 

@@ -11,4 +11,5 @@ import lombok.Data;
 public class HomepageProperties {
 
     private int promotionsCount = 3;
+    private int tariffsCount = 3;
 }

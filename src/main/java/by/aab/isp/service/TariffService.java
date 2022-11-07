@@ -5,26 +5,24 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import by.aab.isp.dto.tariff.ShowTariffDto;
-import by.aab.isp.dto.tariff.TariffDto;
+import by.aab.isp.dto.tariff.TariffViewDto;
+import by.aab.isp.dto.tariff.TariffEditDto;
 
 public interface TariffService {
     
-    List<ShowTariffDto> getAll();
+    List<TariffViewDto> getAll();
 
-    Page<ShowTariffDto> getAll(Pageable pageable);
+    Page<TariffViewDto> getAll(Pageable pageable);
 
-    List<ShowTariffDto> getActive();
+    List<TariffViewDto> getActive();
 
-    Page<ShowTariffDto> getActive(Pageable pageable);
+    Page<TariffViewDto> getActive(Pageable pageable);
 
-    List<ShowTariffDto> getForHomepage();
-
-    List<ShowTariffDto> getInactiveForCustomer(long customerId);
+    List<TariffViewDto> getInactiveForCustomer(long customerId);
     
-    TariffDto getById(Long id);
+    TariffEditDto getById(long id);
 
-    TariffDto save(TariffDto tariff);
+    TariffEditDto save(TariffEditDto tariff);
 
     void generateTariffs(int quantity, boolean active);
 }

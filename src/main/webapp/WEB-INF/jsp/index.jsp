@@ -2,54 +2,60 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><fmt:message key="msg.home.title" /></title>
+        <title><spring:message code="msg.home.title" /></title>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
             <section id="about">
-                <h1><fmt:message key="msg.home.about.h1" /></h1>
-                <p><fmt:message key="msg.home.about.content" />
+                <h1><spring:message code="msg.home.about.h1" /></h1>
+                <p><spring:message code="msg.home.about.content" />
             </section>
-            <c:if test="${promotions != null || activeEmployee != null}">
+            <c:if test="${!promotions.isEmpty() || activeEmployee != null}">
                 <section id="promotions">
-                    <h1><fmt:message key="msg.home.promotions.h1" /></h1>
+                    <h1><spring:message code="msg.home.promotions.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="${pageContext.request.contextPath}/promotion/new?redirect=/"><fmt:message key="msg.promotion.add" /></a>
+                        <p><a href="/promotions/new?redirect=/"><spring:message code="msg.promotion.add" /></a>
                     </c:if>
-                    <ul><c:forEach var="promotion" items="${promotions}">
+                    <ul><c:forEach var="promotion" items="${promotions.toList()}">
                         <li>
                             <h2><c:out value="${promotion.name}" /></h2>
                             <div><c:out value="${promotion.description}" /></div>
                             <c:if test="${promotion.activeUntil != null}">
-                                <p><fmt:message key="msg.promotion.until" /> ${promotion.activeUntil.toLocalDate()}</p>
+                                <p><spring:message code="msg.promotion.until" /> ${promotion.activeUntil.toLocalDate()}</p>
                             </c:if>
                             <c:if test="${activeEmployee != null}">
-                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?redirect=/"><fmt:message key="msg.promotion.edit" /></a>
-                                <a href="${pageContext.request.contextPath}/promotion/${promotion.id}?stop&redirect=/"><fmt:message key="msg.promotion.stop" /></a>
+                                <a href="/promotions/${promotion.id}?redirect=/"><spring:message code="msg.promotion.edit" /></a>
+                                <a href="/promotions/${promotion.id}?stop&redirect=/"><spring:message code="msg.promotion.stop" /></a>
                             </c:if>
                         </li></c:forEach>
                     </ul>
+                    <c:if test="${promotions.hasNext() || activeEmployee != null}">
+                        <p><a href="/promotions"><spring:message code="msg.home.promotions.view-all" /></a>
+                    </c:if>
                 </section>
             </c:if>
-            <c:if test="${tariffs != null || activeEmployee != null}">
+            <c:if test="${!tariffs.isEmpty() || activeEmployee != null}">
                 <section>
-                    <h1><fmt:message key="msg.home.tariffs.h1" /></h1>
+                    <h1><spring:message code="msg.home.tariffs.h1" /></h1>
                     <c:if test="${activeEmployee != null}">
-                        <p><a href="${pageContext.request.contextPath}/tariff/new?redirect=/"><fmt:message key="msg.tariff.add" /></a>
+                        <p><a href="/tariffs/new?redirect=/"><spring:message code="msg.tariff.add" /></a>
                     </c:if>
-                    <ul><c:forEach var="tariff" items="${tariffs}">
+                    <ul><c:forEach var="tariff" items="${tariffs.toList()}">
                         <li>
                             <h2><c:out value="${tariff.name}" /></h2>
                             <div><c:out value="${tariff.description}" /></div>
-                            <p><fmt:message key="msg.tariff.bandwidth" />: <span>${tariff.bandwidth}</span>
-                            <p><fmt:message key="msg.tariff.traffic" />: <span>${tariff.includedTraffic}</span>
-                            <p><fmt:message key="msg.tariff.price" />: <span>${tariff.price}</span></p>
+                            <p><spring:message code="msg.tariff.bandwidth" />: <span>${tariff.bandwidth}</span>
+                            <p><spring:message code="msg.tariff.traffic" />: <span>${tariff.includedTraffic}</span>
+                            <p><spring:message code="msg.tariff.price" />: <span>${tariff.price}</span></p>
                             <c:if test="${activeEmployee != null}">
-                                <a href="${pageContext.request.contextPath}/tariff/${tariff.id}?redirect=/"><fmt:message key="msg.tariff.edit" /></a>
+                                <a href="/tariffs/${tariff.id}?redirect=/"><spring:message code="msg.tariff.edit" /></a>
                             </c:if>
                         </li></c:forEach>
                     </ul>
+                    <c:if test="${tariffs.hasNext() || activeEmployee != null}">
+                        <p><a href="/tariffs"><spring:message code="msg.home.tariffs.view-all" /></a>
+                    </c:if>
                 </section>
             </c:if>
         </main>

@@ -2,46 +2,69 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${customer.email}" /><fmt:message key="${customer.id != null ? 'msg.customer.title.edit' : 'msg.customer.title.new'}" /></title>
+        <c:choose>
+            <c:when test="${customer.id != null}">
+                <title><c:out value="${customer.email}" /> | <spring:message code="msg.customer.edit.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.customer.add.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="${customer.id != null ? 'msg.customer.h1.edit' : 'msg.customer.h1.new'}" /></h1>
-            <form action="${pageContext.request.contextPath}/customer" method="POST">
-                <c:if test="${customer.id != null}"><input type="hidden" name="id" value="${customer.id}"></c:if>
+            <h1><spring:message code="${customer.id != null ? 'msg.customer.edit.h1' : 'msg.customer.add.h1'}" /></h1>
+            <form:form method="POST" modelAttribute="customer">
                 <input name="redirect" type="hidden" value="${redirect}">
+                <form:input path="id" type="hidden" />
                 <ul>
                     <li>
-                        <label for="email"><fmt:message key="msg.user.email" /></label>
-                        <input name="email" id="email" type="email" required maxlength=50 placeholder="user@example.com"
-                            value="<c:out value="${customer.email}" />">
+                        <form:label path="email"><spring:message code="msg.user.email" /></form:label>
+                        <form:input path="email" type="email" required="true" maxlength="50" placeholder="user@example.com" errorCssClass="error" />
+                        <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password1"><fmt:message key="msg.user.password" /></label>
-                        <input name="password1" id="password1" type="password"${customer.id == 0 ? ' required' : ''}>
+                        <form:label path="password"><spring:message code="msg.user.new-password" /></form:label>
+                        <c:choose>
+                            <c:when test="${customer.id == null}">
+                                <form:input path="password" type="password" required="true" errorCssClass="error" />
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="password" type="password" errorCssClass="error" />
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="password" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password2"><fmt:message key="msg.user.confirmPassword" /></label>
-                        <input name="password2" id="password2" type="password"${customer.id == 0 ? ' required' : ''}>
+                        <form:label path="passwordConfirmation"><spring:message code="msg.user.confirm-password" /></form:label>
+                        <c:choose>
+                            <c:when test="${customer.id == null}">
+                                <form:input path="passwordConfirmation" type="password" required="true" errorCssClass="error" />
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="passwordConfirmation" type="password" errorCssClass="error" />
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="passwordConfirmation" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="balance"><fmt:message key="msg.customer.balance" /></label>
-                        <input name="balance" id="balance" type="number" required step="0.01" value="${customer.balance}">
+                        <form:label path="balance"><spring:message code="msg.customer.balance" /></form:label>
+                        <form:input path="balance" type="number" required="true" step="0.01" />
                     </li>
                     <li>
-                        <label for="permitted-overdraft"><fmt:message key="msg.customer.permittedOverdraft" /></label>
-                        <input name="permitted-overdraft" id="permitted-overdraft" type="number" required min="0" step="0.01" value="${customer.permittedOverdraft}">
+                        <form:label path="permittedOverdraft"><spring:message code="msg.customer.permitted-overdraft" /></form:label>
+                        <form:input path="permittedOverdraft" type="number" required="true" min="0" step="0.01" />
                     </li>
                     <li>
-                        <label for="payoff-date"><fmt:message key="msg.customer.payoffDate" /></label>
-                        <input name="payoff-date" id="payoff-date" type="date" value="${customer.payoffDate.toLocalDate()}">
+                        <form:label path="payoffDate"><spring:message code="msg.customer.payoff-date" /></form:label>
+                        <form:input path="payoffDate" type="date" />
                     </li>
                     <li>
-                        <label for="tariff"><fmt:message key="msg.subscription.tariff" /></label>
+                        <label for="tariff"><spring:message code="msg.subscription.tariff" /></label>
                         <select name="tariff" id="tariff">
                             <option value="none" ${activeTariff == null ? ' selected' : ''}>
-                                <fmt:message key="msg.subscription.noTariff" />
+                                <spring:message code="msg.subscription.tariff.none" />
                             </option>
                             <c:forEach var="tariff" items="${tariffs}">
                                 <option value="${tariff.id}"${activeTariff.id == tariff.id ? ' selected' : ''}>
@@ -51,12 +74,12 @@
                         </select>
                     </li>
                     <li>
-                        <label for="active"><fmt:message key="msg.user.active" /></label>
-                        <input name="active" id="active" type="checkbox"${customer.active ? ' checked' : ''}>
+                        <form:label path="active"><spring:message code="msg.user.active" /></form:label>
+                        <form:checkbox path="active" />
                     </li>
                 </ul>
-                <button type="submit"><fmt:message key="msg.user.submit" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.user.submit" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

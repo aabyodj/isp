@@ -5,11 +5,10 @@ import static by.aab.isp.Const.DEFAULT_ADMIN_PASSWORD;
 import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Random;
+
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
@@ -18,11 +17,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.dto.user.CredentialsDto;
-import by.aab.isp.dto.user.CustomerDto;
-import by.aab.isp.dto.user.EmployeeDto;
+import by.aab.isp.converter.PasswordUtil;
+import by.aab.isp.converter.user.CustomerToCustomerEditDtoConverter;
+import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
+import by.aab.isp.converter.user.EmployeeToEmployeeEditDtoConverter;
+import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
+import by.aab.isp.converter.user.UserEditDtoToUserConverter;
+import by.aab.isp.converter.user.UserToUserViewDtoConverter;
+import by.aab.isp.dto.user.CustomerEditDto;
+import by.aab.isp.dto.user.CustomerViewDto;
+import by.aab.isp.dto.user.EmployeeEditDto;
+import by.aab.isp.dto.user.EmployeeViewDto;
+import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserDto;
+import by.aab.isp.dto.user.UserEditDto;
+import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.entity.Customer;
 import by.aab.isp.entity.Employee;
 import by.aab.isp.entity.Tariff;
@@ -31,6 +40,7 @@ import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
+import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
@@ -40,185 +50,108 @@ import lombok.RequiredArgsConstructor;
 @Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String HASH_ALGORITHM = "SHA-256";
+
     private static final long LOGIN_TIMEOUT = 2000;
     private static final double TIMEOUT_SHIFT_FACTOR = .5;
+
     private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final TariffRepository tariffRepository;
     private final SubscriptionService subscriptionService;
+    private final CustomerToCustomerViewDtoConverter customerViewConverter;
+    private final CustomerToCustomerEditDtoConverter toCustomerEditConverter;
+    private final EmployeeToEmployeeViewDtoConverter employeeViewConverter;
+    private final EmployeeToEmployeeEditDtoConverter toEmployeeEditConverter;
+    private final UserToUserViewDtoConverter userViewConverter;
+    private final UserEditDtoToUserConverter toUserConverter;
+    private final PasswordUtil passwordUtil;
 
     @AutoLogged
     @Override
-    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
-        return customerRepository.findAll(pageable).map(this::toCustomerDto);
-    }
-
-    @AutoLogged
-    @Override
-    public Page<EmployeeDto> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable).map(this::toEmployeeDto);
-    }
-
-    @AutoLogged
-    @Override
-    public UserDto getById(long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return toUserDto(user);
-    }
-
-    private UserDto toUserDto(User user) {
-        UserDto dto;
-        if (user instanceof Customer) {
-            Customer customer = (Customer) user;
-            CustomerDto customerDto = new CustomerDto();
-            customerDto.setBalance(customer.getBalance());
-            customerDto.setPermittedOverdraft(customer.getPermittedOverdraft());
-            LocalDateTime payoffDate = customer.getPayoffDate();
-            customerDto.setPayoffDate(payoffDate.isBefore(LDT_FOR_AGES) ? payoffDate : null);
-            dto = customerDto;
-        } else if (user instanceof Employee) {
-            Employee employee = (Employee) user;
-            EmployeeDto employeeDto = new EmployeeDto();
-            employeeDto.setRole(employee.getRole());
-            dto = employeeDto;
-        } else {
-            throw new ServiceException("Converter is undefined for entity " + user.getClass());
-        }
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail());
-        dto.setActive(user.isActive());
-        return dto;
-    }
-
-    private CustomerDto toCustomerDto(Customer customer) {
-        return (CustomerDto) toUserDto(customer);
-    }
-
-    private EmployeeDto toEmployeeDto(Employee employee) {
-        return (EmployeeDto) toUserDto(employee);
+    public Page<CustomerViewDto> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(customerViewConverter::convert);
     }
 
     @AutoLogged
     @Override
-    public CustomerDto getCustomerById(Long id) {
-        CustomerDto customer;
-        if (null == id) {
-            customer = new CustomerDto();
-            customer.setBalance(BigDecimal.ZERO);
-            customer.setPermittedOverdraft(BigDecimal.ZERO);
-        } else {
-            customer = (CustomerDto) toUserDto(customerRepository.findById(id).orElseThrow());
-        }
-        return customer;
+    public Page<EmployeeViewDto> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(employeeViewConverter::convert);
     }
 
     @AutoLogged
     @Override
-    public EmployeeDto getEmployeeById(Long id) {
-        EmployeeDto employee;
-        if (null == id) {
-            employee = new EmployeeDto();
-            employee.setRole(Employee.Role.MANAGER);
-        } else {
-            employee = (EmployeeDto) toUserDto(employeeRepository.findById(id).orElseThrow());
-        }
-        return employee;
+    public UserViewDto getById(long id) {
+        return userRepository.findById(id)
+                .map(userViewConverter::convert)
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @AutoLogged
+    @Override
+    public CustomerEditDto getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .map(toCustomerEditConverter::convert)
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @AutoLogged
+    @Override
+    public EmployeeEditDto getEmployeeById(long id) {
+        return employeeRepository.findById(id)
+                .map(toEmployeeEditConverter::convert)
+                .orElseThrow(NotFoundException::new);
     }
 
     @AutoLogged
     @Override
     @Transactional
-    public UserDto save(UserDto dto) {
+    public UserEditDto save(UserEditDto dto) {
         User user;
         if (dto.getId() != null) {
-            user = userRepository.findById(dto.getId()).orElseThrow();
+            user = userRepository.findById(dto.getId())
+                    .orElseThrow(NotFoundException::new);
             setFields(dto, user);
             userRepository.save(user);
         } else {
-            if (null == dto.getPassword()) {
-                throw new ServiceException("Password required");
-            }
-            user = toNewUser(dto);
+            user = toUserConverter.convert(dto);
             user = userRepository.save(user);
             dto.setId(user.getId());
         }
         return dto;
     }
 
-    private void setFields(UserDto dto, User user) {
-        if (dto instanceof CustomerDto) {
-            CustomerDto customerDto = (CustomerDto) dto;
+    private void setFields(UserEditDto dto, User user) {
+        if (dto instanceof CustomerEditDto customerDto) {
             Customer customer = (Customer) user;
             customer.setBalance(customerDto.getBalance());
             customer.setPermittedOverdraft(customerDto.getPermittedOverdraft());
-            LocalDateTime payoffDate = customerDto.getPayoffDate();
-            customer.setPayoffDate(payoffDate != null ? payoffDate : LDT_FOR_AGES);
-        } else if (dto instanceof EmployeeDto) {
-            EmployeeDto employeeDto = (EmployeeDto) dto;
+            LocalDate payoffDate = customerDto.getPayoffDate();
+            customer.setPayoffDate(payoffDate != null ? payoffDate.plusDays(1).atStartOfDay().minusNanos(1000)
+                                                      : LDT_FOR_AGES);
+        } else if (dto instanceof EmployeeEditDto employeeDto) {
             Employee employee = (Employee) user;
             if (employeeDto.getId() != null && !isActiveAdmin(employeeDto) && noMoreAdmins(employeeDto)) {
                 throw new ServiceException("Unable to delete last admin");
             }
             employee.setRole(employeeDto.getRole());
         }
-        String email = dto.getEmail().strip();
-        if (!email.equals(user.getEmail())) {
-            validateEmailConstraints(email);
-            user.setEmail(email);
-        }
+        user.setEmail(dto.getEmail());
         String password = dto.getPassword();
-        if (password != null) {
-            validatePasswordConstraints(password);
-            user.setPasswordHash(hashPassword(password));
+        if (password != null && !password.isBlank()) {
+            user.setPasswordHash(passwordUtil.hashPassword(password));
         }
         user.setActive(dto.isActive());
     }
 
-    private User toNewUser(UserDto dto) {
-        User user;
-        if (dto instanceof CustomerDto) {
-            user = new Customer();
-        } else if (dto instanceof EmployeeDto) {
-            user = new Employee();
-        } else {
-            throw new ServiceException("Converter is undefined for DTO " + dto.getClass());
-        }
-        setFields(dto, user);
-        return user;
-    }
-
-    private static boolean isActiveAdmin(EmployeeDto employee) {
+    private static boolean isActiveAdmin(EmployeeEditDto employee) {
         return employee.getRole() == Employee.Role.ADMIN && employee.isActive();
     }
 
-    private boolean noMoreAdmins(EmployeeDto employee) {
+    private boolean noMoreAdmins(EmployeeEditDto employee) {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
-    }
-
-    private void validateEmailConstraints(String email) {
-        // TODO Auto-generated method stub
-    }
-
-    private void validatePasswordConstraints(String password) {
-        if (!isStrongPassword(password)) {
-            throw new ServiceException("Password is too weak");
-        }
-    }
-
-    private boolean isStrongPassword(String password) { //TODO: implement password strength criteria
-        return password.length() > 0;
-    }
-
-    private byte[] hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
-            digest.update(password.getBytes());
-            return digest.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException(e);
-        }
     }
 
     private byte[] hashWithDelay(String password) {
@@ -227,12 +160,12 @@ public class UserServiceImpl implements UserService {
             Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
         }
-        return hashPassword(password);
+        return passwordUtil.hashPassword(password);
     }
 
     @AutoLogged
     @Override
-    public UserDto login(CredentialsDto credentials) {
+    public long login(LoginCredentialsDto credentials) {
         byte[] hash = hashWithDelay(credentials.getPassword());
         User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
         if (user != null) {
@@ -244,7 +177,7 @@ public class UserServiceImpl implements UserService {
         if (null == user) {
             throw new UnauthorizedException(credentials.getEmail());
         }
-        return toUserDto(user);
+        return user.getId();
     }
 
     @AutoLogged
@@ -252,19 +185,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
         byte[] hash = hashWithDelay(dto.getCurrentPassword());
-        User user = userRepository.findById(dto.getUserId()).orElseThrow();
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(NotFoundException::new);
         if (!Arrays.equals(user.getPasswordHash(), hash)) {
-            throw new ServiceException("Wrong current password");   //TODO: maybe invalidate the user session?
+            throw new UnauthorizedException("Wrong current password");
         }
         String email = dto.getEmail().strip();
         if (!email.equals(user.getEmail())) {
-            validateEmailConstraints(email);
             user.setEmail(email);
         }
         String password = dto.getNewPassword();
-        if (password != null) {
-            validatePasswordConstraints(password);
-            user.setPasswordHash(hashPassword(password));
+        if (password != null && !password.isBlank()) {
+            user.setPasswordHash(passwordUtil.hashPassword(password));
         }
         userRepository.save(user);
     }
@@ -275,7 +207,8 @@ public class UserServiceImpl implements UserService {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("Cannot replenish balance by nonpositive amount");
         }
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(NotFoundException::new);
         BigDecimal balance = customer.getBalance();
         balance = balance.add(amount);
         customer.setBalance(balance);
@@ -292,7 +225,7 @@ public class UserServiceImpl implements UserService {
         if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
             Employee admin = new Employee();
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
-            admin.setPasswordHash(hashPassword(DEFAULT_ADMIN_PASSWORD));
+            admin.setPasswordHash(passwordUtil.hashPassword(DEFAULT_ADMIN_PASSWORD));
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
             userRepository.save(admin);
@@ -326,7 +259,7 @@ public class UserServiceImpl implements UserService {
             }
             Customer customer = new Customer();
             customer.setEmail(generatedEmail);
-            customer.setPasswordHash(hashPassword(emailName));
+            customer.setPasswordHash(passwordUtil.hashPassword(emailName));
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
@@ -360,7 +293,7 @@ public class UserServiceImpl implements UserService {
             }
             Employee employee = new Employee();
             employee.setEmail(generatedEmail);
-            employee.setPasswordHash(hashPassword(emailName));
+            employee.setPasswordHash(passwordUtil.hashPassword(emailName));
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             userRepository.save(employee);

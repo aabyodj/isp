@@ -2,44 +2,63 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${employee.email}" /><fmt:message key="${employee.id != null ? 'msg.employee.title.edit' : 'msg.employee.title.new'}" /></title>
+        <c:choose>
+            <c:when test="${employee.id != null}">
+                <title><c:out value="${employee.email}" /> | <spring:message code="msg.employee.edit.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.employee.add.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="${employee.id != null ? 'msg.employee.h1.edit' : 'msg.employee.h1.new'}" /></h1>
-            <form action="${pageContext.request.contextPath}/employee" method="POST">
+            <h1><spring:message code="${employee.id != null ? 'msg.employee.edit.h1' : 'msg.employee.add.h1'}" /></h1>
+            <form:form method="POST" modelAttribute="employee">
                 <input name="redirect" type="hidden" value="${redirect}">
-                <c:if test="${employee.id != null}"><input type="hidden" name="id" value="${employee.id}"></c:if>
+                <form:input path="id" type="hidden" />
                 <ul>
                     <li>
-                        <label for="email"><fmt:message key="msg.user.email" /></label>
-                        <input name="email" id="email" type="email" required maxlength=50 placeholder="user@example.com"    <%-- TODO: use constant for maxlength --%>
-                            value="<c:out value="${employee.email}" />">
+                        <form:label path="email"><spring:message code="msg.user.email" /></form:label>
+                        <form:input path="email" type="email" required="true" maxlength="50" placeholder="user@example.com" errorCssClass="error" /><%-- TODO: use constant for maxlength --%>
+                        <form:errors path="email" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password1"><fmt:message key="msg.user.password" /></label>
-                        <input name="password1" id="password1" type="password"${employee.id == 0 ? ' required' : ''}>
+                        <form:label path="password"><spring:message code="msg.user.new-password" /></form:label>
+                        <c:choose>
+                            <c:when test="${employee.id == null}">
+                                <form:input path="password" type="password" required="true" errorCssClass="error "/>
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="password" type="password" errorCssClass="error "/>
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="password" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="password2"><fmt:message key="msg.user.confirmPassword" /></label>
-                        <input name="password2" id="password2" type="password"${employee.id == 0 ? ' required' : ''}>
+                        <form:label path="passwordConfirmation"><spring:message code="msg.user.confirm-password" /></form:label>
+                        <c:choose>
+                            <c:when test="${employee.id == null}">
+                                <form:input path="passwordConfirmation" type="password" required="true" errorCssClass="error" />
+                            </c:when>
+                            <c:otherwise>
+                                <form:input path="passwordConfirmation" type="password" errorCssClass="error" />
+                            </c:otherwise>
+                        </c:choose>
+                        <form:errors path="passwordConfirmation" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="role"><fmt:message key="msg.employee.role" /></label>
-                        <select name="role" id="role" required><c:forEach var="roleOption" items="${roles}">
-                            <option value="${roleOption}"${roleOption == employee.role ? ' selected' : ''}>
-                                <fmt:message key="${roleOption.messageKey}" />
-                            </option>
-                        </c:forEach></select>
+                        <form:label path="role"><spring:message code="msg.employee.role" /></form:label>
+                        <form:select path="role" required="true" items="${roles}" itemValue="name" itemLabel="label" />
                     </li>
                     <li>
-                        <label for="active"><fmt:message key="msg.user.active" /></label>
-                        <input name="active" id="active" type="checkbox"${employee.active ? ' checked' : ''}>
+                        <form:label path="active"><spring:message code="msg.user.active" /></form:label>
+                        <form:checkbox path="active" />
                     </li>
                 </ul>
-                <button type="submit"><fmt:message key="msg.user.submit" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.user.submit" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

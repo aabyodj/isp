@@ -1,23 +1,20 @@
 package by.aab.isp.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import by.aab.isp.dto.promotion.PromotionDto;
+import by.aab.isp.dto.promotion.PromotionEditDto;
+import by.aab.isp.dto.promotion.PromotionViewDto;
 
 public interface PromotionService {
 
-    Page<PromotionDto> getAll(Pageable pageable);
+    Page<PromotionViewDto> getAll(Pageable pageable);
 
-    Page<PromotionDto> getActive(Pageable pageable);
+    Page<PromotionViewDto> getActive(Pageable pageable);
 
-    List<PromotionDto> getForHomepage();
+    PromotionEditDto getById(Long id);
 
-    PromotionDto getById(Long id);
-
-    PromotionDto save(PromotionDto promotion);
+    PromotionEditDto save(PromotionEditDto promotion);
 
     void stop(long id);
 

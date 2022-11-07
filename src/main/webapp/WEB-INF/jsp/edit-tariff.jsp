@@ -2,44 +2,55 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><c:out value="${tariff.name}" /><fmt:message key="${tariff.id != null ? 'msg.tariff.title.edit' : 'msg.tariff.title.new'}" /></title>
+        <c:choose>
+            <c:when test="${tariff.id != null}">
+                <title><c:out value="${tariff.name}" /> | <spring:message code="msg.tariff.edit.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:when>
+            <c:otherwise>
+                <title><spring:message code="msg.tariff.add.title" /> | <spring:message code="msg.home.title" /></title>
+            </c:otherwise>
+        </c:choose>
     </head>
     <body>
-<%@ include file="inc/page-header.inc" %>
+<%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="${tariff.id != null ? 'msg.tariff.h1.edit' : 'msg.tariff.h1.new'}" /></h1>
-            <form action="${pageContext.request.contextPath}/tariff" method="POST">
-                <c:if test="${tariff.id != null}"><input type="hidden" name="id" value="${tariff.id}"></c:if>
+            <h1><spring:message code="${tariff.id != null ? 'msg.tariff.edit.h1' : 'msg.tariff.add.h1'}" /></h1>
+            <form:form method="POST" modelAttribute="tariff">
+                <form:input type="hidden" path="id" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
                     <li>
-                        <label for="tariff-name"><fmt:message key="msg.tariff.name" /></label>
-                        <input name="name" id="tariff-name" type="text" required maxlength=15 placeholder="<fmt:message key="msg.tariff.name" />"
-                            value="<c:out value="${tariff.name}" />">
+                        <form:label path="name"><spring:message code="msg.tariff.name" /></form:label><spring:message code="msg.tariff.name" var="namePlaceholder" />
+                        <form:input path="name" type="text" required="true" maxlength="15" placeholder="${namePlaceholder}" cssErrorClass="error" />
+                        <form:errors path="name" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="description"><fmt:message key="msg.tariff.description" /></label>
-                        <textarea name="description" id="description" required maxlength=50 placeholder="<fmt:message key="msg.tariff.description" />"><c:out value="${tariff.description}" /></textarea>
+                        <form:label path="description"><spring:message code="msg.tariff.description" /></form:label><spring:message code="msg.tariff.description" var="descriptionPlaceholder" />
+                        <form:textarea path="description" required="true" maxlength="50" placeholder="${descriptionPlaceholder}" cssErrorClass="error" />
+                        <form:errors path="description" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="bandwidth"><fmt:message key="msg.tariff.bandwidthLabel" /></label>
-                        <input name="bandwidth" id="bandwidth" type="number" required min=0 step=1 value="${tariff.bandwidth != null ? tariff.bandwidth : 0}">
+                        <form:label path="bandwidth"><spring:message code="msg.tariff.bandwidth.label" /></form:label>
+                        <form:input path="bandwidth" type="number" required="true" min="0" step="1" cssErrorClass="error" />
+                        <form:errors path="bandwidth" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="included-traffic"><fmt:message key="msg.tariff.trafficLabel" /></label>
-                        <input name="included-traffic" id="included-traffic" type="number" required min=0 step=1 value="${tariff.includedTraffic / (1024 * 1024)}">
+                        <form:label path="includedTraffic"><spring:message code="msg.tariff.traffic.label" /></form:label>
+                        <form:input path="includedTraffic" type="number" required="true" min="0" step="1" cssErrorClass="error" />
+                        <form:errors path="includedTraffic" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="price"><fmt:message key="msg.tariff.priceLabel" /></label>
-                        <input name="price" id="price" type="number" required min="0.01" step="0.01" value="${tariff.price}">
+                        <form:label path="price"><spring:message code="msg.tariff.priceLabel" /></form:label>
+                        <form:input path="price" type="number" required="true" min="0.01" step="0.01" cssErrorClass="error" />
+                        <form:errors path="price" cssClass="error-message" />
                     </li>
                     <li>
-                        <label for="active"><fmt:message key="msg.tariff.active" /></label>
-                        <input name="active" id="active" type="checkbox"${tariff.active ? ' checked' : ''}>
+                        <form:label path="active"><spring:message code="msg.tariff.active" /></form:label>
+                        <form:checkbox path="active" />
                     </li>
                 </ul>
-                <button type="submit"><fmt:message key="msg.tariff.submit" /></button>
-            </form>
+                <form:button type="submit"><spring:message code="msg.tariff.submit" /></form:button>
+            </form:form>
         </main>
     </body>
 </html>

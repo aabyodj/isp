@@ -2,13 +2,13 @@
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
-        <title><fmt:message key="msg.error400.title" /></title>
+        <title><spring:message code="msg.error.400.title" /> | <spring:message code="msg.home.title" /></title>
     </head>
     <body>
 <%@ include file="/WEB-INF/jsp/inc/page-header.inc" %>
         <main>
-            <h1><fmt:message key="msg.error400.h1" /></h1>
-            <p><c:out value="${pageContext.exception.message}" />
+            <h1><spring:message code="msg.error.400.h1" /></h1>
+            <p><spring:message code="msg.error.400.content" />
         </main>
     </body>
 </html>
