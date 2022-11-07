@@ -25,7 +25,7 @@ public class UserEditDtoValidator implements Validator {
     public void validate(Object target, Errors errors) {
         UserEditDto user = (UserEditDto) target;
         if (!emailValidator.isEmailAvailable(user.getEmail(), user.getId())) {
-            errors.rejectValue("email", "msg.user.email.busy");
+            errors.rejectValue("email", "msg.validation.email.busy");
         }
         String password = user.getPassword();
         if (password != null && !password.isBlank() && !passwordValidator.isStrongPassword(password)) {

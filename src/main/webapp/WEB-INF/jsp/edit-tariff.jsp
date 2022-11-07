@@ -40,7 +40,7 @@
                         <form:errors path="includedTraffic" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="price"><spring:message code="msg.tariff.priceLabel" /></form:label>
+                        <form:label path="price"><spring:message code="msg.tariff.price.label" /></form:label>
                         <form:input path="price" type="number" required="true" min="0.01" step="0.01" cssErrorClass="error" />
                         <form:errors path="price" cssClass="error-message" />
                     </li>

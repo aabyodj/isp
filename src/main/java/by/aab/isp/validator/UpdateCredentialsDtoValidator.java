@@ -25,7 +25,7 @@ public class UpdateCredentialsDtoValidator implements Validator {
     public void validate(Object object, Errors errors) {
         UpdateCredentialsDto credentials = (UpdateCredentialsDto) object;
         if (!emailValidator.isEmailAvailable(credentials.getEmail(), credentials.getUserId())) {
-            errors.rejectValue("email", "msg.user.email.busy");
+            errors.rejectValue("email", "msg.validation.email.busy");
         };
         String password = credentials.getNewPassword();
         if (password != null && !password.isBlank() && !passwordValidator.isStrongPassword(password)) {
