@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/promotions")
 @RequiredArgsConstructor
-public class PromotionsRestController {
+public class PromotionRestController {
 
     private static final PageRequest DEFAULT_PAGE_REQUEST = PageRequest.of(0, DEFAULT_PAGE_SIZE, DEFAULT_PROMOTIONS_SORT);
     private final PromotionService promotionService;

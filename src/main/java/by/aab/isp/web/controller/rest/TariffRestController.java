@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/tariffs")
 @RequiredArgsConstructor
-public class TariffsRestController {
+public class TariffRestController {
 
     private static final PageRequest DEFAULT_PAGE_REQUEST = PageRequest.of(0, DEFAULT_PAGE_SIZE, DEFAULT_TARIFFS_SORT);
 
