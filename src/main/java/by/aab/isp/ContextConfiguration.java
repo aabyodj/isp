@@ -27,6 +27,7 @@ public class ContextConfiguration implements WebMvcConfigurer {
         return resolver;
     }
 
+    @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
