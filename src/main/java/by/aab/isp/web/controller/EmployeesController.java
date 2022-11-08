@@ -1,5 +1,6 @@
 package by.aab.isp.web.controller;
 
+import static by.aab.isp.web.Const.DEFAULT_EMPLOYEES_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
@@ -15,7 +16,6 @@ import javax.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,8 +45,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmployeesController {
 
-    private static final Sort ORDER_BY_EMAIL = Sort.by("email");
-
     private final UserService userService;
     private final UserEditDtoValidator userValidator;
     private final MessageSource messageSource;
@@ -55,7 +53,7 @@ public class EmployeesController {
     public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee,
             @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
-        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_EMAIL);
+        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, DEFAULT_EMPLOYEES_SORT);
         Page<EmployeeViewDto> employees = userService.getAllEmployees(request);
         model.addAttribute("page", employees);
         return "manage-employees";

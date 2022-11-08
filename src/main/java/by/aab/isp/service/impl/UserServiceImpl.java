@@ -123,6 +123,14 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
+    @AutoLogged
+    @Override
+    public void deactivate(long id) {
+        if (userRepository.setActiveById(id, false) == 0) {
+            throw new NotFoundException();
+        }
+    }
+
     private void setFields(UserEditDto dto, User user) {
         if (dto instanceof CustomerEditDto customerDto) {
             Customer customer = (Customer) user;

@@ -27,6 +27,8 @@ public interface UserService {
 
     UserEditDto save(UserEditDto user);
 
+    void deactivate(long id);
+
     long login(LoginCredentialsDto credentials);
 
     void updateCredentials(UpdateCredentialsDto dto);

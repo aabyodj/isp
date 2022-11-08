@@ -15,6 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.id FROM User u WHERE u.email = :email")
     Optional<Long> findIdByEmail(@Param("email") String email);
 
+    @Query("UPDATE User u SET u.active = :active WHERE u.id = :id")
+    long setActiveById(@Param("id") long id, @Param("active") boolean active);
+
     @Query("SELECT count(*) FROM User u WHERE u.email = :email")
     long countByEmail(@Param("email") String email);
 
