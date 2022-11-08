@@ -1,5 +1,6 @@
 package by.aab.isp.web.controller;
 
+import static by.aab.isp.web.Const.DEFAULT_CUSTOMERS_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
@@ -14,7 +15,6 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,8 +48,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomersController {
 
-    private static final Sort ORDER_BY_EMAIL = Sort.by("email");
-
     private final UserService userService;
     private final SubscriptionService subscriptionService;
     private final TariffService tariffService;
@@ -58,7 +56,7 @@ public class CustomersController {
     @GetMapping
     public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
-        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, ORDER_BY_EMAIL);
+        PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, DEFAULT_CUSTOMERS_SORT);
         Page<CustomerViewDto> customers = userService.getAllCustomers(request);
         model.addAttribute("page", customers);
         return "manage-customers";
