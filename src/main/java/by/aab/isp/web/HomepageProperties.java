@@ -1,4 +1,4 @@
-package by.aab.isp.config;
+package by.aab.isp.web;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
