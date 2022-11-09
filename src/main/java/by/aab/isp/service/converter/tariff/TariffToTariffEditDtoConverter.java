@@ -1,4 +1,4 @@
-package by.aab.isp.converter.tariff;
+package by.aab.isp.service.converter.tariff;
 
 import static by.aab.isp.Const.BANDWIDTH_UNLIMITED;
 import static by.aab.isp.Const.TRAFFIC_UNLIMITED;

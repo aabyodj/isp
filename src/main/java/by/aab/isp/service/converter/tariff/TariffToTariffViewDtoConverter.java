@@ -1,10 +1,10 @@
-package by.aab.isp.converter.tariff;
+package by.aab.isp.service.converter.tariff;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.converter.FormatUtil;
 import by.aab.isp.repository.entity.Tariff;
+import by.aab.isp.service.converter.FormatUtil;
 import by.aab.isp.service.dto.tariff.TariffViewDto;
 import lombok.RequiredArgsConstructor;
 

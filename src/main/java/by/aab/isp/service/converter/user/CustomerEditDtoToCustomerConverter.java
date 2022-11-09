@@ -1,4 +1,4 @@
-package by.aab.isp.converter.user;
+package by.aab.isp.service.converter.user;
 
 import static by.aab.isp.Const.LDT_FOR_AGES;
 

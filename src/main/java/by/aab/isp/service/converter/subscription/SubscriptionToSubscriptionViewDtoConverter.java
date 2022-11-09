@@ -1,4 +1,4 @@
-package by.aab.isp.converter.subscription;
+package by.aab.isp.service.converter.subscription;
 
 import static by.aab.isp.Const.LDT_FOR_AGES;
 import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
@@ -11,10 +11,10 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.converter.FormatUtil;
-import by.aab.isp.converter.tariff.TariffToTariffViewDtoConverter;
 import by.aab.isp.repository.entity.Subscription;
 import by.aab.isp.service.Now;
+import by.aab.isp.service.converter.FormatUtil;
+import by.aab.isp.service.converter.tariff.TariffToTariffViewDtoConverter;
 import by.aab.isp.service.dto.subscription.SubscriptionViewDto;
 import lombok.RequiredArgsConstructor;
 

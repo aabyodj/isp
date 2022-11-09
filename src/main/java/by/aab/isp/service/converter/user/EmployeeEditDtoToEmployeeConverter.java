@@ -1,4 +1,4 @@
-package by.aab.isp.converter.user;
+package by.aab.isp.service.converter.user;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;

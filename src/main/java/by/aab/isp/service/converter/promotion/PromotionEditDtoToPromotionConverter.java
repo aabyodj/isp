@@ -1,4 +1,4 @@
-package by.aab.isp.converter.promotion;
+package by.aab.isp.service.converter.promotion;
 
 import static by.aab.isp.Const.LDT_FOR_AGES;
 import static by.aab.isp.Const.LDT_SINCE_AGES;

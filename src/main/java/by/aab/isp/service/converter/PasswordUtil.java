@@ -1,4 +1,4 @@
-package by.aab.isp.converter;
+package by.aab.isp.service.converter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
