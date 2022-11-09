@@ -18,7 +18,7 @@
                     </li>
                     <li>
                         <label for="active"><spring:message code="msg.employee.generate.activated" /></label>
-                        <span><input name="active" type="checkbox" checked> <spring:message code="msg.employee.generate.postfix" /></span>
+                        <span><input name="active" id="active" type="checkbox" checked> <spring:message code="msg.employee.generate.postfix" /></span>
                     </li>
                 </ul>
                 <button type="submit"><spring:message code="msg.employee.generate.submit" /></button>

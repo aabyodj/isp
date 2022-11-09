@@ -75,7 +75,7 @@
                     </li>
                     <li>
                         <form:label path="active"><spring:message code="msg.user.active" /></form:label>
-                        <form:checkbox path="active" />
+                        <form:checkbox path="active" id="active" />
                     </li>
                 </ul>
                 <form:button type="submit"><spring:message code="msg.user.submit" /></form:button>
