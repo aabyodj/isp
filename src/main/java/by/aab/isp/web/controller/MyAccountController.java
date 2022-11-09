@@ -105,7 +105,7 @@ public class MyAccountController {
         if (!bindingResult.hasErrors()) {
             try {
                 userService.updateCredentials(credentials);
-                session.invalidate();
+                session.removeAttribute("userId");
                 return SCHEMA_REDIRECT + redirect;
             } catch (UnauthorizedException e) {
                 bindingResult.rejectValue("currentPassword", "msg.user.wrong-password");

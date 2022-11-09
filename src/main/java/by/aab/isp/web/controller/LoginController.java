@@ -2,6 +2,7 @@ package by.aab.isp.web.controller;
 
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -36,9 +37,10 @@ public class LoginController {
 
     @PostMapping("/login")
     public String checkLogin(@ModelAttribute("credentials") LoginCredentialsDto credentials, BindingResult bindingResult,
-            @ModelAttribute("redirect") String redirect, Model model, HttpSession session) {
+            @ModelAttribute("redirect") String redirect, Model model, HttpServletRequest req, HttpSession session) {
         try {
             long userId = userService.login(credentials);
+            req.changeSessionId();
             session.setAttribute("userId", userId);
             return SCHEMA_REDIRECT + redirect;
         } catch (UnauthorizedException e) {
@@ -50,7 +52,7 @@ public class LoginController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();   //TODO make locale settings survive this
+        session.removeAttribute("userId");
         return SCHEMA_REDIRECT + "/login?logged-out";
     }
 }
