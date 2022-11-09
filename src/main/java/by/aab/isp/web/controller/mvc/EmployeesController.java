@@ -37,7 +37,7 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.service.dto.user.EmployeeEditDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
 import by.aab.isp.service.dto.user.UserViewDto;
-import by.aab.isp.validator.UserEditDtoValidator;
+import by.aab.isp.service.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller

@@ -33,7 +33,7 @@ import by.aab.isp.service.dto.tariff.TariffViewDto;
 import by.aab.isp.service.dto.user.CustomerViewDto;
 import by.aab.isp.service.dto.user.UpdateCredentialsDto;
 import by.aab.isp.service.dto.user.UserViewDto;
-import by.aab.isp.validator.UpdateCredentialsDtoValidator;
+import by.aab.isp.service.validator.UpdateCredentialsDtoValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller

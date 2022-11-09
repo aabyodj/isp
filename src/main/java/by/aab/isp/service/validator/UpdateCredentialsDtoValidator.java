@@ -1,4 +1,4 @@
-package by.aab.isp.validator;
+package by.aab.isp.service.validator;
 
 import java.util.Objects;
 
