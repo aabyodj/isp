@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import by.aab.isp.dto.user.UpdateCredentialsDto;
+import by.aab.isp.service.dto.user.UpdateCredentialsDto;
 import lombok.RequiredArgsConstructor;
 
 @Service

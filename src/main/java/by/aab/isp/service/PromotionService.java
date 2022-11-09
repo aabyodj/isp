@@ -3,8 +3,8 @@ package by.aab.isp.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.dto.promotion.PromotionViewDto;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
 
 public interface PromotionService {
 

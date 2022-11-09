@@ -7,10 +7,10 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.converter.subscription.SubscriptionToSubscriptionViewDtoConverter;
-import by.aab.isp.dto.user.CustomerViewDto;
 import by.aab.isp.repository.SubscriptionRepository;
 import by.aab.isp.repository.entity.Customer;
 import by.aab.isp.service.Now;
+import by.aab.isp.service.dto.user.CustomerViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Component

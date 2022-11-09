@@ -1,10 +1,10 @@
-package by.aab.isp.dto.user;
+package by.aab.isp.service.dto.user;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import by.aab.isp.dto.subscription.SubscriptionViewDto;
+import by.aab.isp.service.dto.subscription.SubscriptionViewDto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

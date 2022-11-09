@@ -1,4 +1,4 @@
-package by.aab.isp.dto.user;
+package by.aab.isp.service.dto.user;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;

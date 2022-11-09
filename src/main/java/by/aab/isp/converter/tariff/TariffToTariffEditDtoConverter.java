@@ -6,8 +6,8 @@ import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.dto.tariff.TariffEditDto;
 import by.aab.isp.repository.entity.Tariff;
+import by.aab.isp.service.dto.tariff.TariffEditDto;
 
 @Component
 public class TariffToTariffEditDtoConverter implements Converter<Tariff, TariffEditDto> {

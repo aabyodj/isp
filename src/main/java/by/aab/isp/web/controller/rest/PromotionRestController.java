@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController

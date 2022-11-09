@@ -1,4 +1,4 @@
-package by.aab.isp.dto.user;
+package by.aab.isp.service.dto.user;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -12,13 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.dto.promotion.PromotionViewDto;
 import by.aab.isp.repository.PromotionRepository;
 import by.aab.isp.repository.entity.Promotion;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
 import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 

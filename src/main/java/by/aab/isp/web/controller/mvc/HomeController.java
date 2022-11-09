@@ -8,10 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
+import by.aab.isp.service.dto.tariff.TariffViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Controller

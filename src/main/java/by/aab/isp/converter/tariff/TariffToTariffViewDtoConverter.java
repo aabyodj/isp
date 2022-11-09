@@ -4,8 +4,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.converter.FormatUtil;
-import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.repository.entity.Tariff;
+import by.aab.isp.service.dto.tariff.TariffViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Component

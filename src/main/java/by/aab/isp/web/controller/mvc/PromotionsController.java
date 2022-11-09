@@ -27,13 +27,13 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
-import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
+import by.aab.isp.service.dto.user.UserViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Controller

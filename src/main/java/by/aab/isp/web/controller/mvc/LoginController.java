@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.user.LoginCredentialsDto;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.dto.user.LoginCredentialsDto;
 import lombok.RequiredArgsConstructor;
 
 @Controller

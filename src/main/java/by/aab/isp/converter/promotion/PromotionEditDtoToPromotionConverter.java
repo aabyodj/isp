@@ -6,8 +6,8 @@ import static by.aab.isp.Const.LDT_SINCE_AGES;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.dto.promotion.PromotionEditDto;
 import by.aab.isp.repository.entity.Promotion;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
 
 @Component
 public class PromotionEditDtoToPromotionConverter implements Converter<PromotionEditDto, Promotion> {

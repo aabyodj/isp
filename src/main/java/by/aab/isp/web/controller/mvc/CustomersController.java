@@ -30,16 +30,16 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.dto.subscription.SubscriptionViewDto;
-import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.dto.user.CustomerEditDto;
-import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
-import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.dto.subscription.SubscriptionViewDto;
+import by.aab.isp.service.dto.tariff.TariffViewDto;
+import by.aab.isp.service.dto.user.CustomerEditDto;
+import by.aab.isp.service.dto.user.CustomerViewDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
+import by.aab.isp.service.dto.user.UserViewDto;
 import by.aab.isp.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 

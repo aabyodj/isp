@@ -3,10 +3,10 @@ package by.aab.isp.converter.user;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.repository.entity.Customer;
 import by.aab.isp.repository.entity.Employee;
 import by.aab.isp.repository.entity.User;
+import by.aab.isp.service.dto.user.UserViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Component

@@ -2,7 +2,7 @@ package by.aab.isp.service;
 
 import java.util.List;
 
-import by.aab.isp.dto.subscription.SubscriptionViewDto;
+import by.aab.isp.service.dto.subscription.SubscriptionViewDto;
 
 public interface SubscriptionService {
 

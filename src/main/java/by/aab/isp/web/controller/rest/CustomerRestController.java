@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import by.aab.isp.dto.user.CustomerEditDto;
-import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.dto.user.CustomerEditDto;
+import by.aab.isp.service.dto.user.CustomerViewDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController

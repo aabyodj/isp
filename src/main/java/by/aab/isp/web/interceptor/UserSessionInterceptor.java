@@ -7,10 +7,10 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
-import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.dto.user.CustomerViewDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
+import by.aab.isp.service.dto.user.UserViewDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

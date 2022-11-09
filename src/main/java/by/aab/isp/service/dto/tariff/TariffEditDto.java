@@ -1,4 +1,4 @@
-package by.aab.isp.dto.tariff;
+package by.aab.isp.service.dto.tariff;
 
 import java.math.BigDecimal;
 

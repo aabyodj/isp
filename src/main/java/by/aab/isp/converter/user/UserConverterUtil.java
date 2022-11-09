@@ -3,8 +3,8 @@ package by.aab.isp.converter.user;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.converter.PasswordUtil;
-import by.aab.isp.dto.user.UserEditDto;
 import by.aab.isp.repository.entity.User;
+import by.aab.isp.service.dto.user.UserEditDto;
 import lombok.RequiredArgsConstructor;
 
 @Component

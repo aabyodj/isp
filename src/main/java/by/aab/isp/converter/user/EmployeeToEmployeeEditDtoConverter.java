@@ -3,8 +3,8 @@ package by.aab.isp.converter.user;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.repository.entity.Employee;
+import by.aab.isp.service.dto.user.EmployeeEditDto;
 
 @Service
 public class EmployeeToEmployeeEditDtoConverter implements Converter<Employee, EmployeeEditDto> {

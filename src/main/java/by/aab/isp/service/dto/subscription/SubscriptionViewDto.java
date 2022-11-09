@@ -1,8 +1,8 @@
-package by.aab.isp.dto.subscription;
+package by.aab.isp.service.dto.subscription;
 
 import java.math.BigDecimal;
 
-import by.aab.isp.dto.tariff.TariffViewDto;
+import by.aab.isp.service.dto.tariff.TariffViewDto;
 import lombok.Data;
 
 @Data

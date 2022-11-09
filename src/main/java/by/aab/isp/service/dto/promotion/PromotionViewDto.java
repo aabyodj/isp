@@ -1,4 +1,4 @@
-package by.aab.isp.dto.promotion;
+package by.aab.isp.service.dto.promotion;
 
 import java.time.LocalDateTime;
 

@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import by.aab.isp.dto.promotion.PromotionViewDto;
 import by.aab.isp.repository.entity.Promotion;
 import by.aab.isp.service.Now;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
 
 @Component
 public class PromotionToPromotionViewDtoConverter implements Converter<Promotion, PromotionViewDto> {

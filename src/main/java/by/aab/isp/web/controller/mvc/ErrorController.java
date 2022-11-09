@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.NotFoundException;
+import by.aab.isp.service.dto.user.UserViewDto;
 import by.aab.isp.service.log.Autologged;
 
 @ControllerAdvice

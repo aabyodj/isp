@@ -1,4 +1,4 @@
-package by.aab.isp.dto.user;
+package by.aab.isp.service.dto.user;
 
 import by.aab.isp.repository.entity.Employee.Role;
 import lombok.Builder;

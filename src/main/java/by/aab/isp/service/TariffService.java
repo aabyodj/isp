@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.dto.tariff.TariffEditDto;
+import by.aab.isp.service.dto.tariff.TariffEditDto;
+import by.aab.isp.service.dto.tariff.TariffViewDto;
 
 public interface TariffService {
     
