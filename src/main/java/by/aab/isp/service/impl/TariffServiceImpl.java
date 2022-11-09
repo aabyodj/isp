@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.dto.tariff.TariffEditDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
 import by.aab.isp.entity.Tariff;
@@ -22,6 +21,7 @@ import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.TariffService;
+import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 
 @Service("tariffService")
@@ -31,7 +31,7 @@ public class TariffServiceImpl implements TariffService {
     private final TariffRepository tariffRepository;
     private final ConversionService conversionService;
 
-    @AutoLogged
+    @Autologged
     @Override
     public List<TariffViewDto> getAll() {
         try {
@@ -44,21 +44,21 @@ public class TariffServiceImpl implements TariffService {
         }
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<TariffViewDto> getAll(Pageable pageable) {
         return tariffRepository.findAll(pageable)
                 .map(tariff -> conversionService.convert(tariff, TariffViewDto.class));
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<TariffViewDto> getActive(Pageable pageable) {
         return tariffRepository.findByActive(true, pageable)
                 .map(tariff -> conversionService.convert(tariff, TariffViewDto.class));
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public List<TariffViewDto> getActive() {
         return tariffRepository.findByActive(true)
@@ -67,7 +67,7 @@ public class TariffServiceImpl implements TariffService {
                 .collect(Collectors.toList());
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public TariffEditDto getById(long id) {
         return tariffRepository.findById(id)
@@ -75,7 +75,7 @@ public class TariffServiceImpl implements TariffService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public TariffEditDto save(TariffEditDto dto) {
         dto.setName(dto.getName().strip());
@@ -86,7 +86,7 @@ public class TariffServiceImpl implements TariffService {
         return dto;
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void deactivate(long tariffId) {
         if (tariffRepository.setActiveById(tariffId, false) == 0) {
@@ -104,7 +104,7 @@ public class TariffServiceImpl implements TariffService {
             50 * MB, 100 * MB, 200 * MB, 500 * MB, TB, 2 * TB, 5 * TB, 10 * TB, 20 * TB, 30 * TB};
     private static final double MAX_PRICE = 49.95;
 
-    @AutoLogged
+    @Autologged
     @Override
     public void generateTariffs(int quantity, boolean active) {
         int i = 0;

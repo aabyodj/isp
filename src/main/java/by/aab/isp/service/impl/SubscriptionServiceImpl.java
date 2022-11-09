@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.converter.subscription.SubscriptionToSubscriptionViewDtoConverter;
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.entity.Customer;
@@ -23,6 +22,7 @@ import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
+import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 
 @Service("subscriptionService")
@@ -39,7 +39,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private static final Sort ORDER_BY_SINCE_THEN_BY_UNTIL = Sort.by("activeSince", "activeUntil");
 
-    @AutoLogged
+    @Autologged
     @Override
     public List<SubscriptionViewDto> getByCustomerId(long customerId) {
         return subscriptionRepository.findByCustomerId(customerId, ORDER_BY_SINCE_THEN_BY_UNTIL)
@@ -48,7 +48,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .collect(Collectors.toList());
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public List<SubscriptionViewDto> getActiveSubscriptions(long customerId) {
         return subscriptionRepository.findByCustomerIdAndActivePeriodContains(customerId, now.getLocalDateTime())
@@ -57,13 +57,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .collect(Collectors.toList());
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void subscribe(long customerId, long tariffId) {
         setOneTariffForCustomer(customerId, tariffId);    //TODO: add multiply active subscriptions feature
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public void setOneTariffForCustomer(long customerId, Long tariffId) {
@@ -91,7 +91,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public void cancelSubscription(long customerId, long subscriptionId) {

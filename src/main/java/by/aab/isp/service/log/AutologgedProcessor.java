@@ -1,4 +1,4 @@
-package by.aab.isp.aspect;
+package by.aab.isp.service.log;
 
 import java.util.Arrays;
 
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
-public class AutoLoggedProcessor {
+public class AutologgedProcessor {
 
     @Before("@annotation(autoLogged)")
-    public void before(JoinPoint jp, AutoLogged autoLogged) {
+    public void before(JoinPoint jp, Autologged autologged) {
         Signature signature = jp.getSignature();
         Class<?> clazz = signature.getDeclaringType();
         Logger log = LogManager.getLogger(clazz);
-        Level level = Level.valueOf(autoLogged.value());
+        Level level = Level.valueOf(autologged.value());
         String requestUrl = Arrays.stream(jp.getArgs())
                 .filter(arg -> arg instanceof HttpServletRequest)
                 .map(arg -> System.lineSeparator() + "Request URL is: " + ((HttpServletRequest) arg).getRequestURL())

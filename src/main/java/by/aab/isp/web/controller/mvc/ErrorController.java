@@ -9,36 +9,36 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.dto.user.UserViewDto;
 import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.NotFoundException;
+import by.aab.isp.service.log.Autologged;
 
 @ControllerAdvice
 public class ErrorController {
 
-    @AutoLogged("ERROR")
+    @Autologged("ERROR")
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String unhandledException(Throwable e, HttpServletRequest request) {
         return "error";
     }
 
-    @AutoLogged("ERROR")
+    @Autologged("ERROR")
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String badRequest(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         return "error/400";
     }
 
-    @AutoLogged("WARN")
+    @Autologged("WARN")
     @ExceptionHandler(AccessDeniedException.class)  //FIXME this doesn't work
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String accessDenied(HttpServletRequest request, @RequestAttribute(required = false) UserViewDto activeUser) {
         return "error/403";
     }
 
-    @AutoLogged("WARN")
+    @Autologged("WARN")
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String notFound(NotFoundException e, HttpServletRequest request) {

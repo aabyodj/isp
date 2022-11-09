@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.aspect.AutoLogged;
 import by.aab.isp.converter.PasswordUtil;
 import by.aab.isp.converter.user.CustomerToCustomerEditDtoConverter;
 import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
@@ -45,6 +44,7 @@ import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 
 @Service("userService")
@@ -67,21 +67,21 @@ public class UserServiceImpl implements UserService {
     private final UserEditDtoToUserConverter toUserConverter;
     private final PasswordUtil passwordUtil;
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<CustomerViewDto> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll(pageable)
                 .map(customerViewConverter::convert);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<EmployeeViewDto> getAllEmployees(Pageable pageable) {
         return employeeRepository.findAll(pageable)
                 .map(employeeViewConverter::convert);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public UserViewDto getById(long id) {
         return userRepository.findById(id)
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public CustomerEditDto getCustomerById(Long id) {
         return customerRepository.findById(id)
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public EmployeeEditDto getEmployeeById(long id) {
         return employeeRepository.findById(id)
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public UserEditDto save(UserEditDto dto) {
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void deactivate(long id) {
         if (userRepository.setActiveById(id, false) == 0) {
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService {
         return passwordUtil.hashPassword(password);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public long login(LoginCredentialsDto credentials) {
         byte[] hash = hashWithDelay(credentials.getPassword());
@@ -188,7 +188,7 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void replenishBalance(long customerId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(customer);
     }
 
-    @AutoLogged
+    @Autologged
     @PostConstruct
     @Override
     public void createDefaultAdmin() {
@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
     private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
     @Transactional
-    @AutoLogged
+    @Autologged
     @Override
     public void generateCustomers(int quantity, boolean active) {
         if (quantity < 1) {
@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void generateEmployees(int quantity, boolean active) {
         if (quantity < 1) {
