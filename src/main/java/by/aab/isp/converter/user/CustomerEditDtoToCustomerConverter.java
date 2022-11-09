@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.dto.user.CustomerEditDto;
-import by.aab.isp.entity.Customer;
+import by.aab.isp.repository.entity.Customer;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -9,7 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.entity.Promotion;
+import by.aab.isp.repository.entity.Promotion;
 
 @Component
 public class PromotionToPromotionEditDtoConverter implements Converter<Promotion, PromotionEditDto> {

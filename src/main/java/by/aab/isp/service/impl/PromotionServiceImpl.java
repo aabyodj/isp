@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import by.aab.isp.dto.promotion.PromotionEditDto;
 import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.entity.Promotion;
 import by.aab.isp.repository.PromotionRepository;
+import by.aab.isp.repository.entity.Promotion;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import by.aab.isp.dto.tariff.TariffEditDto;
 import by.aab.isp.dto.tariff.TariffViewDto;
-import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.TariffRepository;
+import by.aab.isp.repository.entity.Tariff;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.TariffService;

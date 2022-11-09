@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import by.aab.isp.entity.Promotion;
+import by.aab.isp.repository.entity.Promotion;
 
 public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 

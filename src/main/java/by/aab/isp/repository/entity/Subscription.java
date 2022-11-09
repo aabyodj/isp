@@ -1,4 +1,4 @@
-package by.aab.isp.entity;
+package by.aab.isp.repository.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

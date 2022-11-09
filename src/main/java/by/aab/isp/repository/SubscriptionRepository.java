@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import by.aab.isp.entity.Subscription;
+import by.aab.isp.repository.entity.Subscription;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 

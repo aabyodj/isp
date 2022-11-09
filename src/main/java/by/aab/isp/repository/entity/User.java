@@ -1,4 +1,4 @@
-package by.aab.isp.entity;
+package by.aab.isp.repository.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

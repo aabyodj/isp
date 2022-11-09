@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import by.aab.isp.converter.FormatUtil;
 import by.aab.isp.converter.tariff.TariffToTariffViewDtoConverter;
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
-import by.aab.isp.entity.Subscription;
+import by.aab.isp.repository.entity.Subscription;
 import by.aab.isp.service.Now;
 import lombok.RequiredArgsConstructor;
 

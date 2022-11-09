@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import by.aab.isp.dto.user.CustomerEditDto;
 import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.UserEditDto;
-import by.aab.isp.entity.User;
+import by.aab.isp.repository.entity.User;
 import lombok.RequiredArgsConstructor;
 
 @Service

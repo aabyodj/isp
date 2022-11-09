@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.entity.Tariff;
 
 public interface TariffRepository extends JpaRepository<Tariff, Long> {
 

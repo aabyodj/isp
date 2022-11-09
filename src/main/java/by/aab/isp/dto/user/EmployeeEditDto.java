@@ -2,7 +2,7 @@ package by.aab.isp.dto.user;
 
 import javax.validation.constraints.NotNull;
 
-import by.aab.isp.entity.Employee.Role;
+import by.aab.isp.repository.entity.Employee.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

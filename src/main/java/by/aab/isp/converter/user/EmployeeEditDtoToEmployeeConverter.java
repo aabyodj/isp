@@ -4,7 +4,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.dto.user.EmployeeEditDto;
-import by.aab.isp.entity.Employee;
+import by.aab.isp.repository.entity.Employee;
 import lombok.RequiredArgsConstructor;
 
 @Service

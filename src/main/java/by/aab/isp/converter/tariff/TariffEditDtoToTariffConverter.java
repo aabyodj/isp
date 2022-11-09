@@ -8,7 +8,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.dto.tariff.TariffEditDto;
-import by.aab.isp.entity.Tariff;
+import by.aab.isp.repository.entity.Tariff;
 
 @Component
 public class TariffEditDtoToTariffConverter implements Converter<TariffEditDto, Tariff> {

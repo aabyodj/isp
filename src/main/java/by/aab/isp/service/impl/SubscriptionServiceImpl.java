@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 
 import by.aab.isp.converter.subscription.SubscriptionToSubscriptionViewDtoConverter;
 import by.aab.isp.dto.subscription.SubscriptionViewDto;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Subscription;
-import by.aab.isp.entity.Tariff;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.SubscriptionRepository;
 import by.aab.isp.repository.TariffRepository;
+import by.aab.isp.repository.entity.Customer;
+import by.aab.isp.repository.entity.Subscription;
+import by.aab.isp.repository.entity.Tariff;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;

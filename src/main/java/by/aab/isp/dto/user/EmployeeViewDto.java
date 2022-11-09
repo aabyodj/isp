@@ -1,6 +1,6 @@
 package by.aab.isp.dto.user;
 
-import by.aab.isp.entity.Employee.Role;
+import by.aab.isp.repository.entity.Employee.Role;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import by.aab.isp.dto.user.EmployeeEditDto;
 import by.aab.isp.dto.user.EmployeeViewDto;
-import by.aab.isp.entity.Employee;
+import by.aab.isp.repository.entity.Employee;
 import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.UserService;
 import lombok.RequiredArgsConstructor;
