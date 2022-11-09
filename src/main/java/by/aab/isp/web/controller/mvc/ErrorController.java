@@ -1,4 +1,4 @@
-package by.aab.isp.web.controller;
+package by.aab.isp.web.controller.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 

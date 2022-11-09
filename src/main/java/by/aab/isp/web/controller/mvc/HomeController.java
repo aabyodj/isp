@@ -1,4 +1,4 @@
-package by.aab.isp.web.controller;
+package by.aab.isp.web.controller.mvc;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

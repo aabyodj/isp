@@ -1,4 +1,4 @@
-package by.aab.isp.web.controller;
+package by.aab.isp.web.controller.mvc;
 
 import static by.aab.isp.web.Const.DEFAULT_EMPLOYEES_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
