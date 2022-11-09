@@ -13,6 +13,8 @@
                 <spring:message code="msg.user.login.hint.password" /> <b><spring:eval expression="T(by.aab.isp.Const).DEFAULT_ADMIN_PASSWORD" /></b>
             </p>
             <form:form action="/login/" method="POST" modelAttribute="credentials">
+                <c:if test="${loggedOut != null}"><p class="success-message"><spring:message code="msg.user.logout.message" /></p></c:if>
+                <c:if test="${updated != null}"><p class="success-message"><spring:message code="msg.user.update.message" /></p></c:if>
                 <form:errors cssClass="error-message" element="p" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
@@ -22,7 +24,7 @@
                     </li>
                     <li>
                         <form:label path="password"><spring:message code="msg.user.password" /></form:label>
-                        <form:input path="password" type="password" required="true" />
+                        <form:password path="password" required="true" />
                     </li>
                 </ul>
                 <form:button type="submit"><spring:message code="msg.user.login" /></form:button>

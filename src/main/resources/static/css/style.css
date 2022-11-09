@@ -89,6 +89,10 @@ li > h2:first-child {
     color: #dd0000;
 }
 
+.success-message {
+ color: #00cc00;
+}
+
 @media (min-width: 32rem) {
 
     body > header > nav > ul {
@@ -170,7 +174,7 @@ li > h2:first-child {
         width: fit-content;
     }
 
-    form > p.error-message {
+    form > p:where(.error-message, .success-message) {
         text-align: center;
     }
 }
