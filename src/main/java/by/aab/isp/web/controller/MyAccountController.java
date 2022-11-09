@@ -12,7 +12,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
@@ -47,39 +46,47 @@ public class MyAccountController {
     private final UserService userService;
     private final UpdateCredentialsDtoValidator credentialsValidator;
 
-    @GetMapping
-    public String showMyAccount(@RequestAttribute UserViewDto activeUser, @RequestAttribute(required = false) CustomerViewDto activeCustomer, Model model) {
-        if (activeCustomer != null) {
-            List<SubscriptionViewDto> subscriptions = subscriptionService.getByCustomerId(activeCustomer.getId());
-            if (!subscriptions.isEmpty()) {
-                model.addAttribute("subscriptions", subscriptions);
-            }
-            List<TariffViewDto> absentTariffs = tariffService.getInactiveForCustomer(activeCustomer.getId());
-            if (!absentTariffs.isEmpty()) {
-                model.addAttribute("tariffs", absentTariffs);
-            }
+    @ModelAttribute("subscriptions")
+    List<SubscriptionViewDto> getSubscriptions(@RequestAttribute(required = false) CustomerViewDto activeCustomer) {
+        if (null == activeCustomer) {
+            return null;
         }
+        List<SubscriptionViewDto> subscriptions = subscriptionService.getByCustomerId(activeCustomer.getId());
+        return !subscriptions.isEmpty() ? subscriptions : null;
+    }
+
+    @ModelAttribute("tariffs")
+    List<TariffViewDto> getAvailableTariffs(@RequestAttribute(required = false) CustomerViewDto activeCustomer) {
+        if (null == activeCustomer) {
+            return null;
+        }
+        List<TariffViewDto> absentTariffs = tariffService.getInactiveForCustomer(activeCustomer.getId());
+        return !absentTariffs.isEmpty() ? absentTariffs : null;
+    }
+
+    @GetMapping
+    public String showMyAccount(@RequestAttribute UserViewDto activeUser) {
         return "my-account";
     }
 
     @PostMapping("/replenish_balance")
-    public String replenishBalance(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam BigDecimal amount, @RequestParam String redirect) {
+    public String replenishBalance(@RequestAttribute CustomerViewDto activeCustomer,
+            @RequestParam BigDecimal amount, @RequestParam(defaultValue = "/my_account") String redirect) {
         userService.replenishBalance(activeCustomer.getId(), amount);
         return SCHEMA_REDIRECT + redirect;
     }
 
     @PostMapping("/subscribe")
-    public String subscribe(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam("tariff_id") long tariffId, String redirect) {
+    public String subscribe(@RequestAttribute CustomerViewDto activeCustomer,
+            @RequestParam("tariff_id") long tariffId, @RequestParam(defaultValue = "/my_account") String redirect) {
         subscriptionService.subscribe(activeCustomer.getId(), tariffId);
         return SCHEMA_REDIRECT + redirect;
     }
 
-    @GetMapping("/cancel_subscription")
-    public String cancelSubscription(@RequestAttribute CustomerViewDto activeCustomer, @RequestParam("subscription_id") long subscriptionId, String redirect) {
+    @GetMapping("/cancel_subscription") //TODO make it POST
+    public String cancelSubscription(@RequestAttribute CustomerViewDto activeCustomer,
+            @RequestParam("subscription_id") long subscriptionId, @RequestParam(defaultValue = "/my_account") String redirect) {
         subscriptionService.cancelSubscription(activeCustomer.getId(), subscriptionId);
-        if (null == redirect) {
-            redirect = "/my_account";
-        }
         return SCHEMA_REDIRECT + redirect;
     }
 
@@ -94,7 +101,7 @@ public class MyAccountController {
     @PostMapping("/update_credentials")
     public String updateCredentials(@RequestAttribute UserViewDto activeUser,
             @Valid @ModelAttribute("credentials") UpdateCredentialsDto credentials, BindingResult bindingResult,
-            @ModelAttribute("redirect") String redirect, HttpSession session) {
+            @RequestParam(defaultValue = "/login?updated") String redirect, HttpSession session) {
         if (!bindingResult.hasErrors()) {
             try {
                 userService.updateCredentials(credentials);
@@ -104,7 +111,6 @@ public class MyAccountController {
                 bindingResult.rejectValue("currentPassword", "msg.user.wrong-password");
             }
         }
-        credentials.setCurrentPassword(null);
         return "my-account";
     }
 
