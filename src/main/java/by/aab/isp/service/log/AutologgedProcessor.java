@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class AutologgedProcessor {
 
-    @Before("@annotation(autoLogged)")
+    @Before("@annotation(autologged)")
     public void before(JoinPoint jp, Autologged autologged) {
         Signature signature = jp.getSignature();
         Class<?> clazz = signature.getDeclaringType();
