@@ -1,6 +1,7 @@
 package by.aab.isp.service;
 
 import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -8,7 +9,6 @@ import by.aab.isp.service.dto.user.CustomerEditDto;
 import by.aab.isp.service.dto.user.CustomerViewDto;
 import by.aab.isp.service.dto.user.EmployeeEditDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.LoginCredentialsDto;
 import by.aab.isp.service.dto.user.UpdateCredentialsDto;
 import by.aab.isp.service.dto.user.UserEditDto;
 import by.aab.isp.service.dto.user.UserViewDto;
@@ -28,8 +28,6 @@ public interface UserService {
     UserEditDto save(UserEditDto user);
 
     void deactivate(long id);
-
-    long login(LoginCredentialsDto credentials);
 
     void updateCredentials(UpdateCredentialsDto dto);
 

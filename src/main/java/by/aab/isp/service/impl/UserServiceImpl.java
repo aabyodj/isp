@@ -6,7 +6,6 @@ import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +13,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import by.aab.isp.repository.CustomerRepository;
@@ -29,7 +29,6 @@ import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
-import by.aab.isp.service.converter.PasswordUtil;
 import by.aab.isp.service.converter.user.CustomerToCustomerEditDtoConverter;
 import by.aab.isp.service.converter.user.CustomerToCustomerViewDtoConverter;
 import by.aab.isp.service.converter.user.EmployeeToEmployeeEditDtoConverter;
@@ -40,7 +39,6 @@ import by.aab.isp.service.dto.user.CustomerEditDto;
 import by.aab.isp.service.dto.user.CustomerViewDto;
 import by.aab.isp.service.dto.user.EmployeeEditDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.LoginCredentialsDto;
 import by.aab.isp.service.dto.user.UpdateCredentialsDto;
 import by.aab.isp.service.dto.user.UserEditDto;
 import by.aab.isp.service.dto.user.UserViewDto;
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
     private final EmployeeToEmployeeEditDtoConverter toEmployeeEditConverter;
     private final UserToUserViewDtoConverter userViewConverter;
     private final UserEditDtoToUserConverter toUserConverter;
-    private final PasswordUtil passwordUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Autologged
     @Override
@@ -149,7 +147,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.getEmail());
         String password = dto.getPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(passwordUtil.hashPassword(password));
+            user.setPasswordHash(passwordEncoder.encode(password).getBytes());
         }
         user.setActive(dto.isActive());
     }
@@ -162,40 +160,22 @@ public class UserServiceImpl implements UserService {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
-    private byte[] hashWithDelay(String password) {
+    private void doHashDelay() {
         long timeout = (long) (LOGIN_TIMEOUT * (Math.random() + TIMEOUT_SHIFT_FACTOR));
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
         }
-        return passwordUtil.hashPassword(password);
-    }
-
-    @Autologged
-    @Override
-    public long login(LoginCredentialsDto credentials) {
-        byte[] hash = hashWithDelay(credentials.getPassword());
-        User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
-        if (user != null) {
-            byte[] savedHash = user.getPasswordHash();
-            if (!Arrays.equals(hash, savedHash)) {
-                user = null;
-            }
-        }
-        if (null == user) {
-            throw new UnauthorizedException(credentials.getEmail());
-        }
-        return user.getId();
     }
 
     @Autologged
     @Override
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
-        byte[] hash = hashWithDelay(dto.getCurrentPassword());
+        doHashDelay();
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(NotFoundException::new);
-        if (!Arrays.equals(user.getPasswordHash(), hash)) {
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), new String(user.getPasswordHash()))) {
             throw new UnauthorizedException("Wrong current password");
         }
         String email = dto.getEmail().strip();
@@ -204,7 +184,7 @@ public class UserServiceImpl implements UserService {
         }
         String password = dto.getNewPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(passwordUtil.hashPassword(password));
+            user.setPasswordHash(passwordEncoder.encode(password).getBytes());
         }
         userRepository.save(user);
     }
@@ -233,7 +213,7 @@ public class UserServiceImpl implements UserService {
         if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
             Employee admin = new Employee();
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
-            admin.setPasswordHash(passwordUtil.hashPassword(DEFAULT_ADMIN_PASSWORD));
+            admin.setPasswordHash(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD).getBytes());
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
             userRepository.save(admin);
@@ -267,7 +247,7 @@ public class UserServiceImpl implements UserService {
             }
             Customer customer = new Customer();
             customer.setEmail(generatedEmail);
-            customer.setPasswordHash(passwordUtil.hashPassword(emailName));
+            customer.setPasswordHash(passwordEncoder.encode(emailName).getBytes());
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
@@ -301,7 +281,7 @@ public class UserServiceImpl implements UserService {
             }
             Employee employee = new Employee();
             employee.setEmail(generatedEmail);
-            employee.setPasswordHash(passwordUtil.hashPassword(emailName));
+            employee.setPasswordHash(passwordEncoder.encode(emailName).getBytes());
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             userRepository.save(employee);

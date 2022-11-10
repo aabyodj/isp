@@ -16,6 +16,7 @@
         <main>
             <h1><spring:message code="${customer.id != null ? 'msg.customer.edit.h1' : 'msg.customer.add.h1'}" /></h1>
             <form:form method="POST" modelAttribute="customer">
+                <sec:csrfInput />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <form:input path="id" type="hidden" />
                 <ul>

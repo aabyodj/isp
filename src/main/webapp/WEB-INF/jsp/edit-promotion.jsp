@@ -16,6 +16,7 @@
         <main>
             <h1><spring:message code="${promotion.id != null ? 'msg.promotion.edit.title' : 'msg.promotion.add.title'}" /></h1>
             <form:form method="POST" modelAttribute="promotion">
+                <sec:csrfInput />
                 <c:if test="${promotion.id != null}"><input type="hidden" name="id" value="${promotion.id}"></c:if>
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>

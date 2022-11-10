@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -11,6 +13,7 @@ import by.aab.isp.service.UserService;
 import by.aab.isp.service.dto.user.CustomerViewDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
 import by.aab.isp.service.dto.user.UserViewDto;
+import by.aab.isp.service.security.AppUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -33,11 +36,12 @@ public class UserSessionInterceptor implements HandlerInterceptor {
             log.debug("Anonymous user. No session found");
             return;
         }
-        Long userId = (Long) session.getAttribute("userId");
-        if (null == userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null == authentication || !(authentication.getPrincipal() instanceof AppUserDetails)) {
             log.debug("Anonymous user. Session id=" + session.getId());
             return;
         }
+        long userId = ((AppUserDetails) authentication.getPrincipal()).getId();
         UserViewDto user = userService.getById(userId);
         req.setAttribute("activeUser", user);
         log.debug(user + ". Session id=" + session.getId());

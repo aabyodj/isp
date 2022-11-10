@@ -14,6 +14,7 @@
                         <li>
                             <p${activeCustomer.balance < 0 ? ' class="negative"' : ''}><spring:message code="msg.customer.balance" />: ${activeCustomer.balance}
                             <form action="/my_account/replenish_balance" method="POST">
+                                <sec:csrfInput />
                                 <ul>
                                     <li>
                                         <label for="amount"><spring:message code="msg.customer.balance.replenish" /></label>
@@ -60,6 +61,7 @@
                             </table>
                             <c:if test="${tariffs != null}">
                                 <form action="/my_account/subscribe" method="POST">
+                                    <sec:csrfInput />
                                     <ul>
                                         <li>
                                             <label for="new-tariff"><spring:message code="msg.subscription.subscribe-another" /></label>
@@ -78,6 +80,7 @@
                 </c:when>
             </c:choose>
             <form:form action="/my_account/update_credentials" method="POST" modelAttribute="credentials">
+                <sec:csrfInput />
                 <form:input path="userId" type="hidden" />
                 <ul>
                     <c:if test="${activeEmployee != null}">

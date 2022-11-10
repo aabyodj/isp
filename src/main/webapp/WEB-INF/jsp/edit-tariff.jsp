@@ -16,6 +16,7 @@
         <main>
             <h1><spring:message code="${tariff.id != null ? 'msg.tariff.edit.h1' : 'msg.tariff.add.h1'}" /></h1>
             <form:form method="POST" modelAttribute="tariff">
+                <sec:csrfInput />
                 <form:input type="hidden" path="id" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>

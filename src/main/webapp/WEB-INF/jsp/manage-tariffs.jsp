@@ -19,6 +19,7 @@
                     <h1><spring:message code="msg.tariff.manage.h1" /></h1>
                     <p><a href="/tariffs/new"><spring:message code="msg.tariff.add" /></a>
                     <form action="/tariffs/generate" method="POST">
+                        <sec:csrfInput />
                         <input name="redirect" type="hidden" value="/tariffs">
                         <ul>
                             <li>

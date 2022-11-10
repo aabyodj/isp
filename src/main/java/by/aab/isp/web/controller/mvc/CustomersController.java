@@ -4,13 +4,10 @@ import static by.aab.isp.web.Const.DEFAULT_CUSTOMERS_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -18,19 +15,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.UserService;
@@ -38,8 +31,6 @@ import by.aab.isp.service.dto.subscription.SubscriptionViewDto;
 import by.aab.isp.service.dto.tariff.TariffViewDto;
 import by.aab.isp.service.dto.user.CustomerEditDto;
 import by.aab.isp.service.dto.user.CustomerViewDto;
-import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.UserViewDto;
 import by.aab.isp.service.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 
@@ -54,7 +45,7 @@ public class CustomersController {
     private final UserEditDtoValidator userValidator;
 
     @GetMapping
-    public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
+    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, DEFAULT_CUSTOMERS_SORT);
         Page<CustomerViewDto> customers = userService.getAllCustomers(request);
@@ -81,13 +72,12 @@ public class CustomersController {
     }
 
     @GetMapping("/new")
-    public String createNewCustomer(@RequestAttribute EmployeeViewDto activeEmployee) {
+    public String createNewCustomer() {
         return "edit-customer";
     }
 
     @GetMapping("/{customerId}")
-    public String editCustomer(@RequestAttribute EmployeeViewDto activeEmployee,
-            @PathVariable long customerId, Model model) {
+    public String editCustomer(@PathVariable long customerId, Model model) {
         model.addAttribute("customer", userService.getCustomerById(customerId));
         TariffViewDto activeTariff = subscriptionService.getActiveSubscriptions(customerId)
                 .stream()
@@ -99,7 +89,7 @@ public class CustomersController {
     }
 
     @PostMapping({"/new", "/{customerId}"})
-    public String saveCustomer(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String saveCustomer(
             @Valid @ModelAttribute("customer") CustomerEditDto customer, BindingResult bindingResult,
             @PathVariable(required = false) Long customerId,
             @RequestParam String tariff, @ModelAttribute("redirect") String redirect) {
@@ -120,7 +110,7 @@ public class CustomersController {
     }
 
     @PostMapping("/generate")
-    public String generatePromotions(@RequestAttribute EmployeeViewDto activeEmployee, @RequestParam int quantity, @RequestParam(required = false) String active,
+    public String generatePromotions(@RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         userService.generateCustomers(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
@@ -129,19 +119,5 @@ public class CustomersController {
     @InitBinder("customer")
     public void initBinder(WebDataBinder binder) {
         binder.addValidators(userValidator);
-    }
-
-    @ExceptionHandler
-    public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeViewDto activeEmployee, @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
-            throws ServletRequestBindingException, UnsupportedEncodingException {
-        if (activeEmployee != null) {
-            throw e;
-        }
-        if (activeUser != null) {
-            throw new AccessDeniedException();
-        }
-        String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
-        return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
     }
 }

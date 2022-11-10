@@ -4,11 +4,8 @@ import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.DEFAULT_PROMOTIONS_SORT;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,13 +22,11 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.dto.promotion.PromotionEditDto;
 import by.aab.isp.service.dto.promotion.PromotionViewDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.UserViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -75,7 +68,7 @@ public class PromotionsController {
     }
 
     @GetMapping("/{promotionId}")
-    public String editPromotion(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String editPromotion(
             @PathVariable long promotionId, @RequestParam(required = false) String stop,
             @ModelAttribute String redirect, Model model) {
         if (null != stop) {
@@ -87,7 +80,7 @@ public class PromotionsController {
     }
 
     @PostMapping({"/new", "/{promotionId}"})
-    public String savePromotion(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String savePromotion(
             @PathVariable(required = false) Long promotionId,
             @Valid @ModelAttribute("promotion") PromotionEditDto promotion, BindingResult bindingResult,
             @ModelAttribute("redirect") String redirect) {
@@ -103,25 +96,10 @@ public class PromotionsController {
     }
 
     @PostMapping("/generate")
-    public String generatePromotions(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String generatePromotions(
             @RequestParam int quantity, @RequestParam(required = false) String active,
             @ModelAttribute("redirect") String redirect) {
         promotionService.generatePromotions(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
-    }
-
-    @ExceptionHandler
-    public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
-            @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
-            throws ServletRequestBindingException, UnsupportedEncodingException {
-        if (activeEmployee != null) {
-            throw e;
-        }
-        if (activeUser != null) {
-            throw new AccessDeniedException();
-        }
-        String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
-        return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
     }
 }

@@ -13,7 +13,7 @@
                             </li>
                             <li${activeCustomer.balance < 0 ? ' class="negative"' : ''}><spring:message code="msg.customer.balance" />: ${activeCustomer.balance}
                             <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
-                            <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
+                            <li><%@ include file="/WEB-INF/jsp/inc/logout-button.inc" %>
                         </ul>
                     </li>
                 </ul>
@@ -30,7 +30,7 @@
 <%@ include file="/WEB-INF/jsp/inc/language-selector.inc" %>
                             </li>
                             <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
-                            <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
+                            <li><%@ include file="/WEB-INF/jsp/inc/logout-button.inc" %>
                         </ul>
                     </li>
                 </ul>
@@ -48,7 +48,7 @@
 <%@ include file="/WEB-INF/jsp/inc/language-selector.inc" %>
                             </li>
                             <li><a href="/my_account"><spring:message code="msg.user.my-account" /></a>
-                            <li><a href="/logout"><spring:message code="msg.user.logout" /></a>
+                            <li><%@ include file="/WEB-INF/jsp/inc/logout-button.inc" %>
                         </ul>
                     </li>
                 </ul>

@@ -4,13 +4,10 @@ import static by.aab.isp.web.Const.DEFAULT_EMPLOYEES_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.context.MessageSource;
@@ -19,24 +16,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import by.aab.isp.repository.entity.Employee;
-import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.UserService;
 import by.aab.isp.service.dto.user.EmployeeEditDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.UserViewDto;
 import by.aab.isp.service.validator.UserEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 
@@ -50,8 +42,7 @@ public class EmployeesController {
     private final MessageSource messageSource;
 
     @GetMapping
-    public String viewAll(@RequestAttribute EmployeeViewDto activeEmployee,
-            @RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
+    public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
         PageRequest request = PageRequest.of(pageNumber, DEFAULT_PAGE_SIZE, DEFAULT_EMPLOYEES_SORT);
         Page<EmployeeViewDto> employees = userService.getAllEmployees(request);
@@ -79,20 +70,19 @@ public class EmployeesController {
     }
 
     @GetMapping("/new")
-    public String createNewEmployee(@RequestAttribute EmployeeViewDto activeEmployee) {
+    public String createNewEmployee() {
         return "edit-employee";
     }
 
     @GetMapping("/{employeeId}")
-    public String editEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
-            @PathVariable long employeeId, Model model) {
+    public String editEmployee(@PathVariable long employeeId, Model model) {
         EmployeeEditDto employee = userService.getEmployeeById(employeeId);
         model.addAttribute("employee", employee);
         return "edit-employee";
     }
 
     @PostMapping({"/new", "/{employeeId}"})
-    public String saveEmployee(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String saveEmployee(
             @Valid @ModelAttribute("employee") EmployeeEditDto employee, BindingResult bindingResult,
             @PathVariable(required = false) Long employeeId,
             @ModelAttribute String redirect) {
@@ -110,7 +100,7 @@ public class EmployeesController {
     }
 
     @PostMapping("/generate")
-    public String generateEmployees(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String generateEmployees(
             @RequestParam int quantity, @RequestParam(required = false) String active,
             @RequestParam String redirect) {
         userService.generateEmployees(quantity, active != null);
@@ -120,20 +110,5 @@ public class EmployeesController {
     @InitBinder("employee")
     private void initBinder(WebDataBinder binder) {
         binder.addValidators(userValidator);
-    }
-
-    @ExceptionHandler
-    public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
-            @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
-            throws ServletRequestBindingException, UnsupportedEncodingException {
-        if (activeEmployee != null) {
-            throw e;
-        }
-        if (activeUser != null) {
-            throw new AccessDeniedException();
-        }
-        String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
-        return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
     }
 }

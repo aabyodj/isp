@@ -2,20 +2,16 @@ package by.aab.isp.web.controller.mvc;
 
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -65,7 +61,7 @@ public class MyAccountController {
     }
 
     @GetMapping
-    public String showMyAccount(@RequestAttribute UserViewDto activeUser) {
+    public String showMyAccount() {
         return "my-account";
     }
 
@@ -105,7 +101,7 @@ public class MyAccountController {
         if (!bindingResult.hasErrors()) {
             try {
                 userService.updateCredentials(credentials);
-                session.removeAttribute("userId");
+                SecurityContextHolder.getContext().setAuthentication(null);
                 return SCHEMA_REDIRECT + redirect;
             } catch (UnauthorizedException e) {
                 bindingResult.rejectValue("currentPassword", "msg.user.wrong-password");
@@ -117,15 +113,5 @@ public class MyAccountController {
     @InitBinder("credentials")
     private void initBinder(WebDataBinder binder) {
         binder.addValidators(credentialsValidator);
-    }
-
-    @ExceptionHandler
-    public String handleAnonymous(ServletRequestBindingException e, @RequestAttribute(required = false) UserViewDto activeUser, HttpServletRequest req)
-            throws ServletRequestBindingException, UnsupportedEncodingException {
-        if (activeUser != null) {
-            throw e;
-        }
-        String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
-        return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
     }
 }

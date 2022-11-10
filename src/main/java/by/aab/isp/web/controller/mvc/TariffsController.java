@@ -4,11 +4,8 @@ import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.DEFAULT_TARIFFS_SORT;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,12 +21,10 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.aab.isp.service.AccessDeniedException;
 import by.aab.isp.service.TariffService;
 import by.aab.isp.service.dto.tariff.TariffEditDto;
 import by.aab.isp.service.dto.tariff.TariffViewDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
-import by.aab.isp.service.dto.user.UserViewDto;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -63,7 +56,7 @@ public class TariffsController {
     }
 
     @GetMapping("/new")
-    public String createNewTariff(@RequestAttribute EmployeeViewDto activeEmployee) {
+    public String createNewTariff() {
         return "edit-tariff";
     }
 
@@ -75,7 +68,7 @@ public class TariffsController {
     }
 
     @PostMapping({"/new", "/{tariffId}"})
-    public String saveTariff(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String saveTariff(
             @PathVariable(required = false) Long tariffId,
             @Valid @ModelAttribute("tariff") TariffEditDto tariff,
             BindingResult bindingResult,
@@ -91,26 +84,10 @@ public class TariffsController {
     }
 
     @PostMapping("/generate")
-    public String generateTariffs(@RequestAttribute EmployeeViewDto activeEmployee,
+    public String generateTariffs(
             @RequestParam int quantity, @RequestParam(required = false) String active,
             @ModelAttribute("redirect") String redirect) {
         tariffService.generateTariffs(quantity, active != null);
         return SCHEMA_REDIRECT + redirect;
-    }
-
-    @ExceptionHandler
-    public String handleNonEmployee(ServletRequestBindingException e,
-            @RequestAttribute(required = false) EmployeeViewDto activeEmployee,
-            @RequestAttribute(required = false) UserViewDto activeUser,
-            HttpServletRequest req)
-            throws ServletRequestBindingException, UnsupportedEncodingException {
-        if (activeEmployee != null) {
-            throw e;
-        }
-        if (activeUser != null) {
-            throw new AccessDeniedException();
-        }
-        String redirect = URLEncoder.encode(req.getRequestURL().toString(), "UTF-8");
-        return SCHEMA_REDIRECT + "/login?redirect=" + redirect;
     }
 }

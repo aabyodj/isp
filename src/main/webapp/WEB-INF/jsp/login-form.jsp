@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/inc/html-start-error.inc" %><%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ include file="/WEB-INF/jsp/inc/html-start.inc" %>
 <html>
     <head>
 <%@ include file="/WEB-INF/jsp/inc/html-head.inc" %>
@@ -12,23 +12,23 @@
                 <spring:message code="msg.user.login.hint.email" /> <b><spring:eval expression="T(by.aab.isp.Const).DEFAULT_ADMIN_EMAIL" /></b>,
                 <spring:message code="msg.user.login.hint.password" /> <b><spring:eval expression="T(by.aab.isp.Const).DEFAULT_ADMIN_PASSWORD" /></b>
             </p>
-            <form:form action="/login/" method="POST" modelAttribute="credentials">
-                <c:if test="${loggedOut != null}"><p class="success-message"><spring:message code="msg.user.logout.message" /></p></c:if>
+            <form action="/login" method="POST">
+                <sec:csrfInput />
+                <c:if test="${logout != null}"><p class="success-message"><spring:message code="msg.user.logout.message" /></p></c:if>
                 <c:if test="${updated != null}"><p class="success-message"><spring:message code="msg.user.update.message" /></p></c:if>
-                <form:errors cssClass="error-message" element="p" />
-                <input name="redirect" type="hidden" value="${redirect}">
+                <c:if test="${error != null}"><p class="error-message"><spring:message code="msg.user.login.error" /><p></c:if>
                 <ul>
                     <li>
-                        <form:label path="email"><spring:message code="msg.user.email" /></form:label>
-                        <form:input path="email" type="email" required="true" placeholder="user@example.com" />
+                        <label for="email"><spring:message code="msg.user.email" /></label>
+                        <input name="email" id="email" type="email" required placeholder="user@example.com" value="${email}" />
                     </li>
                     <li>
-                        <form:label path="password"><spring:message code="msg.user.password" /></form:label>
-                        <form:password path="password" required="true" />
+                        <label for="password"><spring:message code="msg.user.password" /></label>
+                        <input name="password" id="password" type="password" required />
                     </li>
                 </ul>
-                <form:button type="submit"><spring:message code="msg.user.login" /></form:button>
-            </form:form>
+                <button type="submit"><spring:message code="msg.user.login" /></button>
+            </form>
         </main>
     </body>
 </html>
