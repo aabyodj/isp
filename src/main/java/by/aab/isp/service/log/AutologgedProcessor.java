@@ -27,7 +27,7 @@ public class AutologgedProcessor {
                 .filter(arg -> arg instanceof HttpServletRequest)
                 .map(arg -> System.lineSeparator() + "Request URL is: " + ((HttpServletRequest) arg).getRequestURL())
                 .findFirst()
-                .orElseGet(() -> "");
+                .orElse("");
         String message = signature + Arrays.toString(jp.getArgs()) + requestUrl;
         Arrays.stream(jp.getArgs())
                 .filter(arg -> arg instanceof Throwable)
