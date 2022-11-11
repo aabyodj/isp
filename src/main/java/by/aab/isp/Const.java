@@ -2,7 +2,7 @@ package by.aab.isp;
 
 import java.time.LocalDateTime;
 
-public class Const {
+public final class Const {
     private Const() {};
 
     public static final String DEFAULT_ADMIN_EMAIL = "admin@example.com";

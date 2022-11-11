@@ -2,7 +2,7 @@ package by.aab.isp.web;
 
 import org.springframework.data.domain.Sort;
 
-public class Const {
+public final class Const {
 
     public static final String SCHEMA_REDIRECT = "redirect:";
     public static final int DEFAULT_PAGE_SIZE = 5;
