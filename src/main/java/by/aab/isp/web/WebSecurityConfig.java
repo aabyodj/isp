@@ -22,10 +22,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .mvcMatchers(HttpMethod.GET, "/", "/promotions", "/tariffs", "/login*",
                                 "/api", "/promotions", "/tariffs",
-                                "/css/**", "/js**", "/images/**", "/error/**").permitAll()
+                                "/css/**", "/js**", "/images/**",
+                                "/error", "/error*", "/error/**").permitAll()   //FIXME Acces to custom error pages is denied
                         .mvcMatchers("/customers/**", "/promotions/**", "/tariffs/**",
-                                "/api/customers/**", "/api/promotions/**", "/api/promotions/**").hasAnyAuthority(ROLE_ADMIN, ROLE_MANAGER) //FIXME must be .hasAnyRole()
-                        .mvcMatchers("/employees/**", "/api/employees/**").hasAuthority(ROLE_ADMIN)  //FIXME must be .hasRole()
+                                "/api/customers/**", "/api/promotions/**", "/api/promotions/**").hasAnyRole(ROLE_ADMIN, ROLE_MANAGER)
+                        .mvcMatchers("/employees/**", "/api/employees/**").hasRole(ROLE_ADMIN)
                         .mvcMatchers("/my_account/**").authenticated()
                         .anyRequest().denyAll())
                 .httpBasic(basic -> {})

@@ -16,9 +16,9 @@ import lombok.ToString;
 @ToString
 public class AppUserDetails implements UserDetails {
 
-    public static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
-    public static final String ROLE_MANAGER = "ROLE_MANAGER";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_CUSTOMER = "CUSTOMER";
+    public static final String ROLE_MANAGER = "MANAGER";
+    public static final String ROLE_ADMIN = "ADMIN";
 
     private final long id;
     private final String email;
@@ -81,9 +81,10 @@ public class AppUserDetails implements UserDetails {
         return true;
     }
 
-    private static final Collection<? extends GrantedAuthority> GA_ROLE_ADMIN = List.of(() -> ROLE_ADMIN);
-    private static final Collection<? extends GrantedAuthority> GA_ROLE_MANAGER = List.of(() -> ROLE_MANAGER);
-    private static final Collection<? extends GrantedAuthority> GA_ROLE_CUSTOMER = List.of(() -> ROLE_CUSTOMER);
+    private static final String ROLE_PREFIX = "ROLE_";
+    private static final Collection<? extends GrantedAuthority> GA_ROLE_ADMIN = List.of(() -> ROLE_PREFIX + ROLE_ADMIN);
+    private static final Collection<? extends GrantedAuthority> GA_ROLE_MANAGER = List.of(() -> ROLE_PREFIX + ROLE_MANAGER);
+    private static final Collection<? extends GrantedAuthority> GA_ROLE_CUSTOMER = List.of(() -> ROLE_PREFIX + ROLE_CUSTOMER);
 
     private static Collection<? extends GrantedAuthority> toGrantedAuthorities(User user) {
         if (user instanceof Customer) {
