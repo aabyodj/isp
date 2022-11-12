@@ -1,11 +1,15 @@
 package by.aab.isp.web.controller.mvc;
 
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_MANAGER;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.DEFAULT_PROMOTIONS_SORT;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import java.util.Objects;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/promotions")
+@RolesAllowed({ROLE_ADMIN, ROLE_MANAGER})
 @RequiredArgsConstructor
 public class PromotionsController {
 
@@ -40,6 +45,7 @@ public class PromotionsController {
     private Now now;
 
     @GetMapping
+    @PermitAll
     public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
             @RequestAttribute(required = false) EmployeeViewDto activeEmployee, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
@@ -50,20 +56,17 @@ public class PromotionsController {
         return "manage-promotions";
     }
 
-    @ModelAttribute("promotion")
-    public PromotionEditDto initPromotion() {
-        return PromotionEditDto.builder()
-                .activeSince(now.getLocalDate())
-                .build();
-    }
-
     @ModelAttribute("redirect")
-    public String getDefaultRedirect() {
+    @PermitAll
+    public String getDefaultRedirect() {    //TODO get rid of this
         return "/promotions";
     }
 
     @GetMapping("/new")
-    public String createNewPromotion(@RequestAttribute EmployeeViewDto activeEmployee) {
+    public String createNewPromotion(Model model) {
+        model.addAttribute("promotion", PromotionEditDto.builder()
+                .activeSince(now.getLocalDate())
+                .build());
         return "edit-promotion";
     }
 

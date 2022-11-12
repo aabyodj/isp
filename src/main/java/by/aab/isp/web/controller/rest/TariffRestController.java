@@ -1,7 +1,12 @@
 package by.aab.isp.web.controller.rest;
 
-import static by.aab.isp.web.Const.*;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_MANAGER;
+import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
+import static by.aab.isp.web.Const.DEFAULT_TARIFFS_SORT;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -26,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/tariffs")
+@RolesAllowed({ROLE_ADMIN, ROLE_MANAGER})
 @RequiredArgsConstructor
 public class TariffRestController {
 
@@ -34,6 +40,7 @@ public class TariffRestController {
     private final TariffService tariffService;
 
     @GetMapping
+    @PermitAll
     public Page<TariffViewDto> getAll(@RequestBody(required = false) PageRequest request,
             @RequestAttribute(required = false) EmployeeViewDto activeEmployee) {
         if (null == request) {

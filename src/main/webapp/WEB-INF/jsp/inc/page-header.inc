@@ -1,4 +1,8 @@
-        <header><sec:authorize access="hasAnyRole('MANAGER', 'ADMIN')" var="isEmployee" />
+<spring:eval expression="T(by.aab.isp.service.security.AppUserDetails).ROLE_ADMIN" var="roleAdmin"
+/><spring:eval expression="T(by.aab.isp.service.security.AppUserDetails).ROLE_MANAGER" var="roleManager"
+/><spring:eval expression="T(by.aab.isp.service.security.AppUserDetails).ROLE_CUSTOMER" var="roleCustomer"
+/><sec:authorize access="hasAnyRole(#roleAdmin, #roleManager)" var="isEmployee"
+/>        <header>
             <h1><a href="/"><spring:message code="msg.home.h1" /></a></h1>
             <nav>
                 <ul>
@@ -7,7 +11,7 @@
                             <li><a href="/promotions"><spring:message code="msg.promotion.manage" /></a>
                             <li><a href="/tariffs"><spring:message code="msg.tariff.manage" /></a>
                             <li><a href="/customers"><spring:message code="msg.customer.manage" /></a>
-                            <sec:authorize access="hasRole('ADMIN')">
+                            <sec:authorize access="hasRole(#roleAdmin)">
                                 <li><a href="/employees"><spring:message code="msg.employee.manage" /></a>
                             </sec:authorize>
                         </c:when>
@@ -23,7 +27,7 @@
                                 <li>
 <%@ include file="/WEB-INF/jsp/inc/language-selector.inc" %>
                                 </li>
-                                <sec:authorize access="hasRole('CUSTOMER')">
+                                <sec:authorize access="hasRole(#roleCustomer)">
                                     <li${activeCustomer.balance < 0 ? ' class="negative"' : ''}><spring:message code="msg.customer.balance" />: ${activeCustomer.balance}
                                 </sec:authorize>
                                 <c:if test="${isEmployee}">

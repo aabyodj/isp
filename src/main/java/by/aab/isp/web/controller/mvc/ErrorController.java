@@ -1,5 +1,6 @@
 package by.aab.isp.web.controller.mvc;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,8 @@ import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.log.Autologged;
 
 @ControllerAdvice
-public class ErrorController {
+@PermitAll
+public class ErrorController {  //FIXME actual error codes are always 500
 
     @Autologged("ERROR")
     @ExceptionHandler
@@ -30,7 +32,7 @@ public class ErrorController {
     }
 
     @Autologged("WARN")
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AccessDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String accessDenied() {
         return "error/403";

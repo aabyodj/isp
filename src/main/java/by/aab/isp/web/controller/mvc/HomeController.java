@@ -1,5 +1,7 @@
 package by.aab.isp.web.controller.mvc;
 
+import javax.annotation.security.PermitAll;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,7 @@ public class HomeController {
     private final TariffService tariffService;
 
     @GetMapping("/")
+    @PermitAll
     public String getHomepage(@Value("${homepage.promotions-count}") Integer promotionsCount,
             @Value("${homepage.tariffs-count}") Integer tariffsCount,
             Model model) {

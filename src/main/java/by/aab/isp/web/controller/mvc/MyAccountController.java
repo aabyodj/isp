@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/my_account")
+@PreAuthorize("authenticated")
 @RequiredArgsConstructor
 public class MyAccountController {
 

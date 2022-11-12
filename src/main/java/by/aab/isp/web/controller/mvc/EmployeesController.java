@@ -1,5 +1,6 @@
 package by.aab.isp.web.controller.mvc;
 
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
 import static by.aab.isp.web.Const.DEFAULT_EMPLOYEES_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.context.MessageSource;
@@ -34,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/employees")
+@RolesAllowed(ROLE_ADMIN)
 @RequiredArgsConstructor
 public class EmployeesController {
 

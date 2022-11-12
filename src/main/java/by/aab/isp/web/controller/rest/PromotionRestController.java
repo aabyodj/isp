@@ -1,8 +1,12 @@
 package by.aab.isp.web.controller.rest;
 
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_MANAGER;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.DEFAULT_PROMOTIONS_SORT;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/promotions")
+@RolesAllowed({ROLE_ADMIN, ROLE_MANAGER})
 @RequiredArgsConstructor
 public class PromotionRestController {
 
@@ -34,6 +39,7 @@ public class PromotionRestController {
     private final PromotionService promotionService;
 
     @GetMapping
+    @PermitAll
     public Page<PromotionViewDto> getAll(@RequestBody(required = false) PageRequest request, 
             @RequestAttribute(required = false) EmployeeViewDto activeEmployee) {
         if (null == request) {
@@ -44,29 +50,25 @@ public class PromotionRestController {
     }
 
     @GetMapping("/{promotionId}")
-    public PromotionEditDto getPromotion(@PathVariable long promotionId, 
-            @RequestAttribute EmployeeViewDto activeEmployee) {   //FIXME create normal authentication
+    public PromotionEditDto getPromotion(@PathVariable long promotionId) {
         return promotionService.getById(promotionId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PromotionEditDto createPromotion(@Valid @RequestBody PromotionEditDto promotion, 
-            @RequestAttribute EmployeeViewDto activeEmployee) {
+    public PromotionEditDto createPromotion(@Valid @RequestBody PromotionEditDto promotion) {
         promotion.setId(null);
         return promotionService.save(promotion);
     }
 
     @PutMapping("/{promotionId}")
-    public PromotionEditDto updatePromotion(@PathVariable long promotionId, @Valid @RequestBody PromotionEditDto promotion, 
-            @RequestAttribute EmployeeViewDto activeEmployee) {
+    public PromotionEditDto updatePromotion(@PathVariable long promotionId, @Valid @RequestBody PromotionEditDto promotion) {
         promotion.setId(promotionId);
         return promotionService.save(promotion);
     }
 
     @DeleteMapping("/{promotionId}")
-    public void stopPromotion(@PathVariable long promotionId, 
-            @RequestAttribute EmployeeViewDto activeEmployee) {
+    public void stopPromotion(@PathVariable long promotionId) {
         promotionService.stop(promotionId);
     }
 }

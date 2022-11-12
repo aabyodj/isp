@@ -1,5 +1,7 @@
 package by.aab.isp.web.controller.mvc;
 
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_MANAGER;
 import static by.aab.isp.web.Const.DEFAULT_CUSTOMERS_SORT;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
@@ -8,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/customers")
+@RolesAllowed({ROLE_ADMIN, ROLE_MANAGER})
 @RequiredArgsConstructor
 public class CustomersController {
 

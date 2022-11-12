@@ -1,11 +1,15 @@
 package by.aab.isp.web.controller.mvc;
 
+import static by.aab.isp.service.security.AppUserDetails.ROLE_ADMIN;
+import static by.aab.isp.service.security.AppUserDetails.ROLE_MANAGER;
 import static by.aab.isp.web.Const.DEFAULT_PAGE_SIZE;
 import static by.aab.isp.web.Const.DEFAULT_TARIFFS_SORT;
 import static by.aab.isp.web.Const.SCHEMA_REDIRECT;
 
 import java.util.Objects;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -29,12 +33,14 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/tariffs")
+@RolesAllowed({ROLE_ADMIN, ROLE_MANAGER})
 @RequiredArgsConstructor
 public class TariffsController {
 
     private final TariffService tariffService;
 
     @GetMapping
+    @PermitAll
     public String viewAll(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
             @RequestAttribute(required = false) EmployeeViewDto activeEmployee, Model model) {
         pageNumber = Integer.max(pageNumber - 1, 0);
@@ -45,24 +51,20 @@ public class TariffsController {
         return "manage-tariffs";
     }
 
-    @ModelAttribute("tariff")
-    public TariffEditDto initTariff() {
-        return new TariffEditDto();
-    }
-
     @ModelAttribute("redirect")
-    public String getDefaultRedirect() {
+    @PermitAll
+    public String getDefaultRedirect() {    //TODO get rid of this
         return "/tariffs";
     }
 
     @GetMapping("/new")
-    public String createNewTariff() {
+    public String createNewTariff(Model model) {
+        model.addAttribute("tariff", new TariffEditDto());
         return "edit-tariff";
     }
 
     @GetMapping("/{tariffId}")
-    public String editTariff(@RequestAttribute EmployeeViewDto activeEmployee,
-            @PathVariable long tariffId, Model model) {
+    public String editTariff(@PathVariable long tariffId, Model model) {
         model.addAttribute("tariff", tariffService.getById(tariffId));
         return "edit-tariff";
     }
