@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +32,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final TariffRepository tariffRepository;
     private final SubscriptionToSubscriptionViewDtoConverter viewConverter;
-
-    @Autowired
-    private Now now;
+    private final Now now;
 
     private static final Sort ORDER_BY_SINCE_THEN_BY_UNTIL = Sort.by("activeSince", "activeUntil");
 

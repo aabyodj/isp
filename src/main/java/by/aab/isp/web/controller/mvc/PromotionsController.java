@@ -12,7 +12,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -44,9 +43,7 @@ public class PromotionsController {
 
     private final PromotionService promotionService;
     private final PromotionEditDtoValidator promotionValidator;
-
-    @Autowired
-    private Now now;
+    private final Now now;
 
     @GetMapping
     @PermitAll

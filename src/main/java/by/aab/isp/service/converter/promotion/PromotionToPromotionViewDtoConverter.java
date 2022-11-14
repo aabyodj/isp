@@ -5,19 +5,19 @@ import static by.aab.isp.Const.LDT_SINCE_AGES;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import by.aab.isp.repository.entity.Promotion;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.dto.promotion.PromotionViewDto;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class PromotionToPromotionViewDtoConverter implements Converter<Promotion, PromotionViewDto> {
 
-    @Autowired
-    private Now now;
+    private final Now now;
 
     @Override
     public PromotionViewDto convert(Promotion promotion) {

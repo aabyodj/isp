@@ -2,7 +2,6 @@ package by.aab.isp.service.converter.user;
 
 import static by.aab.isp.Const.LDT_FOR_AGES;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +18,7 @@ public class CustomerToCustomerViewDtoConverter implements Converter<Customer, C
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionToSubscriptionViewDtoConverter subscriptionConverter;
-
-    @Autowired
-    private Now now;
+    private final Now now;
 
     @Override
     public CustomerViewDto convert(Customer entity) {

@@ -5,7 +5,6 @@ import static by.aab.isp.Const.TRAFFIC_UNLIMITED;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.converter.Converter;
@@ -25,9 +24,7 @@ public class SubscriptionToSubscriptionViewDtoConverter implements Converter<Sub
     private final FormatUtil formatUtil;
     private final TariffToTariffViewDtoConverter tariffConverter;
     private final MessageSource messageSource;
-
-    @Autowired
-    private Now now;
+    private final Now now;
 
     public SubscriptionViewDto convert(Subscription entity) {
         SubscriptionViewDto dto = new SubscriptionViewDto();

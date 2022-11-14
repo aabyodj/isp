@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +27,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionRepository promotionRepository;
     private final ConversionService conversionService;
-
-    @Autowired
-    private Now now;
+    private final Now now;
 
     @Autologged
     @Override
