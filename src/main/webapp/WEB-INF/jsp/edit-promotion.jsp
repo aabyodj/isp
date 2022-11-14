@@ -32,11 +32,13 @@
                     </li>
                     <li>
                         <label for="active-since"><spring:message code="msg.promotion.since" /></label>
-                        <form:input path="activeSince" id="active-since" type="date" />
+                        <form:input path="activeSince" id="active-since" type="date" cssErrorClass="error" />
+                        <form:errors path="activeSince" cssClass="error-message" element="label" for="active-since" />
                     </li>
                     <li>
                         <label for="active-until"><spring:message code="msg.promotion.until" /></label>
-                        <form:input path="activeUntil" id="active-until" type="date" />
+                        <form:input path="activeUntil" id="active-until" type="date" cssErrorClass="error" />
+                        <form:errors path="activeUntil" cssClass="error-message" element="label" for="active-until" />
                     </li>
                 </ul>
                 <button type="submit"><spring:message code="msg.promotion.submit" /></button>

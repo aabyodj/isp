@@ -18,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ import by.aab.isp.service.PromotionService;
 import by.aab.isp.service.dto.promotion.PromotionEditDto;
 import by.aab.isp.service.dto.promotion.PromotionViewDto;
 import by.aab.isp.service.dto.user.EmployeeViewDto;
+import by.aab.isp.service.validator.PromotionEditDtoValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -40,6 +43,7 @@ import lombok.RequiredArgsConstructor;
 public class PromotionsController {
 
     private final PromotionService promotionService;
+    private final PromotionEditDtoValidator promotionValidator;
 
     @Autowired
     private Now now;
@@ -96,6 +100,11 @@ public class PromotionsController {
         promotion.setId(promotionId);
         promotionService.save(promotion);
         return SCHEMA_REDIRECT + redirect;
+    }
+
+    @InitBinder("promotion")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(promotionValidator);
     }
 
     @PostMapping("/generate")
