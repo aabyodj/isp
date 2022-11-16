@@ -12,7 +12,7 @@
 	<groupId>by.aab</groupId>
 	<artifactId>isp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>Internet Service Provider</name>
 	<url>http://isp.aab.by</url>
