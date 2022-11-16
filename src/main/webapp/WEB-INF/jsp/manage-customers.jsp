@@ -10,6 +10,7 @@
             <h1><spring:message code="msg.customer.manage" /></h1>
             <p><a href="/customers/new"><spring:message code="msg.customer.add" /></a>
             <form action="/customers/generate" method="POST">
+                <sec:csrfInput />
                 <input name="redirect" type="hidden" value="/customers">
                 <ul>
                     <li>

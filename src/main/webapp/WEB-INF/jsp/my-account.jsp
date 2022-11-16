@@ -14,7 +14,7 @@
                         <li>
                             <p${activeCustomer.balance < 0 ? ' class="negative"' : ''}><spring:message code="msg.customer.balance" />: ${activeCustomer.balance}
                             <form action="/my_account/replenish_balance" method="POST">
-                                <input name="redirect" type="hidden" value="/my_account">
+                                <sec:csrfInput />
                                 <ul>
                                     <li>
                                         <label for="amount"><spring:message code="msg.customer.balance.replenish" /></label>
@@ -61,7 +61,7 @@
                             </table>
                             <c:if test="${tariffs != null}">
                                 <form action="/my_account/subscribe" method="POST">
-                                    <input name="redirect" type="hidden" value="/my_account">
+                                    <sec:csrfInput />
                                     <ul>
                                         <li>
                                             <label for="new-tariff"><spring:message code="msg.subscription.subscribe-another" /></label>
@@ -80,7 +80,7 @@
                 </c:when>
             </c:choose>
             <form:form action="/my_account/update_credentials" method="POST" modelAttribute="credentials">
-                <input name="redirect" type="hidden" value="/my_account">
+                <sec:csrfInput />
                 <form:input path="userId" type="hidden" />
                 <ul>
                     <c:if test="${activeEmployee != null}">
@@ -106,7 +106,7 @@
                     </li>
                     <li>
                         <form:label path="currentPassword"><spring:message code="msg.user.current-password" /></form:label>
-                        <form:input path="currentPassword" type="password" required="true" cssErrorClass="error" />
+                        <form:password path="currentPassword" required="true" cssErrorClass="error" />
                         <form:errors path="currentPassword" cssClass="error-message" />
                     </li>
                 </ul>

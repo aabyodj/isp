@@ -6,7 +6,6 @@ import static by.aab.isp.Const.LDT_FOR_AGES;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -14,37 +13,36 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.converter.PasswordUtil;
-import by.aab.isp.converter.user.CustomerToCustomerEditDtoConverter;
-import by.aab.isp.converter.user.CustomerToCustomerViewDtoConverter;
-import by.aab.isp.converter.user.EmployeeToEmployeeEditDtoConverter;
-import by.aab.isp.converter.user.EmployeeToEmployeeViewDtoConverter;
-import by.aab.isp.converter.user.UserEditDtoToUserConverter;
-import by.aab.isp.converter.user.UserToUserViewDtoConverter;
-import by.aab.isp.dto.user.CustomerEditDto;
-import by.aab.isp.dto.user.CustomerViewDto;
-import by.aab.isp.dto.user.EmployeeEditDto;
-import by.aab.isp.dto.user.EmployeeViewDto;
-import by.aab.isp.dto.user.LoginCredentialsDto;
-import by.aab.isp.dto.user.UpdateCredentialsDto;
-import by.aab.isp.dto.user.UserEditDto;
-import by.aab.isp.dto.user.UserViewDto;
-import by.aab.isp.entity.Customer;
-import by.aab.isp.entity.Employee;
-import by.aab.isp.entity.Tariff;
-import by.aab.isp.entity.User;
 import by.aab.isp.repository.CustomerRepository;
 import by.aab.isp.repository.EmployeeRepository;
 import by.aab.isp.repository.TariffRepository;
 import by.aab.isp.repository.UserRepository;
+import by.aab.isp.repository.entity.Customer;
+import by.aab.isp.repository.entity.Employee;
+import by.aab.isp.repository.entity.Tariff;
+import by.aab.isp.repository.entity.User;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.ServiceException;
 import by.aab.isp.service.SubscriptionService;
 import by.aab.isp.service.UnauthorizedException;
 import by.aab.isp.service.UserService;
+import by.aab.isp.service.converter.user.CustomerToCustomerEditDtoConverter;
+import by.aab.isp.service.converter.user.CustomerToCustomerViewDtoConverter;
+import by.aab.isp.service.converter.user.EmployeeToEmployeeEditDtoConverter;
+import by.aab.isp.service.converter.user.EmployeeToEmployeeViewDtoConverter;
+import by.aab.isp.service.converter.user.UserEditDtoToUserConverter;
+import by.aab.isp.service.converter.user.UserToUserViewDtoConverter;
+import by.aab.isp.service.dto.user.CustomerEditDto;
+import by.aab.isp.service.dto.user.CustomerViewDto;
+import by.aab.isp.service.dto.user.EmployeeEditDto;
+import by.aab.isp.service.dto.user.EmployeeViewDto;
+import by.aab.isp.service.dto.user.UpdateCredentialsDto;
+import by.aab.isp.service.dto.user.UserEditDto;
+import by.aab.isp.service.dto.user.UserViewDto;
+import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 
 @Service("userService")
@@ -65,23 +63,23 @@ public class UserServiceImpl implements UserService {
     private final EmployeeToEmployeeEditDtoConverter toEmployeeEditConverter;
     private final UserToUserViewDtoConverter userViewConverter;
     private final UserEditDtoToUserConverter toUserConverter;
-    private final PasswordUtil passwordUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<CustomerViewDto> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll(pageable)
                 .map(customerViewConverter::convert);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<EmployeeViewDto> getAllEmployees(Pageable pageable) {
         return employeeRepository.findAll(pageable)
                 .map(employeeViewConverter::convert);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public UserViewDto getById(long id) {
         return userRepository.findById(id)
@@ -89,7 +87,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public CustomerEditDto getCustomerById(Long id) {
         return customerRepository.findById(id)
@@ -97,7 +95,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public EmployeeEditDto getEmployeeById(long id) {
         return employeeRepository.findById(id)
@@ -105,7 +103,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public UserEditDto save(UserEditDto dto) {
@@ -121,6 +119,14 @@ public class UserServiceImpl implements UserService {
             dto.setId(user.getId());
         }
         return dto;
+    }
+
+    @Autologged
+    @Override
+    public void deactivate(long id) {
+        if (userRepository.setActiveById(id, false) == 0) {
+            throw new NotFoundException();
+        }
     }
 
     private void setFields(UserEditDto dto, User user) {
@@ -141,7 +147,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.getEmail());
         String password = dto.getPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(passwordUtil.hashPassword(password));
+            user.setPasswordHash(passwordEncoder.encode(password).getBytes());
         }
         user.setActive(dto.isActive());
     }
@@ -154,40 +160,22 @@ public class UserServiceImpl implements UserService {
         return employeeRepository.countByNotIdAndRoleAndActive(employee.getId(), Employee.Role.ADMIN, true) < 1;
     }
 
-    private byte[] hashWithDelay(String password) {
+    private void doHashDelay() {
         long timeout = (long) (LOGIN_TIMEOUT * (Math.random() + TIMEOUT_SHIFT_FACTOR));
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
         }
-        return passwordUtil.hashPassword(password);
     }
 
-    @AutoLogged
-    @Override
-    public long login(LoginCredentialsDto credentials) {
-        byte[] hash = hashWithDelay(credentials.getPassword());
-        User user = userRepository.findByEmailAndActive(credentials.getEmail(), true).orElse(null);
-        if (user != null) {
-            byte[] savedHash = user.getPasswordHash();
-            if (!Arrays.equals(hash, savedHash)) {
-                user = null;
-            }
-        }
-        if (null == user) {
-            throw new UnauthorizedException(credentials.getEmail());
-        }
-        return user.getId();
-    }
-
-    @AutoLogged
+    @Autologged
     @Override
     @Transactional
     public void updateCredentials(UpdateCredentialsDto dto) {
-        byte[] hash = hashWithDelay(dto.getCurrentPassword());
+        doHashDelay();
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(NotFoundException::new);
-        if (!Arrays.equals(user.getPasswordHash(), hash)) {
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), new String(user.getPasswordHash()))) {
             throw new UnauthorizedException("Wrong current password");
         }
         String email = dto.getEmail().strip();
@@ -196,12 +184,12 @@ public class UserServiceImpl implements UserService {
         }
         String password = dto.getNewPassword();
         if (password != null && !password.isBlank()) {
-            user.setPasswordHash(passwordUtil.hashPassword(password));
+            user.setPasswordHash(passwordEncoder.encode(password).getBytes());
         }
         userRepository.save(user);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void replenishBalance(long customerId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -218,14 +206,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(customer);
     }
 
-    @AutoLogged
+    @Autologged
     @PostConstruct
     @Override
     public void createDefaultAdmin() {
         if (employeeRepository.countByRoleAndActive(Employee.Role.ADMIN, true) < 1) {
             Employee admin = new Employee();
             admin.setEmail(DEFAULT_ADMIN_EMAIL);
-            admin.setPasswordHash(passwordUtil.hashPassword(DEFAULT_ADMIN_PASSWORD));
+            admin.setPasswordHash(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD).getBytes());
             admin.setRole(Employee.Role.ADMIN);
             admin.setActive(true);
             userRepository.save(admin);
@@ -239,7 +227,7 @@ public class UserServiceImpl implements UserService {
     private static final String GENERATED_EMPLOYEE_EMAIL_NAME = "employee";
 
     @Transactional
-    @AutoLogged
+    @Autologged
     @Override
     public void generateCustomers(int quantity, boolean active) {
         if (quantity < 1) {
@@ -259,7 +247,7 @@ public class UserServiceImpl implements UserService {
             }
             Customer customer = new Customer();
             customer.setEmail(generatedEmail);
-            customer.setPasswordHash(passwordUtil.hashPassword(emailName));
+            customer.setPasswordHash(passwordEncoder.encode(emailName).getBytes());
             customer.setBalance(BigDecimal.valueOf(
                     random.nextDouble() * (GENERATED_CUSTOMER_MAX_BALANCE - GENERATED_CUSTOMER_MIN_BALANCE)
                             + GENERATED_CUSTOMER_MIN_BALANCE));
@@ -275,7 +263,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public void generateEmployees(int quantity, boolean active) {
         if (quantity < 1) {
@@ -293,7 +281,7 @@ public class UserServiceImpl implements UserService {
             }
             Employee employee = new Employee();
             employee.setEmail(generatedEmail);
-            employee.setPasswordHash(passwordUtil.hashPassword(emailName));
+            employee.setPasswordHash(passwordEncoder.encode(emailName).getBytes());
             employee.setRole(roles[random.nextInt(roles.length)]);
             employee.setActive(active);
             userRepository.save(employee);

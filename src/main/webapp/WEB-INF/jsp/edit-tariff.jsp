@@ -16,6 +16,7 @@
         <main>
             <h1><spring:message code="${tariff.id != null ? 'msg.tariff.edit.h1' : 'msg.tariff.add.h1'}" /></h1>
             <form:form method="POST" modelAttribute="tariff">
+                <sec:csrfInput />
                 <form:input type="hidden" path="id" />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <ul>
@@ -40,13 +41,13 @@
                         <form:errors path="includedTraffic" cssClass="error-message" />
                     </li>
                     <li>
-                        <form:label path="price"><spring:message code="msg.tariff.priceLabel" /></form:label>
+                        <form:label path="price"><spring:message code="msg.tariff.price.label" /></form:label>
                         <form:input path="price" type="number" required="true" min="0.01" step="0.01" cssErrorClass="error" />
                         <form:errors path="price" cssClass="error-message" />
                     </li>
                     <li>
                         <form:label path="active"><spring:message code="msg.tariff.active" /></form:label>
-                        <form:checkbox path="active" />
+                        <form:checkbox path="active" id="active" />
                     </li>
                 </ul>
                 <form:button type="submit"><spring:message code="msg.tariff.submit" /></form:button>

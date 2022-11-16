@@ -10,6 +10,7 @@
             <h1><spring:message code="msg.employee.manage" /></h1>
             <p><a href="/employees/new"><spring:message code="msg.employee.add" /></a>
             <form action="/employees/generate" method="POST">
+                <sec:csrfInput />
                 <input name="redirect" type="hidden" value="/employees">
                 <ul>
                     <li>
@@ -18,7 +19,7 @@
                     </li>
                     <li>
                         <label for="active"><spring:message code="msg.employee.generate.activated" /></label>
-                        <span><input name="active" type="checkbox" checked> <spring:message code="msg.employee.generate.postfix" /></span>
+                        <span><input name="active" id="active" type="checkbox" checked> <spring:message code="msg.employee.generate.postfix" /></span>
                     </li>
                 </ul>
                 <button type="submit"><spring:message code="msg.employee.generate.submit" /></button>

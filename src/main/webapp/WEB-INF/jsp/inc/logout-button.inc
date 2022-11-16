@@ -1,0 +1,1 @@
+<form action="/logout" method="POST" class="link"><sec:csrfInput /><button type="submit"><span><spring:message code="msg.user.logout" /></span></button></form>

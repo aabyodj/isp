@@ -19,6 +19,7 @@
                     <h1><spring:message code="msg.tariff.manage.h1" /></h1>
                     <p><a href="/tariffs/new"><spring:message code="msg.tariff.add" /></a>
                     <form action="/tariffs/generate" method="POST">
+                        <sec:csrfInput />
                         <input name="redirect" type="hidden" value="/tariffs">
                         <ul>
                             <li>
@@ -27,7 +28,7 @@
                             </li>
                             <li>
                                 <label for="active"><spring:message code="msg.tariff.generate.activated" /></label>
-                                <span><input name="active" type="checkbox" checked> <spring:message code="msg.tariff.generate.postfix" /></span>
+                                <span><input name="active" id="active" type="checkbox" checked> <spring:message code="msg.tariff.generate.postfix" /></span>
                             </li>
                         </ul>
                         <button type="submit"><spring:message code="msg.tariff.generate.submit" /></button>

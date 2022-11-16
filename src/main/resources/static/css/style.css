@@ -81,12 +81,36 @@ li > h2:first-child {
     margin-top: 0;
 }
 
+form.link {
+    display: inline;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+}
+
+form.link button {
+    display: contents;
+    font: inherit;
+    color: blue;
+    cursor: pointer;
+}
+
+form.link button span {
+    text-decoration: underline;
+}
+
 :where(input, textarea).error {
     border: 2px solid #dd0000;
 }
 
 .negative, .error-message {
     color: #dd0000;
+}
+
+.success-message {
+ color: #00cc00;
 }
 
 @media (min-width: 32rem) {
@@ -170,7 +194,7 @@ li > h2:first-child {
         width: fit-content;
     }
 
-    form > p.error-message {
+    form > p:where(.error-message, .success-message) {
         text-align: center;
     }
 }

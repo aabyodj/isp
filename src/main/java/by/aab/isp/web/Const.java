@@ -1,9 +1,15 @@
 package by.aab.isp.web;
 
-public class Const {
+import org.springframework.data.domain.Sort;
+
+public final class Const {
 
     public static final String SCHEMA_REDIRECT = "redirect:";
     public static final int DEFAULT_PAGE_SIZE = 5;
+    public static final Sort DEFAULT_PROMOTIONS_SORT = Sort.by("activeSince", "activeUntil");
+    public static final Sort DEFAULT_TARIFFS_SORT = Sort.by("name");
+    public static final Sort DEFAULT_CUSTOMERS_SORT = Sort.by("email");
+    public static final Sort DEFAULT_EMPLOYEES_SORT = Sort.by("email");
 
     private Const() {}
 }

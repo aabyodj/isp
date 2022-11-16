@@ -19,6 +19,7 @@
                     <h1><spring:message code="msg.promotion.manage.h1" /></h1>
                     <p><a href="/promotions/new"><spring:message code="msg.promotion.add" /></a>
                     <form action="/promotions/generate" method="POST">
+                        <sec:csrfInput />
                         <input name="redirect" type="hidden" value="/promotions">
                         <ul>
                             <li>

@@ -6,20 +6,19 @@ import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import by.aab.isp.aspect.AutoLogged;
-import by.aab.isp.dto.promotion.PromotionEditDto;
-import by.aab.isp.dto.promotion.PromotionViewDto;
-import by.aab.isp.entity.Promotion;
 import by.aab.isp.repository.PromotionRepository;
+import by.aab.isp.repository.entity.Promotion;
 import by.aab.isp.service.NotFoundException;
 import by.aab.isp.service.Now;
 import by.aab.isp.service.PromotionService;
+import by.aab.isp.service.dto.promotion.PromotionEditDto;
+import by.aab.isp.service.dto.promotion.PromotionViewDto;
+import by.aab.isp.service.log.Autologged;
 import lombok.RequiredArgsConstructor;
 
 @Service("promotionService")
@@ -28,25 +27,23 @@ public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionRepository promotionRepository;
     private final ConversionService conversionService;
+    private final Now now;
 
-    @Autowired
-    private Now now;
-
-    @AutoLogged
+    @Autologged
     @Override
     public Page<PromotionViewDto> getAll(Pageable pageable) {
         return promotionRepository.findAll(pageable)
                 .map(promotion -> conversionService.convert(promotion, PromotionViewDto.class));
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public Page<PromotionViewDto> getActive(Pageable pageable) {
         return promotionRepository.findByActivePeriodContains(now.getLocalDateTime(), pageable)
                 .map(promotion -> conversionService.convert(promotion, PromotionViewDto.class));
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public PromotionEditDto getById(Long id) {
         return promotionRepository.findById(id)
@@ -54,7 +51,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    @AutoLogged
+    @Autologged
     @Override
     public PromotionEditDto save(PromotionEditDto dto) {
         dto.setName(dto.getName().strip());
@@ -65,7 +62,7 @@ public class PromotionServiceImpl implements PromotionService {
         return dto;
     }
 
-    @AutoLogged
+    @Autologged
     @Transactional
     @Override
     public void stop(long id) {
@@ -76,7 +73,7 @@ public class PromotionServiceImpl implements PromotionService {
         }
     }
 
-    @AutoLogged
+    @Autologged
     @Transactional
     @Override
     public void generatePromotions(int quantity, boolean active) {

@@ -16,6 +16,7 @@
         <main>
             <h1><spring:message code="${employee.id != null ? 'msg.employee.edit.h1' : 'msg.employee.add.h1'}" /></h1>
             <form:form method="POST" modelAttribute="employee">
+                <sec:csrfInput />
                 <input name="redirect" type="hidden" value="${redirect}">
                 <form:input path="id" type="hidden" />
                 <ul>
@@ -54,7 +55,7 @@
                     </li>
                     <li>
                         <form:label path="active"><spring:message code="msg.user.active" /></form:label>
-                        <form:checkbox path="active" />
+                        <form:checkbox path="active" id="active" />
                     </li>
                 </ul>
                 <form:button type="submit"><spring:message code="msg.user.submit" /></form:button>
