@@ -1,80 +1,72 @@
-# Интернет-провайдер
+# Internet Server Provider
 
-## Учебный проект
+## Tutorial Project
 
-**Клиент** может просмотреть состояние своего счёта и трафика, пополнить счёт,
-изменить личные параметры и тарифный план.
+**Customer** views and replenishes their account balance, observes traffic consumption,
+changes their credentials and tariff plan.
 
-**Администратор** регистрирует клиентов, управляет тарифными планами
-(корректирует и добавляет новые), объявляет акции, скидки и т.д., при нарушении
-правил пользования системой может блокировать клиента.
+**Manager** manages customers accounts, tariff plans (modifies and adds new ones),
+announces discounts and promotions etc; can block *customers*.
 
-## Функциональные требования
+## Functional requirements
 
-- [x] Авторизация (sign in) и выход (sign out) в/из системы.
-- [x] Хранение паролей в виде хэшей
-- [x] Регистрация пользователя и/или добавление артефакта предметной области системы.
-- [x] Просмотр информации (например: просмотр всех ставок тотализатора, статистики заказов, счетов и т.д.)
-- [x] Удаление информации (например: отмена заказа, удаление сущности и т.д.)
-- [x] Добавление и модификация информации (например: создать и отредактировать товар, создать и отредактировать заказ и
- т.д.)
-- [ ] Во всех проектах, где присутствуют финансовые отношения, возможно использование оплаты в кредит
-- [ ] Интерфейс приложения должен быть локализован; выбор из языков: EN|BE|RU и т.д.
+- [x] Authentication (*sign in* and *sign out*)
+- [x] Passwords are hashed before being persisted
+- [x] *Add an entity* feature
+- [x] *View entities* feature
+- [x] *Modify an entity* feature
+- [x] *Remove an entity* feature
+- [ ] *Customers* can pay on credit
+- [x] The application interface is internationalized
 
-### Клиент
+### Customers
 
-- [x] Просматривает состояние своего счёта и трафика
-- [x] Пополняет счёт
-- [x] Изменяет свои личные параметры и тарифный план
+- [x] View their account balance and traffic
+- [x] Replenish their balance
+- [x] Change their *tariff plan*
+- [x] Update their credentials
 
-### Менеджер
+### Managers
 
-- [x] Управляет клиентами (регистрирует, блокирует и разблокирует)
-- [x] Управляет тарифными планами (корректирует и добавляет новые)
-- [x] Редактирует заглавную страницу: объявляет акции, скидки и т.д.
-- [x] Изменяет свои личные параметры
+- [x] Manage *customers* accounts (create, modify, block and unblock)
+- [x] Manage *tariff plans* (create and modify)
+- [x] Manage *discounts and promotions* (create, modify, stop)
+- [x] Update their credentials
 
-### Администратор
+### Administrators
 
-- [x] Имеет весь функционал менеджера
-- [x] Управляет менеджерами и администраторами (регистрирует, блокирует и разблокирует, изменяет роли)
-- [x] Нельзя удалить или разжаловать администратора, если он последний активный в системе
+- [x] Have all the *managers* authorities
+- [x] Manage other *administrators* and *managers* accounts (create, modify, change role, block, unblock)
+- [x] The last active *administrator* cannot be blocked or demoted
 
-### Незарегистрированный пользователь
+### Anonymous users
 
-- [x] Просматривает информацию об актуальных тарифных планах и скидках
-- [ ] Отправляет заявку на подключение
+- [x] View actual tariff plans and discounts
+- [ ] Submit a registration request
 
-## Нефункциональные требования
+## Nonfunctional requirements
 
-- [x] Приложение реализовать, применяя технологии Servlet и JSP
-- [x] Архитектура приложения должна соответствовать шаблонам Layered architecture и MVC. Controller может быть только
- ~~двух видов: контроллер роли или контроллер приложения~~ один.
-- [x] Информация о предметной области должна хранится в БД
-- [x] Если данные в базе хранятся на кириллице, рекомендуется применять кодировку UTF-8
-- [x] Технология доступа к БД **только** JDBC
-- [x] Параметры соединения с БД читаются из файла конфигурации
-- [x] Для работы с БД в приложении должен быть реализован потокобезопасный пул соединений, использовать *synchronized* и
- *volatile* запрещено
-- [x] При проектировании БД рекомендуется использовать не более (и не менее) 6-8 таблиц
-- [x] Работу с данными в приложении осуществлять посредством шаблона DAO
-- [x] Приложение должно корректно обрабатывать возникающие исключительные ситуации, в том числе вести их лог. В качестве
- логгера использовать Log4J2/SLF4J
-- [x] Классы и другие сущности приложения должны быть грамотно структурированы по пакетам и иметь отражающую их
- функциональность название
-- [x] При реализации бизнес-логики приложения следует при необходимости использовать шаблоны проектирования (например,
- шаблоны GoF: Factory Method, Command, Builder, Strategy, State, Observer, Singleton, Proxy и т.д.
-- [x] Для хранения пользовательской информации между запросами использовать сессию
-- [x] Для перехвата и корректировки объектов запроса (request) и ответа (response) применить фильтры
-- [x] При реализации страниц JSP следует использовать теги библиотеки JSTL, использовать скриптлеты запрещено
-- [x] При реализации пользовательского интерфейса разрешается использовать любые технологии front-end разработки 
- (JavaScript, AJAX и т.д.)
-- [x] Реализовать защиту от повторного выполнения запроса нажатием F5
-- [x] Реализовать защиту от HTML и JavaScript Injection
-- [ ] Просмотр длинных списков желательно организовывать в постраничном режиме
-- [x] Валидацию входных данных производить и на клиенте, и на сервере
-- [ ] Документацию к проекту необходимо оформить согласно требованиям javadoc
-- [x] Оформление кода должно соответствовать Java Code Convention
-- [x] При развертывании приложения разрешается использовать технологию Maven
-- [ ] Приложение должно содержать JUnit
-- [x] Приложение должно быть размещено на удалённом git-репозитории
+- [x] Spring Boot
+- [x] Spring JPA
+- [x] Spring MVC
+- [x] Spring Security
+- [x] Spring i18n
+- [x] Spring Aspects
+- [x] 3-tier architecture
+- [x] Database schema comprises at least 6 tables
+- [x] DTO pattern
+- [x] Log4J2/SLF4J
+- [x] Custom annotations
+- [x] Make use of HTTP Session
+- [x] Make use of HTTP Filter or HandlerInterceptor
+- [x] JSP scriptlets are prohibited
+- [x] Any frontend technology is allowed (JavaScript, AJAX etc)
+- [x] Duplicate HTTP request protection
+- [x] HTML and JavaScript injection protection
+- [x] Pagination
+- [x] Client-side validation
+- [x] Server-side validation
+- [ ] Javadoc
+- [x] Java Code Convention
+- [ ] JUnit
+- [x] Git
